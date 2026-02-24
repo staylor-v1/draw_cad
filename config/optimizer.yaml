@@ -1,0 +1,35 @@
+# Loop 2 meta-optimizer configuration
+optimizer:
+  max_iterations: 20
+  convergence_threshold: 0.01
+  convergence_patience: 3
+  candidate_count: 3
+
+parameter_search:
+  temperature:
+    min: 0.0
+    max: 1.0
+    step: 0.1
+  max_retries:
+    values: [1, 2, 3, 5]
+  fewshot_count:
+    values: [0, 1, 2, 3, 5]
+  ocr_enabled:
+    values: [true, false]
+
+prompt_optimization:
+  enabled: true
+  max_patch_length: 500
+  patch_strategies:
+    - "add_constraint"
+    - "add_example_pattern"
+    - "clarify_ambiguity"
+    - "add_error_prevention"
+
+fewshot_optimization:
+  enabled: true
+  selection_strategies:
+    - "fixed"
+    - "random"
+    - "coverage"
+    - "failure_targeted"

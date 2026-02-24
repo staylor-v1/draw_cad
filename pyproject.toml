@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "drawing-to-cad"
+version = "0.1.0"
+description = "Three-layer agentic system for engineering drawing to CAD conversion"
+requires-python = ">=3.9,<3.13"
+dependencies = [
+    "build123d>=0.7.0",
+    "pydantic>=2.0",
+    "pyyaml>=6.0",
+    "structlog>=23.0",
+    "httpx>=0.25.0",
+    "trimesh>=4.0",
+    "numpy>=1.24",
+    "Pillow>=10.0",
+]
+
+[project.optional-dependencies]
+ocr = ["paddleocr>=2.7", "paddlepaddle>=2.5"]
+optimizer = ["optuna>=3.4"]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.21",
+]
+all = ["drawing-to-cad[ocr,optimizer,dev]"]
+
+[project.scripts]
+drawing-to-cad = "main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*", "tools*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

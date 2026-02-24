@@ -1,0 +1,16 @@
+id: "001_simple_plate"
+name: "Simple Plate with Hole"
+tier: 1
+description: "A rectangular plate 100x50x10mm with a single 5mm centered through-hole"
+dimensions:
+  length: 100.0
+  width: 50.0
+  thickness: 10.0
+features:
+  - type: "Base Plate"
+    description: "Rectangular plate 100x50x10mm"
+  - type: "Through Hole"
+    description: "5mm diameter hole centered on the top face"
+material: "Aluminum 6061-T6"
+units: "mm"
+tolerance: 0.1

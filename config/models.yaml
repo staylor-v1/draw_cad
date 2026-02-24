@@ -1,0 +1,31 @@
+# Model backend configurations
+backends:
+  ollama:
+    type: "ollama"
+    base_url: "http://localhost:11434"
+    api_path: "/api"
+    chat_endpoint: "/api/chat"
+    timeout: 120
+    models:
+      vision: "llama3.2-vision:11b"
+      reasoning: "gpt-oss-120b"
+
+  vllm:
+    type: "vllm"
+    base_url: "http://localhost:8000"
+    api_path: "/v1"
+    chat_endpoint: "/v1/chat/completions"
+    timeout: 120
+    models:
+      vision: "llama-3.2-11b-Vision"
+      reasoning: "gpt-oss-120b"
+
+  llamacpp:
+    type: "llamacpp"
+    base_url: "http://localhost:8080"
+    api_path: "/v1"
+    chat_endpoint: "/v1/chat/completions"
+    timeout: 120
+    models:
+      vision: "llama-3.2-11b-Vision"
+      reasoning: "gpt-oss-120b"

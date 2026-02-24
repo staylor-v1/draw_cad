@@ -1,0 +1,71 @@
+# Benchmark suite for drawing-to-CAD pipeline evaluation
+name: "core_benchmark_v1"
+description: "Core benchmark suite with Tier 1-3 test cases"
+
+cases:
+  - id: "001_simple_plate"
+    drawing: "drawings/001_simple_plate/drawing.png"
+    reference: "drawings/001_simple_plate/reference.step"
+    tier: 1
+    description: "Simple rectangular plate 100x50x10mm with one centered hole"
+    expected_dimensions:
+      length: 100.0
+      width: 50.0
+      thickness: 10.0
+    expected_features:
+      - type: "Base Plate"
+        description: "Rectangular plate"
+      - type: "Through Hole"
+        description: "5mm diameter centered hole"
+
+  - id: "002_simple_block"
+    drawing: "drawings/002_simple_block/drawing.png"
+    tier: 1
+    description: "Simple rectangular block 80x40x20mm, no features"
+    expected_dimensions:
+      length: 80.0
+      width: 40.0
+      height: 20.0
+    expected_features:
+      - type: "Block"
+        description: "Rectangular block"
+
+  - id: "003_plate_four_holes"
+    drawing: "drawings/003_plate_four_holes/drawing.png"
+    tier: 1
+    description: "Rectangular plate 120x80x15mm with 4 corner mounting holes"
+    expected_dimensions:
+      length: 120.0
+      width: 80.0
+      thickness: 15.0
+    expected_features:
+      - type: "Base Plate"
+        description: "Rectangular plate"
+      - type: "Mounting Holes"
+        description: "4x M8 through-holes at corners"
+
+  - id: "004_cylinder"
+    drawing: "drawings/004_cylinder/drawing.png"
+    tier: 1
+    description: "Simple cylinder, diameter 50mm, height 75mm"
+    expected_dimensions:
+      diameter: 50.0
+      height: 75.0
+    expected_features:
+      - type: "Cylinder"
+        description: "Solid cylinder"
+
+  - id: "005_l_bracket"
+    drawing: "drawings/005_l_bracket/drawing.png"
+    tier: 2
+    description: "L-shaped bracket with two mounting holes"
+    expected_dimensions:
+      base_length: 100.0
+      base_width: 60.0
+      thickness: 8.0
+      wall_height: 50.0
+    expected_features:
+      - type: "L-Bracket"
+        description: "L-shaped bracket body"
+      - type: "Mounting Holes"
+        description: "2x 6mm holes in base"

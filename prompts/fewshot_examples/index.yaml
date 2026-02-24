@@ -1,0 +1,16 @@
+# Few-shot example index
+examples:
+  - name: "simple_plate"
+    path: "prompts/fewshot_examples/simple_plate.md"
+    tags: ["plate", "rectangular", "holes", "basic"]
+    tier: 1
+
+  - name: "bracket_with_holes"
+    path: "prompts/fewshot_examples/bracket_with_holes.md"
+    tags: ["bracket", "L-shape", "holes", "intermediate"]
+    tier: 2
+
+  - name: "shaft_with_keyway"
+    path: "prompts/fewshot_examples/shaft_with_keyway.md"
+    tags: ["shaft", "revolve", "keyway", "intermediate"]
+    tier: 2
