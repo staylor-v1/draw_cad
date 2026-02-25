@@ -44,6 +44,7 @@ class EvaluationMetrics(BaseModel):
     feature_precision: float = 0.0
     bounding_box_iou: float = 0.0
     volume_ratio: float = 0.0
+    face_count_ratio: float = 0.0
     geometry_valid: float = 0.0
     retry_efficiency: float = 1.0
     composite_score: float = 0.0
@@ -107,7 +108,8 @@ class BenchmarkReport(BaseModel):
 
         metric_fields = [
             "dimension_fidelity", "feature_recall", "feature_precision",
-            "bounding_box_iou", "volume_ratio", "geometry_valid", "retry_efficiency",
+            "bounding_box_iou", "volume_ratio", "face_count_ratio",
+            "geometry_valid", "retry_efficiency",
         ]
         for field_name in metric_fields:
             values = [getattr(c.metrics, field_name) for c in self.case_results]

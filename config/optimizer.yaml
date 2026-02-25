@@ -33,3 +33,31 @@ fewshot_optimization:
     - "random"
     - "coverage"
     - "failure_targeted"
+    - "similarity"
+
+training_data:
+  root_dir: "training_data"
+  manifest_path: "training_data/manifest.json"
+  rendered_png_dir: "training_data/rendered_png"
+  sample_size: 20
+  sampling_strategy: "stratified"
+  sentinel_count: 5
+
+curriculum:
+  enabled: true
+  phases:
+    - name: "foundation"
+      tiers: [1]
+      sample_size: 15
+      min_score_to_advance: 0.6
+      max_iterations: 5
+    - name: "intermediate"
+      tiers: [1, 2]
+      sample_size: 20
+      min_score_to_advance: 0.5
+      max_iterations: 8
+    - name: "advanced"
+      tiers: [1, 2, 3]
+      sample_size: 25
+      min_score_to_advance: 0.4
+      max_iterations: 10

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from src.evaluation.benchmark_runner import BenchmarkRunner
 from src.inference.base import BaseLLMClient, BaseVisionClient
@@ -19,6 +19,11 @@ from src.schemas.pipeline_config import PipelineConfig
 from src.utils.file_utils import load_prompt
 from src.utils.logging_config import get_logger
 
+if TYPE_CHECKING:
+    from src.training.curriculum import CurriculumScheduler
+    from src.training.data_loader import TrainingDataIndex, TrainingPair
+    from src.training.fewshot_miner import FewShotMiner
+
 logger = get_logger(__name__)
 
 
@@ -33,12 +38,15 @@ class MetaOptimizer:
         use_mock: bool = False,
         experiments_dir: str = "experiments",
         benchmark_suite: str = "benchmarks/suite.yaml",
+        training_index: TrainingDataIndex | None = None,
+        curriculum_enabled: bool = False,
     ):
         self.config = config
         self.llm_client = llm_client
         self.vision_client = vision_client
         self.use_mock = use_mock
         self.benchmark_suite = benchmark_suite
+        self.training_index = training_index
 
         # Sub-components
         self.tracker = ExperimentTracker(experiments_dir)
@@ -50,6 +58,20 @@ class MetaOptimizer:
             threshold=0.01,
             patience=3,
         )
+
+        # Training-data integration (optional)
+        self.curriculum: CurriculumScheduler | None = None
+        self.fewshot_miner: FewShotMiner | None = None
+
+        if training_index is not None:
+            from src.training.fewshot_miner import FewShotMiner as _FewShotMiner
+
+            self.fewshot_miner = _FewShotMiner(training_index)
+
+            if curriculum_enabled:
+                from src.training.curriculum import CurriculumScheduler as _CurriculumScheduler
+
+                self.curriculum = _CurriculumScheduler(training_index)
 
     def run(self, max_iterations: int = 20) -> dict:
         """Run the meta-optimization loop.
@@ -71,7 +93,7 @@ class MetaOptimizer:
 
         # Baseline run
         logger.info("meta_optimizer_baseline")
-        baseline_report = self._run_benchmark(self.config)
+        baseline_report = self._run_benchmark_adaptive(self.config, iteration=0)
         baseline_score = baseline_report.aggregate_metrics.composite_score
         self.convergence.update(baseline_score)
         best_score = baseline_score
@@ -102,7 +124,7 @@ class MetaOptimizer:
             # Evaluate each candidate
             candidate_results: list[tuple[PipelineConfig, BenchmarkReport, ConfigDelta]] = []
             for candidate_config, delta in candidates:
-                report = self._run_benchmark(candidate_config)
+                report = self._run_benchmark_adaptive(candidate_config, iteration)
                 score = report.aggregate_metrics.composite_score
                 candidate_results.append((candidate_config, report, delta))
 
@@ -135,6 +157,27 @@ class MetaOptimizer:
                 logger.info("candidate_rejected", candidate_score=candidate_score, best_score=best_score)
                 # Rollback any prompt patches
                 candidate_delta = ConfigDelta(description=f"Rejected (score {candidate_score:.4f})")
+
+            # Record successful runs as few-shot examples
+            if self.fewshot_miner and candidate_report:
+                for cr in candidate_report.case_results:
+                    if cr.metrics.composite_score > 0.7 and cr.generated_code:
+                        pair = (
+                            self.training_index.get_by_id(cr.case_id)
+                            if self.training_index
+                            else None
+                        )
+                        if pair:
+                            self.fewshot_miner.record_successful_run(
+                                pair=pair,
+                                code=cr.generated_code,
+                                metrics=cr.metrics,
+                            )
+
+            # Check curriculum phase advancement
+            if self.curriculum and self.curriculum.should_advance(candidate_score):
+                self.curriculum.advance()
+                self.convergence.reset()
 
             self.convergence.update(candidate_score)
             self._record_experiment(
@@ -179,6 +222,50 @@ class MetaOptimizer:
             use_mock=self.use_mock,
         )
         return runner.run_suite(self.benchmark_suite)
+
+    def _run_benchmark_adaptive(
+        self, config: PipelineConfig, iteration: int
+    ) -> BenchmarkReport:
+        """Run benchmark using training-data sampling when available,
+        otherwise fall back to the static YAML suite."""
+        if self.curriculum and self.training_index:
+            pairs = self.curriculum.get_current_sample(iteration)
+            return self._run_benchmark_on_sample(config, pairs)
+        if self.training_index:
+            from src.training.sampler import BenchmarkSampler
+
+            sampler = BenchmarkSampler(self.training_index)
+            pairs = sampler.sample()
+            return self._run_benchmark_on_sample(config, pairs)
+        return self._run_benchmark(config)
+
+    def _run_benchmark_on_sample(
+        self,
+        config: PipelineConfig,
+        pairs: list[TrainingPair],
+    ) -> BenchmarkReport:
+        """Run the pipeline on a list of training pairs."""
+        # Disable OCR for training data (SVGs have no text annotations)
+        config = config.deep_copy()
+        config.pipeline.ocr_enabled = False
+
+        cases: list[dict] = []
+        for pair in pairs:
+            drawing = str(pair.png_path) if pair.png_path else str(pair.svg_path)
+            cases.append({
+                "id": pair.pair_id,
+                "drawing": drawing,
+                "reference": str(pair.step_path),
+                "ground_truth": pair.ground_truth,
+            })
+
+        runner = BenchmarkRunner(
+            config=config,
+            llm_client=self.llm_client,
+            vision_client=self.vision_client,
+            use_mock=self.use_mock,
+        )
+        return runner.run_cases(cases)
 
     def _generate_candidates(
         self,
@@ -248,6 +335,7 @@ class MetaOptimizer:
                 "feature_precision": report.aggregate_metrics.feature_precision,
                 "bounding_box_iou": report.aggregate_metrics.bounding_box_iou,
                 "volume_ratio": report.aggregate_metrics.volume_ratio,
+                "face_count_ratio": report.aggregate_metrics.face_count_ratio,
                 "geometry_valid": report.aggregate_metrics.geometry_valid,
                 "retry_efficiency": report.aggregate_metrics.retry_efficiency,
             },

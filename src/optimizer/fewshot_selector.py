@@ -3,11 +3,14 @@ from __future__ import annotations
 
 import random
 from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from src.schemas.pipeline_config import PipelineConfig
 from src.utils.file_utils import load_prompt, load_yaml
 from src.utils.logging_config import get_logger
+
+if TYPE_CHECKING:
+    from src.training.ground_truth import StepGroundTruth
 
 logger = get_logger(__name__)
 
@@ -38,12 +41,12 @@ class FewShotSelector:
         self._load_examples()
 
     def _load_examples(self) -> None:
-        """Load examples from the configured index."""
+        """Load examples from the configured index, then auto-mined examples."""
         try:
             index = load_yaml(self.config.prompts.fewshot_index)
         except FileNotFoundError:
             logger.debug("fewshot_index_not_found")
-            return
+            index = {"examples": []}
 
         for entry in index.get("examples", []):
             try:
@@ -58,7 +61,45 @@ class FewShotSelector:
             except (FileNotFoundError, KeyError) as e:
                 logger.debug("fewshot_example_load_error", path=entry.get("path"), error=str(e))
 
+        # Load auto-mined examples (lower initial priority)
+        self.load_mined_examples(Path("prompts/fewshot_examples/mined"))
         logger.info("fewshot_examples_loaded", count=len(self.examples))
+
+    def load_mined_examples(self, mined_dir: Path) -> None:
+        """Discover and load auto-mined few-shot examples.
+
+        Mined examples are appended after hand-written ones so they
+        have lower priority with the ``fixed`` selection strategy.
+        """
+        index_path = mined_dir / "index.yaml"
+        if not index_path.exists():
+            return
+
+        existing_names = {ex.name for ex in self.examples}
+
+        try:
+            data = load_yaml(str(index_path))
+        except Exception:
+            return
+
+        for entry in data.get("examples", []):
+            name = entry.get("name", "")
+            if name in existing_names:
+                continue
+            try:
+                content = load_prompt(entry["path"])
+                example = FewShotExample(
+                    name=name,
+                    path=entry["path"],
+                    tags=entry.get("tags", []),
+                    content=content,
+                )
+                self.examples.append(example)
+                existing_names.add(name)
+            except (FileNotFoundError, KeyError):
+                pass
+
+        logger.debug("mined_examples_loaded", dir=str(mined_dir))
 
     def select(
         self,
@@ -89,6 +130,8 @@ class FewShotSelector:
             selected = self._select_coverage(count, target_tags)
         elif strategy == "failure_targeted":
             selected = self._select_failure_targeted(count)
+        elif strategy == "similarity":
+            selected = self._select_similarity(count, target_tags)
         else:
             selected = self.examples[:count]
 
@@ -150,3 +193,27 @@ class FewShotSelector:
             reverse=True,
         )
         return sorted_examples[:count]
+
+    def _select_similarity(
+        self,
+        count: int,
+        target_tags: list[str] | None,
+    ) -> list[FewShotExample]:
+        """Select examples whose tags overlap most with the target tags.
+
+        When *reference_ground_truth* is available on the class, this
+        can be extended to compare numeric StepGroundTruth features;
+        for now it falls back to tag-based overlap which is populated
+        from ground-truth properties by ``FewShotMiner``.
+        """
+        if not target_tags:
+            return self.examples[:count]
+
+        target_set = set(target_tags)
+
+        def _score(ex: FewShotExample) -> float:
+            overlap = len(target_set & set(ex.tags))
+            return overlap + ex.success_rate * 0.1
+
+        ranked = sorted(self.examples, key=_score, reverse=True)
+        return ranked[:count]

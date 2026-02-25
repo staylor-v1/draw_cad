@@ -78,12 +78,20 @@ def compute_retry_efficiency(retry_count: int, max_retries: int = 3) -> float:
     return 1.0 - min(retry_count, max_retries) / max_retries
 
 
+def compute_face_count_ratio(generated: int, reference: int) -> float:
+    """Compute face-count ratio: min(gen, ref) / max(gen, ref)."""
+    if generated <= 0 or reference <= 0:
+        return 0.0
+    return min(generated, reference) / max(generated, reference)
+
+
 def compute_all_metrics(
     dim_checks: list[DimensionCheck],
     feat_checks: list[FeatureCheck],
     validation: Optional[ValidationResult],
     reference_bbox: Optional[list[list[float]]] = None,
     reference_volume: Optional[float] = None,
+    reference_face_count: int = 0,
     retry_count: int = 0,
     execution_success: bool = False,
     weights: Optional[dict[str, float]] = None,
@@ -91,6 +99,7 @@ def compute_all_metrics(
     """Compute all metrics and the composite score."""
     gen_bbox = validation.bounding_box if validation else None
     gen_volume = validation.volume if validation else None
+    gen_face_count = validation.face_count if validation else 0
 
     metrics = EvaluationMetrics(
         dimension_fidelity=compute_dimension_fidelity(dim_checks),
@@ -98,6 +107,7 @@ def compute_all_metrics(
         feature_precision=compute_feature_precision(feat_checks),
         bounding_box_iou=compute_bounding_box_iou_metric(gen_bbox, reference_bbox),
         volume_ratio=compute_volume_ratio(gen_volume, reference_volume),
+        face_count_ratio=compute_face_count_ratio(gen_face_count, reference_face_count),
         geometry_valid=compute_geometry_valid(validation),
         retry_efficiency=compute_retry_efficiency(retry_count),
         dimension_checks=dim_checks,

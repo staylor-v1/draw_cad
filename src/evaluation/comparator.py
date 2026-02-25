@@ -2,12 +2,15 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from src.schemas.evaluation_result import DimensionCheck, FeatureCheck, ValidationResult
 from src.tools.mesh_validator import compute_bounding_box_iou, validate_step_file
 from src.tools.step_analyzer import StepProperties, analyze_step_file
 from src.utils.logging_config import get_logger
+
+if TYPE_CHECKING:
+    from src.training.ground_truth import StepGroundTruth
 
 logger = get_logger(__name__)
 
@@ -63,6 +66,53 @@ class StepComparator:
             "step_comparison_complete",
             bbox_iou=result["bounding_box_iou"],
             volume_ratio=result["volume_ratio"],
+        )
+        return result
+
+    def compare_with_ground_truth(
+        self,
+        generated_path: str | Path,
+        ground_truth: StepGroundTruth,
+    ) -> dict:
+        """Compare generated STEP against precomputed ground truth.
+
+        Only analyses the *generated* file; all reference properties come
+        from ``ground_truth``, avoiding the cost of loading the reference
+        STEP file entirely.
+        """
+        gen_props = analyze_step_file(generated_path)
+        gen_validation = validate_step_file(generated_path)
+
+        result: dict = {
+            "generated_valid": gen_props.is_valid,
+            "reference_valid": ground_truth.is_valid,
+            "bounding_box_iou": 0.0,
+            "volume_ratio": 0.0,
+            "face_count_ratio": 0.0,
+            "gen_props": gen_props,
+            "gen_validation": gen_validation,
+        }
+
+        if gen_props.bounding_box and ground_truth.bounding_box:
+            result["bounding_box_iou"] = compute_bounding_box_iou(
+                gen_props.bounding_box, ground_truth.bounding_box
+            )
+
+        if gen_props.volume and ground_truth.volume:
+            v_min = min(gen_props.volume, ground_truth.volume)
+            v_max = max(gen_props.volume, ground_truth.volume)
+            result["volume_ratio"] = v_min / v_max if v_max > 0 else 0.0
+
+        if gen_props.face_count > 0 and ground_truth.face_count > 0:
+            f_min = min(gen_props.face_count, ground_truth.face_count)
+            f_max = max(gen_props.face_count, ground_truth.face_count)
+            result["face_count_ratio"] = f_min / f_max
+
+        logger.info(
+            "step_ground_truth_comparison_complete",
+            bbox_iou=result["bounding_box_iou"],
+            volume_ratio=result["volume_ratio"],
+            face_count_ratio=result["face_count_ratio"],
         )
         return result
 
