@@ -187,15 +187,16 @@ class TestTrainingDataIndex:
 # ===========================================================================
 
 class TestSvgRenderer:
-    @patch("src.training.svg_renderer.cairosvg")
-    def test_render_svg_to_png(self, mock_cairo):
+    def test_render_svg_to_png(self):
         from src.training.svg_renderer import render_svg_to_png
 
+        mock_cairo = MagicMock()
         with tempfile.TemporaryDirectory() as tmp:
             svg = Path(tmp) / "test.svg"
             svg.write_text("<svg></svg>")
             out = Path(tmp) / "out.png"
-            result = render_svg_to_png(svg, out)
+            with patch.dict("sys.modules", {"cairosvg": mock_cairo}):
+                result = render_svg_to_png(svg, out)
             assert result == out
             mock_cairo.svg2png.assert_called_once()
 
@@ -203,11 +204,12 @@ class TestSvgRenderer:
         """Output PNG should match input SVG basename."""
         from src.training.svg_renderer import render_svg_to_png
 
+        mock_cairo = MagicMock()
         with tempfile.TemporaryDirectory() as tmp:
             svg = Path(tmp) / "12345_abc_0001.svg"
             svg.write_text("<svg></svg>")
             out = Path(tmp) / "rendered" / "12345_abc_0001.png"
-            with patch("src.training.svg_renderer.cairosvg"):
+            with patch.dict("sys.modules", {"cairosvg": mock_cairo}):
                 result = render_svg_to_png(svg, out)
             assert result.stem == "12345_abc_0001"
 

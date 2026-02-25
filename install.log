@@ -1,0 +1,6 @@
+=== Drawing-to-CAD Environment Installer ===
+Project root: /app
+Log file:     /app/install.log
+
+[1/7] Installing system packages...
+E: List directory /var/lib/apt/lists/partial is missing. - Acquire (13: Permission denied)
