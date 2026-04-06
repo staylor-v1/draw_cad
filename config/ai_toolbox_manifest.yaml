@@ -1,0 +1,2151 @@
+manifest_version: 1
+repo_root: /home/me/gits/draw_cad
+stable_tools:
+- name: build_reconstructor
+  qualname: src.ai_toolbox.build_reconstructor
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 166
+  signature: '(config: PipelineConfig | str | Path = ''config/total_view_data.yaml'',
+    view_suffixes: tuple[str, str, str] | None = None) -> OrthographicTripletReconstructor'
+  description: Build the deterministic orthographic reconstructor from a config object
+    or YAML path.
+  parameters:
+  - name: config
+    annotation: PipelineConfig | str | Path
+    required: false
+    default: '''config/total_view_data.yaml'''
+    kind: POSITIONAL_OR_KEYWORD
+  - name: view_suffixes
+    annotation: tuple[str, str, str] | None
+    required: false
+    default: None
+    kind: POSITIONAL_OR_KEYWORD
+  returns: OrthographicTripletReconstructor
+  callable_from_registry: true
+  registry_name: build_reconstructor
+  owner: null
+- name: evaluate_reconstruction_step
+  qualname: src.ai_toolbox.evaluate_reconstruction_step
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 218
+  signature: '(step_path: str | Path, triplet: OrthographicTriplet, config: PipelineConfig
+    | str | Path = ''config/total_view_data.yaml'', view_suffixes: tuple[str, str,
+    str] = (''f'', ''r'', ''t'')) -> Any'
+  description: Evaluate a generated STEP file against its source orthographic triplet.
+  parameters:
+  - name: step_path
+    annotation: str | Path
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: triplet
+    annotation: OrthographicTriplet
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: config
+    annotation: PipelineConfig | str | Path
+    required: false
+    default: '''config/total_view_data.yaml'''
+    kind: POSITIONAL_OR_KEYWORD
+  - name: view_suffixes
+    annotation: tuple[str, str, str]
+    required: false
+    default: ('f', 'r', 't')
+    kind: POSITIONAL_OR_KEYWORD
+  returns: Any
+  callable_from_registry: true
+  registry_name: evaluate_reconstruction_step
+  owner: null
+- name: generate_reconstruction_candidates
+  qualname: src.ai_toolbox.generate_reconstruction_candidates
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 195
+  signature: '(triplet: OrthographicTriplet, config: PipelineConfig | str | Path =
+    ''config/total_view_data.yaml'', view_suffixes: tuple[str, str, str] | None =
+    None) -> list[ReconstructionCandidate]'
+  description: Generate the deterministic reconstruction candidate set for one orthographic
+    triplet.
+  parameters:
+  - name: triplet
+    annotation: OrthographicTriplet
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: config
+    annotation: PipelineConfig | str | Path
+    required: false
+    default: '''config/total_view_data.yaml'''
+    kind: POSITIONAL_OR_KEYWORD
+  - name: view_suffixes
+    annotation: tuple[str, str, str] | None
+    required: false
+    default: None
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[ReconstructionCandidate]
+  callable_from_registry: true
+  registry_name: generate_reconstruction_candidates
+  owner: null
+- name: generate_reconstruction_program
+  qualname: src.ai_toolbox.generate_reconstruction_program
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 185
+  signature: '(triplet: OrthographicTriplet, config: PipelineConfig | str | Path =
+    ''config/total_view_data.yaml'', view_suffixes: tuple[str, str, str] | None =
+    None) -> OrthographicReconstructionResult'
+  description: Generate the default deterministic reconstruction program for one orthographic
+    triplet.
+  parameters:
+  - name: triplet
+    annotation: OrthographicTriplet
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: config
+    annotation: PipelineConfig | str | Path
+    required: false
+    default: '''config/total_view_data.yaml'''
+    kind: POSITIONAL_OR_KEYWORD
+  - name: view_suffixes
+    annotation: tuple[str, str, str] | None
+    required: false
+    default: None
+    kind: POSITIONAL_OR_KEYWORD
+  returns: OrthographicReconstructionResult
+  callable_from_registry: true
+  registry_name: generate_reconstruction_program
+  owner: null
+- name: get_toolbox_manifest
+  qualname: src.ai_toolbox.get_toolbox_manifest
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 326
+  signature: () -> dict[str, Any]
+  description: Build the machine-readable AI toolbox manifest for the repo.
+  parameters: []
+  returns: dict[str, Any]
+  callable_from_registry: true
+  registry_name: get_toolbox_manifest
+  owner: null
+- name: list_tool_names
+  qualname: src.ai_toolbox.list_tool_names
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 321
+  signature: () -> list[str]
+  description: List the stable toolbox entrypoints exposed by this module.
+  parameters: []
+  returns: list[str]
+  callable_from_registry: true
+  registry_name: list_tool_names
+  owner: null
+- name: list_total_view_cases
+  qualname: src.ai_toolbox.list_total_view_cases
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 143
+  signature: '(svg_zip_path: str | Path, required_views: tuple[str, ...] = (''f'',
+    ''r'', ''t''), require_complete: bool = True) -> list[str]'
+  description: List case ids from a zipped Total_view_data SVG archive.
+  parameters:
+  - name: svg_zip_path
+    annotation: str | Path
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: required_views
+    annotation: tuple[str, ...]
+    required: false
+    default: ('f', 'r', 't')
+    kind: POSITIONAL_OR_KEYWORD
+  - name: require_complete
+    annotation: bool
+    required: false
+    default: 'True'
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[str]
+  callable_from_registry: true
+  registry_name: list_total_view_cases
+  owner: null
+- name: load_pipeline_config
+  qualname: src.ai_toolbox.load_pipeline_config
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 133
+  signature: '(config_path: str | Path = ''config/total_view_data.yaml'') -> PipelineConfig'
+  description: Load a pipeline configuration file for toolbox-driven reconstruction
+    work.
+  parameters:
+  - name: config_path
+    annotation: str | Path
+    required: false
+    default: '''config/total_view_data.yaml'''
+    kind: POSITIONAL_OR_KEYWORD
+  returns: PipelineConfig
+  callable_from_registry: true
+  registry_name: load_pipeline_config
+  owner: null
+- name: load_total_view_archive
+  qualname: src.ai_toolbox.load_total_view_archive
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 138
+  signature: '(svg_zip_path: str | Path) -> TotalViewArchive'
+  description: Open a zipped Total_view_data SVG archive.
+  parameters:
+  - name: svg_zip_path
+    annotation: str | Path
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: TotalViewArchive
+  callable_from_registry: true
+  registry_name: load_total_view_archive
+  owner: null
+- name: load_total_view_triplet
+  qualname: src.ai_toolbox.load_total_view_triplet
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 156
+  signature: '(svg_zip_path: str | Path, case_id: str, view_suffixes: tuple[str, str,
+    str] = (''f'', ''r'', ''t'')) -> OrthographicTriplet'
+  description: Load one grouped orthographic triplet from a zipped Total_view_data
+    SVG archive.
+  parameters:
+  - name: svg_zip_path
+    annotation: str | Path
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: case_id
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: view_suffixes
+    annotation: tuple[str, str, str]
+    required: false
+    default: ('f', 'r', 't')
+    kind: POSITIONAL_OR_KEYWORD
+  returns: OrthographicTriplet
+  callable_from_registry: true
+  registry_name: load_total_view_triplet
+  owner: null
+- name: reconstruct_case_with_candidate_search
+  qualname: src.ai_toolbox.reconstruct_case_with_candidate_search
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 238
+  signature: '(svg_zip_path: str | Path, case_id: str, output_dir: str | Path, config:
+    PipelineConfig | str | Path = ''config/total_view_data.yaml'', view_suffixes:
+    tuple[str, str, str] = (''f'', ''r'', ''t''), candidate_search: bool = True) ->
+    dict[str, Any]'
+  description: Reconstruct one dataset case, score the candidates, and return the
+    best result.
+  parameters:
+  - name: svg_zip_path
+    annotation: str | Path
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: case_id
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: output_dir
+    annotation: str | Path
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: config
+    annotation: PipelineConfig | str | Path
+    required: false
+    default: '''config/total_view_data.yaml'''
+    kind: POSITIONAL_OR_KEYWORD
+  - name: view_suffixes
+    annotation: tuple[str, str, str]
+    required: false
+    default: ('f', 'r', 't')
+    kind: POSITIONAL_OR_KEYWORD
+  - name: candidate_search
+    annotation: bool
+    required: false
+    default: 'True'
+    kind: POSITIONAL_OR_KEYWORD
+  returns: dict[str, Any]
+  callable_from_registry: true
+  registry_name: reconstruct_case_with_candidate_search
+  owner: null
+- name: run_build123d_script
+  qualname: src.ai_toolbox.run_build123d_script
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 205
+  signature: '(script_content: str, output_path: str = ''output.step'', timeout: int
+    = 60) -> Any'
+  description: Run generated build123d code and return the execution result.
+  parameters:
+  - name: script_content
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: output_path
+    annotation: str
+    required: false
+    default: '''output.step'''
+    kind: POSITIONAL_OR_KEYWORD
+  - name: timeout
+    annotation: int
+    required: false
+    default: '60'
+    kind: POSITIONAL_OR_KEYWORD
+  returns: Any
+  callable_from_registry: true
+  registry_name: run_build123d_script
+  owner: null
+- name: write_toolbox_manifest
+  qualname: src.ai_toolbox.write_toolbox_manifest
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 342
+  signature: '(output_path: str | Path = PosixPath(''/home/me/gits/draw_cad/config/ai_toolbox_manifest.yaml''))
+    -> Path'
+  description: Write the AI toolbox manifest to YAML and return the output path.
+  parameters:
+  - name: output_path
+    annotation: str | Path
+    required: false
+    default: PosixPath('/home/me/gits/draw_cad/config/ai_toolbox_manifest.yaml')
+    kind: POSITIONAL_OR_KEYWORD
+  returns: Path
+  callable_from_registry: true
+  registry_name: write_toolbox_manifest
+  owner: null
+inventory:
+- name: _maybe_reexec_into_project_venv
+  qualname: scripts.benchmark_total_view_data._maybe_reexec_into_project_venv
+  module: scripts.benchmark_total_view_data
+  kind: script_function
+  visibility: internal
+  source_path: scripts/benchmark_total_view_data.py
+  line: 11
+  signature: () -> None
+  description: CLI helper that re-executes the benchmark runner inside the repo-local
+    virtualenv when available.
+  parameters: []
+  returns: None
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: main
+  qualname: scripts.benchmark_total_view_data.main
+  module: scripts.benchmark_total_view_data
+  kind: script_function
+  visibility: public
+  source_path: scripts/benchmark_total_view_data.py
+  line: 38
+  signature: () -> None
+  description: CLI entrypoint for reprojection benchmarking over a slice of the Total_view_data
+    dataset.
+  parameters: []
+  returns: None
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: _maybe_reexec_into_project_venv
+  qualname: scripts.export_ai_toolbox._maybe_reexec_into_project_venv
+  module: scripts.export_ai_toolbox
+  kind: script_function
+  visibility: internal
+  source_path: scripts/export_ai_toolbox.py
+  line: 11
+  signature: () -> None
+  description: CLI helper that re-executes the toolbox manifest exporter inside the
+    repo-local virtualenv when available.
+  parameters: []
+  returns: None
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: main
+  qualname: scripts.export_ai_toolbox.main
+  module: scripts.export_ai_toolbox
+  kind: script_function
+  visibility: public
+  source_path: scripts/export_ai_toolbox.py
+  line: 29
+  signature: () -> None
+  description: CLI entrypoint that writes the AI toolbox manifest for this repository.
+  parameters: []
+  returns: None
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: _maybe_reexec_into_project_venv
+  qualname: scripts.reconstruct_total_view_data._maybe_reexec_into_project_venv
+  module: scripts.reconstruct_total_view_data
+  kind: script_function
+  visibility: internal
+  source_path: scripts/reconstruct_total_view_data.py
+  line: 11
+  signature: () -> None
+  description: CLI helper that re-executes the reconstruction runner inside the repo-local
+    virtualenv when available.
+  parameters: []
+  returns: None
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: main
+  qualname: scripts.reconstruct_total_view_data.main
+  module: scripts.reconstruct_total_view_data
+  kind: script_function
+  visibility: public
+  source_path: scripts/reconstruct_total_view_data.py
+  line: 37
+  signature: () -> None
+  description: CLI entrypoint for deterministic Total_view_data reconstruction with
+    optional candidate selection.
+  parameters: []
+  returns: None
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: build_reconstructor
+  qualname: src.ai_toolbox.build_reconstructor
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 166
+  signature: '(config: PipelineConfig | str | Path = ''config/total_view_data.yaml'',
+    view_suffixes: tuple[str, str, str] | None = None) -> OrthographicTripletReconstructor'
+  description: Build the deterministic orthographic reconstructor from a config object
+    or YAML path.
+  parameters:
+  - name: config
+    annotation: PipelineConfig | str | Path
+    required: false
+    default: '''config/total_view_data.yaml'''
+    kind: POSITIONAL_OR_KEYWORD
+  - name: view_suffixes
+    annotation: tuple[str, str, str] | None
+    required: false
+    default: None
+    kind: POSITIONAL_OR_KEYWORD
+  returns: OrthographicTripletReconstructor
+  callable_from_registry: true
+  registry_name: build_reconstructor
+  owner: null
+- name: evaluate_reconstruction_step
+  qualname: src.ai_toolbox.evaluate_reconstruction_step
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 218
+  signature: '(step_path: str | Path, triplet: OrthographicTriplet, config: PipelineConfig
+    | str | Path = ''config/total_view_data.yaml'', view_suffixes: tuple[str, str,
+    str] = (''f'', ''r'', ''t'')) -> Any'
+  description: Evaluate a generated STEP file against its source orthographic triplet.
+  parameters:
+  - name: step_path
+    annotation: str | Path
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: triplet
+    annotation: OrthographicTriplet
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: config
+    annotation: PipelineConfig | str | Path
+    required: false
+    default: '''config/total_view_data.yaml'''
+    kind: POSITIONAL_OR_KEYWORD
+  - name: view_suffixes
+    annotation: tuple[str, str, str]
+    required: false
+    default: ('f', 'r', 't')
+    kind: POSITIONAL_OR_KEYWORD
+  returns: Any
+  callable_from_registry: true
+  registry_name: evaluate_reconstruction_step
+  owner: null
+- name: generate_reconstruction_candidates
+  qualname: src.ai_toolbox.generate_reconstruction_candidates
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 195
+  signature: '(triplet: OrthographicTriplet, config: PipelineConfig | str | Path =
+    ''config/total_view_data.yaml'', view_suffixes: tuple[str, str, str] | None =
+    None) -> list[ReconstructionCandidate]'
+  description: Generate the deterministic reconstruction candidate set for one orthographic
+    triplet.
+  parameters:
+  - name: triplet
+    annotation: OrthographicTriplet
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: config
+    annotation: PipelineConfig | str | Path
+    required: false
+    default: '''config/total_view_data.yaml'''
+    kind: POSITIONAL_OR_KEYWORD
+  - name: view_suffixes
+    annotation: tuple[str, str, str] | None
+    required: false
+    default: None
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[ReconstructionCandidate]
+  callable_from_registry: true
+  registry_name: generate_reconstruction_candidates
+  owner: null
+- name: generate_reconstruction_program
+  qualname: src.ai_toolbox.generate_reconstruction_program
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 185
+  signature: '(triplet: OrthographicTriplet, config: PipelineConfig | str | Path =
+    ''config/total_view_data.yaml'', view_suffixes: tuple[str, str, str] | None =
+    None) -> OrthographicReconstructionResult'
+  description: Generate the default deterministic reconstruction program for one orthographic
+    triplet.
+  parameters:
+  - name: triplet
+    annotation: OrthographicTriplet
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: config
+    annotation: PipelineConfig | str | Path
+    required: false
+    default: '''config/total_view_data.yaml'''
+    kind: POSITIONAL_OR_KEYWORD
+  - name: view_suffixes
+    annotation: tuple[str, str, str] | None
+    required: false
+    default: None
+    kind: POSITIONAL_OR_KEYWORD
+  returns: OrthographicReconstructionResult
+  callable_from_registry: true
+  registry_name: generate_reconstruction_program
+  owner: null
+- name: get_toolbox_manifest
+  qualname: src.ai_toolbox.get_toolbox_manifest
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 326
+  signature: () -> dict[str, Any]
+  description: Build the machine-readable AI toolbox manifest for the repo.
+  parameters: []
+  returns: dict[str, Any]
+  callable_from_registry: true
+  registry_name: get_toolbox_manifest
+  owner: null
+- name: list_tool_names
+  qualname: src.ai_toolbox.list_tool_names
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 321
+  signature: () -> list[str]
+  description: List the stable toolbox entrypoints exposed by this module.
+  parameters: []
+  returns: list[str]
+  callable_from_registry: true
+  registry_name: list_tool_names
+  owner: null
+- name: list_total_view_cases
+  qualname: src.ai_toolbox.list_total_view_cases
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 143
+  signature: '(svg_zip_path: str | Path, required_views: tuple[str, ...] = (''f'',
+    ''r'', ''t''), require_complete: bool = True) -> list[str]'
+  description: List case ids from a zipped Total_view_data SVG archive.
+  parameters:
+  - name: svg_zip_path
+    annotation: str | Path
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: required_views
+    annotation: tuple[str, ...]
+    required: false
+    default: ('f', 'r', 't')
+    kind: POSITIONAL_OR_KEYWORD
+  - name: require_complete
+    annotation: bool
+    required: false
+    default: 'True'
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[str]
+  callable_from_registry: true
+  registry_name: list_total_view_cases
+  owner: null
+- name: load_pipeline_config
+  qualname: src.ai_toolbox.load_pipeline_config
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 133
+  signature: '(config_path: str | Path = ''config/total_view_data.yaml'') -> PipelineConfig'
+  description: Load a pipeline configuration file for toolbox-driven reconstruction
+    work.
+  parameters:
+  - name: config_path
+    annotation: str | Path
+    required: false
+    default: '''config/total_view_data.yaml'''
+    kind: POSITIONAL_OR_KEYWORD
+  returns: PipelineConfig
+  callable_from_registry: true
+  registry_name: load_pipeline_config
+  owner: null
+- name: load_total_view_archive
+  qualname: src.ai_toolbox.load_total_view_archive
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 138
+  signature: '(svg_zip_path: str | Path) -> TotalViewArchive'
+  description: Open a zipped Total_view_data SVG archive.
+  parameters:
+  - name: svg_zip_path
+    annotation: str | Path
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: TotalViewArchive
+  callable_from_registry: true
+  registry_name: load_total_view_archive
+  owner: null
+- name: load_total_view_triplet
+  qualname: src.ai_toolbox.load_total_view_triplet
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 156
+  signature: '(svg_zip_path: str | Path, case_id: str, view_suffixes: tuple[str, str,
+    str] = (''f'', ''r'', ''t'')) -> OrthographicTriplet'
+  description: Load one grouped orthographic triplet from a zipped Total_view_data
+    SVG archive.
+  parameters:
+  - name: svg_zip_path
+    annotation: str | Path
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: case_id
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: view_suffixes
+    annotation: tuple[str, str, str]
+    required: false
+    default: ('f', 'r', 't')
+    kind: POSITIONAL_OR_KEYWORD
+  returns: OrthographicTriplet
+  callable_from_registry: true
+  registry_name: load_total_view_triplet
+  owner: null
+- name: reconstruct_case_with_candidate_search
+  qualname: src.ai_toolbox.reconstruct_case_with_candidate_search
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 238
+  signature: '(svg_zip_path: str | Path, case_id: str, output_dir: str | Path, config:
+    PipelineConfig | str | Path = ''config/total_view_data.yaml'', view_suffixes:
+    tuple[str, str, str] = (''f'', ''r'', ''t''), candidate_search: bool = True) ->
+    dict[str, Any]'
+  description: Reconstruct one dataset case, score the candidates, and return the
+    best result.
+  parameters:
+  - name: svg_zip_path
+    annotation: str | Path
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: case_id
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: output_dir
+    annotation: str | Path
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: config
+    annotation: PipelineConfig | str | Path
+    required: false
+    default: '''config/total_view_data.yaml'''
+    kind: POSITIONAL_OR_KEYWORD
+  - name: view_suffixes
+    annotation: tuple[str, str, str]
+    required: false
+    default: ('f', 'r', 't')
+    kind: POSITIONAL_OR_KEYWORD
+  - name: candidate_search
+    annotation: bool
+    required: false
+    default: 'True'
+    kind: POSITIONAL_OR_KEYWORD
+  returns: dict[str, Any]
+  callable_from_registry: true
+  registry_name: reconstruct_case_with_candidate_search
+  owner: null
+- name: run_build123d_script
+  qualname: src.ai_toolbox.run_build123d_script
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 205
+  signature: '(script_content: str, output_path: str = ''output.step'', timeout: int
+    = 60) -> Any'
+  description: Run generated build123d code and return the execution result.
+  parameters:
+  - name: script_content
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: output_path
+    annotation: str
+    required: false
+    default: '''output.step'''
+    kind: POSITIONAL_OR_KEYWORD
+  - name: timeout
+    annotation: int
+    required: false
+    default: '60'
+    kind: POSITIONAL_OR_KEYWORD
+  returns: Any
+  callable_from_registry: true
+  registry_name: run_build123d_script
+  owner: null
+- name: write_toolbox_manifest
+  qualname: src.ai_toolbox.write_toolbox_manifest
+  module: src.ai_toolbox
+  kind: tool
+  visibility: public
+  source_path: src/ai_toolbox.py
+  line: 342
+  signature: '(output_path: str | Path = PosixPath(''/home/me/gits/draw_cad/config/ai_toolbox_manifest.yaml''))
+    -> Path'
+  description: Write the AI toolbox manifest to YAML and return the output path.
+  parameters:
+  - name: output_path
+    annotation: str | Path
+    required: false
+    default: PosixPath('/home/me/gits/draw_cad/config/ai_toolbox_manifest.yaml')
+    kind: POSITIONAL_OR_KEYWORD
+  returns: Path
+  callable_from_registry: true
+  registry_name: write_toolbox_manifest
+  owner: null
+- name: _build_code
+  qualname: src.reconstruction.orthographic_solver.OrthographicTripletReconstructor._build_code
+  module: src.reconstruction.orthographic_solver
+  kind: method
+  visibility: internal
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 609
+  signature: '(front_points: list[tuple[float, float]], top_points: list[tuple[float,
+    float]], right_points: list[tuple[float, float]], consensus_extents: dict[str,
+    float], hidden_cylinders: list[CylindricalCut]) -> str'
+  description: Emit a build123d program for the visual-hull reconstruction candidate.
+  parameters:
+  - name: front_points
+    annotation: list[tuple[float, float]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: top_points
+    annotation: list[tuple[float, float]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: right_points
+    annotation: list[tuple[float, float]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: consensus_extents
+    annotation: dict[str, float]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: hidden_cylinders
+    annotation: list[CylindricalCut]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: str
+  callable_from_registry: false
+  registry_name: null
+  owner: OrthographicTripletReconstructor
+- name: _build_revolve_code
+  qualname: src.reconstruction.orthographic_solver.OrthographicTripletReconstructor._build_revolve_code
+  module: src.reconstruction.orthographic_solver
+  kind: method
+  visibility: internal
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 686
+  signature: '(profile_points: list[tuple[float, float]], consensus_extents: dict[str,
+    float], hidden_cylinders: list[CylindricalCut]) -> str'
+  description: Emit a build123d program for the axisymmetric revolve reconstruction
+    candidate.
+  parameters:
+  - name: profile_points
+    annotation: list[tuple[float, float]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: consensus_extents
+    annotation: dict[str, float]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: hidden_cylinders
+    annotation: list[CylindricalCut]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: str
+  callable_from_registry: false
+  registry_name: null
+  owner: OrthographicTripletReconstructor
+- name: _contour_area_rows_cols
+  qualname: src.reconstruction.orthographic_solver.OrthographicTripletReconstructor._contour_area_rows_cols
+  module: src.reconstruction.orthographic_solver
+  kind: method
+  visibility: internal
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 570
+  signature: '(contour: np.ndarray) -> float'
+  description: Internal helper on OrthographicTripletReconstructor to contour area
+    rows cols.
+  parameters:
+  - name: contour
+    annotation: np.ndarray
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: float
+  callable_from_registry: false
+  registry_name: null
+  owner: OrthographicTripletReconstructor
+- name: _extract_horizontal_support_segments
+  qualname: src.reconstruction.orthographic_solver.OrthographicTripletReconstructor._extract_horizontal_support_segments
+  module: src.reconstruction.orthographic_solver
+  kind: method
+  visibility: internal
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 509
+  signature: '(view: SvgOrthographicView, suffix: str, target_extents: tuple[float,
+    float]) -> list[HorizontalSupportSegment]'
+  description: Extract merged horizontal red support segments from side views for
+    hidden-feature depth inference.
+  parameters:
+  - name: view
+    annotation: SvgOrthographicView
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: suffix
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: target_extents
+    annotation: tuple[float, float]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[HorizontalSupportSegment]
+  callable_from_registry: false
+  registry_name: null
+  owner: OrthographicTripletReconstructor
+- name: _extract_outer_contour
+  qualname: src.reconstruction.orthographic_solver.OrthographicTripletReconstructor._extract_outer_contour
+  module: src.reconstruction.orthographic_solver
+  kind: method
+  visibility: internal
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 197
+  signature: '(view: SvgOrthographicView) -> OrthographicContour'
+  description: Rasterize visible SVG polylines, fill the silhouette, and recover the
+    outer contour used for reconstruction.
+  parameters:
+  - name: view
+    annotation: SvgOrthographicView
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: OrthographicContour
+  callable_from_registry: false
+  registry_name: null
+  owner: OrthographicTripletReconstructor
+- name: _extract_top_view_circles
+  qualname: src.reconstruction.orthographic_solver.OrthographicTripletReconstructor._extract_top_view_circles
+  module: src.reconstruction.orthographic_solver
+  kind: method
+  visibility: internal
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 455
+  signature: '(view: SvgOrthographicView, consensus_extents: dict[str, float]) ->
+    list[CircularFeatureCandidate]'
+  description: Fit circular hidden-feature candidates from red top-view polylines.
+  parameters:
+  - name: view
+    annotation: SvgOrthographicView
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: consensus_extents
+    annotation: dict[str, float]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[CircularFeatureCandidate]
+  callable_from_registry: false
+  registry_name: null
+  owner: OrthographicTripletReconstructor
+- name: _infer_axisymmetric_profile
+  qualname: src.reconstruction.orthographic_solver.OrthographicTripletReconstructor._infer_axisymmetric_profile
+  module: src.reconstruction.orthographic_solver
+  kind: method
+  visibility: internal
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 277
+  signature: '(front: OrthographicContour, right: OrthographicContour, top: OrthographicContour,
+    consensus_extents: dict[str, float]) -> list[tuple[float, float]] | None'
+  description: Detect whether the triplet is consistent with a lathe-like part and
+    derive a revolvable radius-versus-height profile.
+  parameters:
+  - name: front
+    annotation: OrthographicContour
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: right
+    annotation: OrthographicContour
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: top
+    annotation: OrthographicContour
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: consensus_extents
+    annotation: dict[str, float]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[tuple[float, float]] | None
+  callable_from_registry: false
+  registry_name: null
+  owner: OrthographicTripletReconstructor
+- name: _infer_hidden_cylinders
+  qualname: src.reconstruction.orthographic_solver.OrthographicTripletReconstructor._infer_hidden_cylinders
+  module: src.reconstruction.orthographic_solver
+  kind: method
+  visibility: internal
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 373
+  signature: '(triplet: OrthographicTriplet, consensus_extents: dict[str, float])
+    -> list[CylindricalCut]'
+  description: Infer conservative cylindrical cuts from corroborated red hidden-line
+    circles and side-view support segments.
+  parameters:
+  - name: triplet
+    annotation: OrthographicTriplet
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: consensus_extents
+    annotation: dict[str, float]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[CylindricalCut]
+  callable_from_registry: false
+  registry_name: null
+  owner: OrthographicTripletReconstructor
+- name: _largest_component
+  qualname: src.reconstruction.orthographic_solver.OrthographicTripletReconstructor._largest_component
+  module: src.reconstruction.orthographic_solver
+  kind: method
+  visibility: internal
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 560
+  signature: '(mask: np.ndarray) -> np.ndarray'
+  description: Internal helper on OrthographicTripletReconstructor to largest component.
+  parameters:
+  - name: mask
+    annotation: np.ndarray
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: np.ndarray
+  callable_from_registry: false
+  registry_name: null
+  owner: OrthographicTripletReconstructor
+- name: _sample_axisymmetric_profile
+  qualname: src.reconstruction.orthographic_solver.OrthographicTripletReconstructor._sample_axisymmetric_profile
+  module: src.reconstruction.orthographic_solver
+  kind: method
+  visibility: internal
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 354
+  signature: '(points: list[tuple[float, float]], center: float, z_samples: np.ndarray)
+    -> list[tuple[float, float, float]]'
+  description: Sample horizontal spans through a contour and convert them into radius
+    samples around an inferred revolution axis.
+  parameters:
+  - name: points
+    annotation: list[tuple[float, float]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: center
+    annotation: float
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: z_samples
+    annotation: np.ndarray
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[tuple[float, float, float]]
+  callable_from_registry: false
+  registry_name: null
+  owner: OrthographicTripletReconstructor
+- name: _scale_points
+  qualname: src.reconstruction.orthographic_solver.OrthographicTripletReconstructor._scale_points
+  module: src.reconstruction.orthographic_solver
+  kind: method
+  visibility: internal
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 575
+  signature: '(points: list[tuple[float, float]], source_extents: tuple[float, float],
+    target_extents: tuple[float, float]) -> list[tuple[float, float]]'
+  description: Internal helper on OrthographicTripletReconstructor to scale points.
+  parameters:
+  - name: points
+    annotation: list[tuple[float, float]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: source_extents
+    annotation: tuple[float, float]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: target_extents
+    annotation: tuple[float, float]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[tuple[float, float]]
+  callable_from_registry: false
+  registry_name: null
+  owner: OrthographicTripletReconstructor
+- name: _scaled_polyline_points
+  qualname: src.reconstruction.orthographic_solver.OrthographicTripletReconstructor._scaled_polyline_points
+  module: src.reconstruction.orthographic_solver
+  kind: method
+  visibility: internal
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 590
+  signature: '(view: SvgOrthographicView, suffix: str, polyline: SvgPolyline, target_extents:
+    tuple[float, float]) -> list[tuple[float, float]]'
+  description: Internal helper on OrthographicTripletReconstructor to scaled polyline
+    points.
+  parameters:
+  - name: view
+    annotation: SvgOrthographicView
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: suffix
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: polyline
+    annotation: SvgPolyline
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: target_extents
+    annotation: tuple[float, float]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[tuple[float, float]]
+  callable_from_registry: false
+  registry_name: null
+  owner: OrthographicTripletReconstructor
+- name: from_pipeline_config
+  qualname: src.reconstruction.orthographic_solver.OrthographicTripletReconstructor.from_pipeline_config
+  module: src.reconstruction.orthographic_solver
+  kind: method
+  visibility: public
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 88
+  signature: '(config: PipelineConfig) -> OrthographicTripletReconstructor'
+  description: Create a reconstructor from the repo-wide config object.
+  parameters:
+  - name: config
+    annotation: PipelineConfig
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: OrthographicTripletReconstructor
+  callable_from_registry: false
+  registry_name: null
+  owner: OrthographicTripletReconstructor
+- name: generate_candidate_programs
+  qualname: src.reconstruction.orthographic_solver.OrthographicTripletReconstructor.generate_candidate_programs
+  module: src.reconstruction.orthographic_solver
+  kind: method
+  visibility: public
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 161
+  signature: '(triplet: OrthographicTriplet) -> list[ReconstructionCandidate]'
+  description: Generate deterministic reconstruction candidates that vary the shape
+    model and hidden-feature carving strategy.
+  parameters:
+  - name: triplet
+    annotation: OrthographicTriplet
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[ReconstructionCandidate]
+  callable_from_registry: false
+  registry_name: null
+  owner: OrthographicTripletReconstructor
+- name: generate_program
+  qualname: src.reconstruction.orthographic_solver.OrthographicTripletReconstructor.generate_program
+  module: src.reconstruction.orthographic_solver
+  kind: method
+  visibility: public
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 97
+  signature: '(triplet: OrthographicTriplet) -> OrthographicReconstructionResult'
+  description: Generate build123d code for the best available deterministic solid.
+  parameters:
+  - name: triplet
+    annotation: OrthographicTriplet
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: OrthographicReconstructionResult
+  callable_from_registry: false
+  registry_name: null
+  owner: OrthographicTripletReconstructor
+- name: cluster_values
+  qualname: src.reconstruction.orthographic_solver.cluster_values
+  module: src.reconstruction.orthographic_solver
+  kind: function
+  visibility: public
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 854
+  signature: '(values: list[float], tolerance: float) -> list[list[float]]'
+  description: Cluster sorted numeric values by adjacency tolerance.
+  parameters:
+  - name: values
+    annotation: list[float]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: tolerance
+    annotation: float
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[list[float]]
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: contour_circularity
+  qualname: src.reconstruction.orthographic_solver.contour_circularity
+  module: src.reconstruction.orthographic_solver
+  kind: function
+  visibility: public
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 785
+  signature: '(points: list[tuple[float, float]]) -> float'
+  description: Return the isoperimetric circularity of a closed contour.
+  parameters:
+  - name: points
+    annotation: list[tuple[float, float]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: float
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: dedupe_circular_candidates
+  qualname: src.reconstruction.orthographic_solver.dedupe_circular_candidates
+  module: src.reconstruction.orthographic_solver
+  kind: function
+  visibility: public
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 865
+  signature: '(candidates: list[CircularFeatureCandidate]) -> list[CircularFeatureCandidate]'
+  description: Remove near-duplicate circular candidates.
+  parameters:
+  - name: candidates
+    annotation: list[CircularFeatureCandidate]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[CircularFeatureCandidate]
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: dedupe_cylindrical_cuts
+  qualname: src.reconstruction.orthographic_solver.dedupe_cylindrical_cuts
+  module: src.reconstruction.orthographic_solver
+  kind: function
+  visibility: public
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 884
+  signature: '(cuts: list[CylindricalCut]) -> list[CylindricalCut]'
+  description: Remove near-duplicate cylindrical cuts.
+  parameters:
+  - name: cuts
+    annotation: list[CylindricalCut]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[CylindricalCut]
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: dedupe_numeric
+  qualname: src.reconstruction.orthographic_solver.dedupe_numeric
+  module: src.reconstruction.orthographic_solver
+  kind: function
+  visibility: public
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 900
+  signature: '(values: list[float], tolerance: float) -> list[float]'
+  description: Remove near-duplicate numeric values from a sorted sequence.
+  parameters:
+  - name: values
+    annotation: list[float]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: tolerance
+    annotation: float
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[float]
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: fit_circle
+  qualname: src.reconstruction.orthographic_solver.fit_circle
+  module: src.reconstruction.orthographic_solver
+  kind: function
+  visibility: public
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 833
+  signature: '(points: np.ndarray) -> tuple[float, float, float, float]'
+  description: Least-squares circle fit returning center, radius, and mean radial
+    error.
+  parameters:
+  - name: points
+    annotation: np.ndarray
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: tuple[float, float, float, float]
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: format_hidden_cylinders
+  qualname: src.reconstruction.orthographic_solver.format_hidden_cylinders
+  module: src.reconstruction.orthographic_solver
+  kind: function
+  visibility: public
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 759
+  signature: '(hidden_cylinders: list[CylindricalCut]) -> str'
+  description: Render hidden cylinder metadata into generated Python code.
+  parameters:
+  - name: hidden_cylinders
+    annotation: list[CylindricalCut]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: str
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: format_points
+  qualname: src.reconstruction.orthographic_solver.format_points
+  module: src.reconstruction.orthographic_solver
+  kind: function
+  visibility: public
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 750
+  signature: '(name: str, points: list[tuple[float, float]]) -> str'
+  description: Render a stable Python point-list literal for generated code.
+  parameters:
+  - name: name
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: points
+    annotation: list[tuple[float, float]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: str
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: horizontal_span
+  qualname: src.reconstruction.orthographic_solver.horizontal_span
+  module: src.reconstruction.orthographic_solver
+  kind: function
+  visibility: public
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 796
+  signature: '(points: list[tuple[float, float]], y_value: float, tolerance: float
+    = 1e-06) -> tuple[float, float] | None'
+  description: Find the horizontal span of a closed contour at a given y value.
+  parameters:
+  - name: points
+    annotation: list[tuple[float, float]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: y_value
+    annotation: float
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: tolerance
+    annotation: float
+    required: false
+    default: 1e-06
+    kind: POSITIONAL_OR_KEYWORD
+  returns: tuple[float, float] | None
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: polygon_area
+  qualname: src.reconstruction.orthographic_solver.polygon_area
+  module: src.reconstruction.orthographic_solver
+  kind: function
+  visibility: public
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 776
+  signature: '(points: list[tuple[float, float]]) -> float'
+  description: Compute polygon area via the shoelace formula.
+  parameters:
+  - name: points
+    annotation: list[tuple[float, float]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: float
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: polyline_is_axis_aligned
+  qualname: src.reconstruction.orthographic_solver.polyline_is_axis_aligned
+  module: src.reconstruction.orthographic_solver
+  kind: function
+  visibility: public
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 845
+  signature: '(points: list[tuple[float, float]]) -> bool'
+  description: Return True when all segments are horizontal or vertical.
+  parameters:
+  - name: points
+    annotation: list[tuple[float, float]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: bool
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: polyline_path_length
+  qualname: src.reconstruction.orthographic_solver.polyline_path_length
+  module: src.reconstruction.orthographic_solver
+  kind: function
+  visibility: public
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 825
+  signature: '(points: list[tuple[float, float]]) -> float'
+  description: Compute cumulative polyline length.
+  parameters:
+  - name: points
+    annotation: list[tuple[float, float]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: float
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: simplify_radius_profile
+  qualname: src.reconstruction.orthographic_solver.simplify_radius_profile
+  module: src.reconstruction.orthographic_solver
+  kind: function
+  visibility: public
+  source_path: src/reconstruction/orthographic_solver.py
+  line: 910
+  signature: '(profile: list[tuple[float, float]], tolerance: float = 0.001) -> list[tuple[float,
+    float]]'
+  description: Drop near-collinear samples from a radius-vs-height profile.
+  parameters:
+  - name: profile
+    annotation: list[tuple[float, float]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: tolerance
+    annotation: float
+    required: false
+    default: '0.001'
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[tuple[float, float]]
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: _dedupe_adjacent_points
+  qualname: src.reconstruction.reprojection._dedupe_adjacent_points
+  module: src.reconstruction.reprojection
+  kind: function
+  visibility: internal
+  source_path: src/reconstruction/reprojection.py
+  line: 441
+  signature: '(points: list[tuple[float, float]]) -> list[tuple[float, float]]'
+  description: Internal helper to deduplicate adjacent points.
+  parameters:
+  - name: points
+    annotation: list[tuple[float, float]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[tuple[float, float]]
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: _draw_mask
+  qualname: src.reconstruction.reprojection._draw_mask
+  module: src.reconstruction.reprojection
+  kind: function
+  visibility: internal
+  source_path: src/reconstruction/reprojection.py
+  line: 410
+  signature: '(polylines: list[list[tuple[float, float]]], canvas_width: float, canvas_height:
+    float, image_size: tuple[int, int], config: ReprojectionConfig) -> np.ndarray'
+  description: Internal helper to draw mask.
+  parameters:
+  - name: polylines
+    annotation: list[list[tuple[float, float]]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: canvas_width
+    annotation: float
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: canvas_height
+    annotation: float
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: image_size
+    annotation: tuple[int, int]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: config
+    annotation: ReprojectionConfig
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: np.ndarray
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: _image_size
+  qualname: src.reconstruction.reprojection._image_size
+  module: src.reconstruction.reprojection
+  kind: function
+  visibility: internal
+  source_path: src/reconstruction/reprojection.py
+  line: 398
+  signature: '(canvas_width: float, canvas_height: float, config: ReprojectionConfig)
+    -> tuple[int, int]'
+  description: Internal helper to image size.
+  parameters:
+  - name: canvas_width
+    annotation: float
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: canvas_height
+    annotation: float
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: config
+    annotation: ReprojectionConfig
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: tuple[int, int]
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: _polyline_bounds
+  qualname: src.reconstruction.reprojection._polyline_bounds
+  module: src.reconstruction.reprojection
+  kind: function
+  visibility: internal
+  source_path: src/reconstruction/reprojection.py
+  line: 372
+  signature: '(polylines: list[list[tuple[float, float]]]) -> tuple[float, float,
+    float, float] | None'
+  description: Internal helper to polyline bounds.
+  parameters:
+  - name: polylines
+    annotation: list[list[tuple[float, float]]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: tuple[float, float, float, float] | None
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: _projector_axis
+  qualname: src.reconstruction.reprojection._projector_axis
+  module: src.reconstruction.reprojection
+  kind: function
+  visibility: internal
+  source_path: src/reconstruction/reprojection.py
+  line: 360
+  signature: '(suffix: str) -> Any'
+  description: Internal helper to projector axis.
+  parameters:
+  - name: suffix
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: Any
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: _sample_count
+  qualname: src.reconstruction.reprojection._sample_count
+  module: src.reconstruction.reprojection
+  kind: function
+  visibility: internal
+  source_path: src/reconstruction/reprojection.py
+  line: 352
+  signature: '(curve_type: str, curve_samples: int) -> int'
+  description: Internal helper to sample count.
+  parameters:
+  - name: curve_type
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: curve_samples
+    annotation: int
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: int
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: _shape_to_polylines
+  qualname: src.reconstruction.reprojection._shape_to_polylines
+  module: src.reconstruction.reprojection
+  kind: function
+  visibility: internal
+  source_path: src/reconstruction/reprojection.py
+  line: 316
+  signature: '(shape, config: ReprojectionConfig) -> list[list[tuple[float, float]]]'
+  description: Sample each projected OpenCASCADE edge into a 2D polyline representation.
+  parameters:
+  - name: shape
+    annotation: Any
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: config
+    annotation: ReprojectionConfig
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[list[tuple[float, float]]]
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: _snap_nearly_axis_aligned
+  qualname: src.reconstruction.reprojection._snap_nearly_axis_aligned
+  module: src.reconstruction.reprojection
+  kind: function
+  visibility: internal
+  source_path: src/reconstruction/reprojection.py
+  line: 449
+  signature: '(points: list[tuple[float, float]]) -> list[tuple[float, float]]'
+  description: Remove tiny projection shear from near-horizontal/vertical line segments.
+  parameters:
+  - name: points
+    annotation: list[tuple[float, float]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[tuple[float, float]]
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: _translate_polylines
+  qualname: src.reconstruction.reprojection._translate_polylines
+  module: src.reconstruction.reprojection
+  kind: function
+  visibility: internal
+  source_path: src/reconstruction/reprojection.py
+  line: 387
+  signature: '(polylines: list[list[tuple[float, float]]], origin: tuple[float, float])
+    -> list[list[tuple[float, float]]]'
+  description: Internal helper to translate polylines.
+  parameters:
+  - name: polylines
+    annotation: list[list[tuple[float, float]]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: origin
+    annotation: tuple[float, float]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[list[tuple[float, float]]]
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: _view_box_to_bounds
+  qualname: src.reconstruction.reprojection._view_box_to_bounds
+  module: src.reconstruction.reprojection
+  kind: function
+  visibility: internal
+  source_path: src/reconstruction/reprojection.py
+  line: 382
+  signature: '(view_box: tuple[float, float, float, float]) -> tuple[float, float,
+    float, float]'
+  description: Internal helper to view box to bounds.
+  parameters:
+  - name: view_box
+    annotation: tuple[float, float, float, float]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: tuple[float, float, float, float]
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: compare_line_masks
+  qualname: src.reconstruction.reprojection.compare_line_masks
+  module: src.reconstruction.reprojection
+  kind: function
+  visibility: public
+  source_path: src/reconstruction/reprojection.py
+  line: 246
+  signature: '(source_mask: np.ndarray, predicted_mask: np.ndarray, tolerance_px:
+    int) -> LineMatchMetrics'
+  description: Compute tolerance-aware precision, recall, F1, and IoU for source versus
+    predicted line masks.
+  parameters:
+  - name: source_mask
+    annotation: np.ndarray
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: predicted_mask
+    annotation: np.ndarray
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: tolerance_px
+    annotation: int
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: LineMatchMetrics
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: evaluate_step_against_triplet
+  qualname: src.reconstruction.reprojection.evaluate_step_against_triplet
+  module: src.reconstruction.reprojection
+  kind: function
+  visibility: public
+  source_path: src/reconstruction/reprojection.py
+  line: 62
+  signature: '(step_path: str | Path, triplet: OrthographicTriplet, config: ReprojectionConfig
+    | None = None, view_suffixes: tuple[str, str, str] = (''f'', ''r'', ''t'')) ->
+    tuple[CaseReprojectionScore, dict[str, RenderedComparison]]'
+  description: Project a generated STEP solid back into the source orthographic views
+    and score visible and hidden line fidelity.
+  parameters:
+  - name: step_path
+    annotation: str | Path
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: triplet
+    annotation: OrthographicTriplet
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: config
+    annotation: ReprojectionConfig | None
+    required: false
+    default: None
+    kind: POSITIONAL_OR_KEYWORD
+  - name: view_suffixes
+    annotation: tuple[str, str, str]
+    required: false
+    default: ('f', 'r', 't')
+    kind: POSITIONAL_OR_KEYWORD
+  returns: tuple[CaseReprojectionScore, dict[str, RenderedComparison]]
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: load_step_shape
+  qualname: src.reconstruction.reprojection.load_step_shape
+  module: src.reconstruction.reprojection
+  kind: function
+  visibility: public
+  source_path: src/reconstruction/reprojection.py
+  line: 124
+  signature: '(step_path: str | Path) -> Any'
+  description: Load a STEP B-Rep shape using OpenCASCADE.
+  parameters:
+  - name: step_path
+    annotation: str | Path
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: Any
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: project_shape_to_view_polylines
+  qualname: src.reconstruction.reprojection.project_shape_to_view_polylines
+  module: src.reconstruction.reprojection
+  kind: function
+  visibility: public
+  source_path: src/reconstruction/reprojection.py
+  line: 140
+  signature: '(shape, suffix: str, config: ReprojectionConfig) -> tuple[list[list[tuple[float,
+    float]]], list[list[tuple[float, float]]]]'
+  description: Project a B-Rep shape into one orthographic view and sample both visible
+    and hidden edges into 2D polylines.
+  parameters:
+  - name: shape
+    annotation: Any
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: suffix
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: config
+    annotation: ReprojectionConfig
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: tuple[list[list[tuple[float, float]]], list[list[tuple[float, float]]]]
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: render_comparison
+  qualname: src.reconstruction.reprojection.render_comparison
+  module: src.reconstruction.reprojection
+  kind: function
+  visibility: public
+  source_path: src/reconstruction/reprojection.py
+  line: 161
+  signature: '(source_view: SvgOrthographicView, source_visible_polylines: list[list[tuple[float,
+    float]]], source_hidden_polylines: list[list[tuple[float, float]]], predicted_visible_polylines:
+    list[list[tuple[float, float]]], predicted_hidden_polylines: list[list[tuple[float,
+    float]]], config: ReprojectionConfig) -> RenderedComparison'
+  description: Align source and predicted line work in a shared raster frame and build
+    masks plus an optional overlay image.
+  parameters:
+  - name: source_view
+    annotation: SvgOrthographicView
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: source_visible_polylines
+    annotation: list[list[tuple[float, float]]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: source_hidden_polylines
+    annotation: list[list[tuple[float, float]]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: predicted_visible_polylines
+    annotation: list[list[tuple[float, float]]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: predicted_hidden_polylines
+    annotation: list[list[tuple[float, float]]]
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: config
+    annotation: ReprojectionConfig
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: RenderedComparison
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: render_overlay
+  qualname: src.reconstruction.reprojection.render_overlay
+  module: src.reconstruction.reprojection
+  kind: function
+  visibility: public
+  source_path: src/reconstruction/reprojection.py
+  line: 292
+  signature: '(source_visible: np.ndarray, source_hidden: np.ndarray, predicted_visible:
+    np.ndarray, predicted_hidden: np.ndarray) -> Image.Image'
+  description: Render a false-color overlay for debugging.
+  parameters:
+  - name: source_visible
+    annotation: np.ndarray
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: source_hidden
+    annotation: np.ndarray
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: predicted_visible
+    annotation: np.ndarray
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: predicted_hidden
+    annotation: np.ndarray
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: Image.Image
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: _build_index
+  qualname: src.reconstruction.total_view_dataset.TotalViewArchive._build_index
+  module: src.reconstruction.total_view_dataset
+  kind: method
+  visibility: internal
+  source_path: src/reconstruction/total_view_dataset.py
+  line: 51
+  signature: () -> dict[str, dict[str, str]]
+  description: Build the case-id to member-name index from a zipped Total_view_data
+    SVG archive.
+  parameters: []
+  returns: dict[str, dict[str, str]]
+  callable_from_registry: false
+  registry_name: null
+  owner: TotalViewArchive
+- name: available_views
+  qualname: src.reconstruction.total_view_dataset.TotalViewArchive.available_views
+  module: src.reconstruction.total_view_dataset
+  kind: method
+  visibility: public
+  source_path: src/reconstruction/total_view_dataset.py
+  line: 64
+  signature: '(case_id: str) -> list[str]'
+  description: Return sorted available suffixes for a case.
+  parameters:
+  - name: case_id
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[str]
+  callable_from_registry: false
+  registry_name: null
+  owner: TotalViewArchive
+- name: case_ids
+  qualname: src.reconstruction.total_view_dataset.TotalViewArchive.case_ids
+  module: src.reconstruction.total_view_dataset
+  kind: method
+  visibility: public
+  source_path: src/reconstruction/total_view_dataset.py
+  line: 68
+  signature: '(required_views: tuple[str, ...] = (''f'', ''r'', ''t''), require_complete:
+    bool = True) -> list[str]'
+  description: List case ids, optionally filtering to complete orthographic triplets.
+  parameters:
+  - name: required_views
+    annotation: tuple[str, ...]
+    required: false
+    default: ('f', 'r', 't')
+    kind: POSITIONAL_OR_KEYWORD
+  - name: require_complete
+    annotation: bool
+    required: false
+    default: 'True'
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[str]
+  callable_from_registry: false
+  registry_name: null
+  owner: TotalViewArchive
+- name: load_triplet
+  qualname: src.reconstruction.total_view_dataset.TotalViewArchive.load_triplet
+  module: src.reconstruction.total_view_dataset
+  kind: method
+  visibility: public
+  source_path: src/reconstruction/total_view_dataset.py
+  line: 101
+  signature: '(case_id: str, view_suffixes: tuple[str, str, str] = (''f'', ''r'',
+    ''t'')) -> OrthographicTriplet'
+  description: Load the configured orthographic triplet for a case.
+  parameters:
+  - name: case_id
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: view_suffixes
+    annotation: tuple[str, str, str]
+    required: false
+    default: ('f', 'r', 't')
+    kind: POSITIONAL_OR_KEYWORD
+  returns: OrthographicTriplet
+  callable_from_registry: false
+  registry_name: null
+  owner: TotalViewArchive
+- name: load_view
+  qualname: src.reconstruction.total_view_dataset.TotalViewArchive.load_view
+  module: src.reconstruction.total_view_dataset
+  kind: method
+  visibility: public
+  source_path: src/reconstruction/total_view_dataset.py
+  line: 85
+  signature: '(case_id: str, suffix: str) -> SvgOrthographicView'
+  description: Load and parse one SVG view from the archive.
+  parameters:
+  - name: case_id
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: suffix
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: SvgOrthographicView
+  callable_from_registry: false
+  registry_name: null
+  owner: TotalViewArchive
+- name: _parse_polyline_points
+  qualname: src.reconstruction.total_view_dataset._parse_polyline_points
+  module: src.reconstruction.total_view_dataset
+  kind: function
+  visibility: internal
+  source_path: src/reconstruction/total_view_dataset.py
+  line: 148
+  signature: '(raw: str) -> list[tuple[float, float]]'
+  description: Internal helper to parse polyline points.
+  parameters:
+  - name: raw
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: list[tuple[float, float]]
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: _parse_view_box
+  qualname: src.reconstruction.total_view_dataset._parse_view_box
+  module: src.reconstruction.total_view_dataset
+  kind: function
+  visibility: internal
+  source_path: src/reconstruction/total_view_dataset.py
+  line: 141
+  signature: '(raw: str) -> tuple[float, float, float, float]'
+  description: Internal helper to parse view box.
+  parameters:
+  - name: raw
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: tuple[float, float, float, float]
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: parse_svg_view
+  qualname: src.reconstruction.total_view_dataset.parse_svg_view
+  module: src.reconstruction.total_view_dataset
+  kind: function
+  visibility: public
+  source_path: src/reconstruction/total_view_dataset.py
+  line: 114
+  signature: '(svg_text: str) -> tuple[tuple[float, float, float, float], list[SvgPolyline]]'
+  description: Parse the polyline-only dataset SVG format.
+  parameters:
+  - name: svg_text
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: tuple[tuple[float, float, float, float], list[SvgPolyline]]
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: _resolve_python_executable
+  qualname: src.tools.cad._resolve_python_executable
+  module: src.tools.cad
+  kind: function
+  visibility: internal
+  source_path: src/tools/cad.py
+  line: 167
+  signature: () -> str
+  description: Prefer an explicit or local project interpreter for CAD execution.
+  parameters: []
+  returns: str
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: categorize_error
+  qualname: src.tools.cad.categorize_error
+  module: src.tools.cad
+  kind: function
+  visibility: public
+  source_path: src/tools/cad.py
+  line: 40
+  signature: '(stderr: str) -> ErrorCategory'
+  description: Categorize the error from stderr output.
+  parameters:
+  - name: stderr
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  returns: ErrorCategory
+  callable_from_registry: false
+  registry_name: null
+  owner: null
+- name: execute_build123d
+  qualname: src.tools.cad.execute_build123d
+  module: src.tools.cad
+  kind: function
+  visibility: public
+  source_path: src/tools/cad.py
+  line: 60
+  signature: '(script_content: str, output_path: str = ''output.step'', timeout: int
+    = 60) -> ExecutionResult'
+  description: Execute generated build123d code in a subprocess and classify import,
+    geometry, export, or runtime failures.
+  parameters:
+  - name: script_content
+    annotation: str
+    required: true
+    default: null
+    kind: POSITIONAL_OR_KEYWORD
+  - name: output_path
+    annotation: str
+    required: false
+    default: '''output.step'''
+    kind: POSITIONAL_OR_KEYWORD
+  - name: timeout
+    annotation: int
+    required: false
+    default: '60'
+    kind: POSITIONAL_OR_KEYWORD
+  returns: ExecutionResult
+  callable_from_registry: false
+  registry_name: null
+  owner: null
