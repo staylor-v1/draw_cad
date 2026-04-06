@@ -34,6 +34,34 @@ An intelligent agent system that converts engineering drawings into dimensionall
 python main.py path/to/drawing.png [output.step]
 ```
 
+## Total_view_data Dataset
+
+For zipped `Total_view_data` orthographic triplets (`*_f.svg`, `*_r.svg`, `*_t.svg`),
+use the deterministic reconstructor:
+
+```bash
+.venv/bin/python scripts/reconstruct_total_view_data.py \
+  --config config/total_view_data.yaml \
+  --dataset ABC \
+  --case-id 00008252
+```
+
+That path now does a small candidate search per case and keeps the best-scoring
+deterministic reconstruction by reprojection against the source views.
+
+To benchmark a larger slice of the dataset:
+
+```bash
+.venv/bin/python scripts/benchmark_total_view_data.py \
+  --config config/total_view_data.yaml \
+  --dataset ABC \
+  --limit 100
+```
+
+The `total_view_data` config also enables conservative hidden-feature carving from
+corroborated red SVG primitives and an axisymmetric revolve candidate for parts whose
+views are consistent with lathe-like geometry.
+
 ## Structure
 
 -   `agent_loop.py`: Core logic for the agentic loop.
