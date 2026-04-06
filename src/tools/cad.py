@@ -96,6 +96,8 @@ def execute_build123d(
         "            part.part.export_step(_output_path)",
         "        elif hasattr(part, 'export_step'):",
         "            part.export_step(_output_path)",
+        "        else:",
+        "            export_step(part, _output_path)",
         '        print(f"Auto-exported to {_output_path}")',
         "    except Exception as e:",
         '        print(f"Auto-export error: {e}", file=sys.stderr)',
@@ -118,8 +120,9 @@ def execute_build123d(
         tmp_path = tmp.name
 
     try:
+        python_executable = _resolve_python_executable()
         result = subprocess.run(
-            [sys.executable, tmp_path],
+            [python_executable, tmp_path],
             capture_output=True,
             text=True,
             timeout=timeout,
@@ -159,3 +162,16 @@ def execute_build123d(
         )
     finally:
         os.remove(tmp_path)
+
+
+def _resolve_python_executable() -> str:
+    """Prefer an explicit or local project interpreter for CAD execution."""
+    configured = os.environ.get("DRAWING_TO_CAD_PYTHON")
+    if configured and Path(configured).exists():
+        return configured
+
+    project_venv = Path.cwd() / ".venv" / "bin" / "python"
+    if project_venv.exists():
+        return str(project_venv)
+
+    return sys.executable

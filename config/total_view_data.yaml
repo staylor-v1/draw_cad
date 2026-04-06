@@ -1,0 +1,111 @@
+# Dataset-oriented configuration for deterministic reconstruction from
+# Total_view_data orthographic triplets.
+pipeline:
+  max_retries: 1
+  retry_backoff_factor: 1.0
+  execution_timeout: 180
+  ocr_enabled: false
+  default_unit: "mm"
+  default_tolerance: 0.1
+
+models:
+  vision:
+    name: "llama-3.2-11b-Vision"
+    backend: "ollama"
+    temperature: 0.1
+    max_tokens: 4096
+  reasoning:
+    name: "gpt-oss-120b"
+    backend: "ollama"
+    temperature: 0.2
+    max_tokens: 8192
+
+inference:
+  ollama:
+    base_url: "http://localhost:11434"
+    timeout: 120
+  vllm:
+    base_url: "http://localhost:8000"
+    timeout: 120
+  llamacpp:
+    base_url: "http://localhost:8080"
+    timeout: 120
+
+evaluation:
+  weights:
+    dimension_fidelity: 0.30
+    feature_recall: 0.25
+    bounding_box_iou: 0.15
+    volume_ratio: 0.10
+    geometry_valid: 0.10
+    feature_precision: 0.05
+    retry_efficiency: 0.05
+  dimension_tolerance_mm: 0.5
+  volume_tolerance_ratio: 0.05
+
+prompts:
+  system_prompt: "prompts/system_prompt.md"
+  vision_prompt: "prompts/vision_prompt.md"
+  retry_prompt: "prompts/retry_prompt.md"
+  validation_prompt: "prompts/validation_prompt.md"
+  reconciliation_prompt: "prompts/reconciliation_prompt.md"
+  fewshot_index: "prompts/fewshot_examples/index.yaml"
+
+total_view_data:
+  root_dir: "/home/me/Downloads/Total_view_data"
+  default_dataset: "ABC"
+  preferred_views: ["f", "r", "t"]
+  require_complete_triplet: true
+  cache_dir: "experiments/total_view_data/cache"
+  svg_archives:
+    ABC: "/home/me/Downloads/Total_view_data/SVG/ABC_data_SVG.zip"
+    CSG: "/home/me/Downloads/Total_view_data/SVG/CSG_data_SVG.zip"
+  png_archives:
+    ABC: "/home/me/Downloads/Total_view_data/PNG/ABC_data_PNG.zip"
+    CSG: "/home/me/Downloads/Total_view_data/PNG/CSG_data_PNG.zip"
+
+orthographic_reconstruction:
+  enabled: true
+  prefer_svg: true
+  raster_max_dimension_px: 768
+  raster_padding_px: 10
+  contour_simplify_tolerance_px: 2.5
+  dilation_iterations: 1
+  min_component_area_ratio: 0.05
+  visible_stroke_colors: ["black", "#000000"]
+  hidden_feature_enabled: true
+  hidden_feature_circle_min_points: 20
+  hidden_feature_circle_aspect_ratio_max: 1.1
+  hidden_feature_circle_fit_error_max: 0.03
+  hidden_feature_circle_min_coverage: 0.9
+  hidden_feature_circle_min_radius: 0.6
+  hidden_feature_match_center_tolerance: 0.5
+  hidden_feature_match_radius_tolerance: 0.5
+  hidden_feature_segment_merge_tolerance: 0.3
+  hidden_feature_segment_join_gap: 0.2
+  hidden_feature_z_cluster_tolerance: 0.5
+  hidden_feature_min_depth: 0.5
+  candidate_search_enabled: true
+  axisymmetric_enabled: true
+  axisymmetric_top_circularity_min: 0.9
+  axisymmetric_top_aspect_ratio_max: 1.1
+  axisymmetric_center_tolerance_ratio: 0.04
+  axisymmetric_profile_tolerance_ratio: 0.08
+  axisymmetric_profile_samples: 96
+
+reprojection:
+  raster_size_px: 640
+  raster_padding_px: 20
+  line_width_px: 2
+  curve_samples: 48
+  hidden_line_subtract_dilation_px: 2
+  match_tolerance_px: 2
+  overlay_enabled: true
+
+output:
+  default_step_path: "output.step"
+  experiments_dir: "experiments"
+  total_view_data_output_dir: "experiments/total_view_data/steps"
+  total_view_data_summary_path: "experiments/total_view_data/summary.json"
+  total_view_data_benchmark_dir: "experiments/total_view_data/benchmark"
+  total_view_data_benchmark_summary_path: "experiments/total_view_data/benchmark_summary.json"

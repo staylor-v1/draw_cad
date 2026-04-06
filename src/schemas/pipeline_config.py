@@ -73,10 +73,97 @@ class PipelineStageConfig(BaseModel):
     default_tolerance: float = 0.1
 
 
+class TotalViewDataConfig(BaseModel):
+    """Configuration for the zipped Total_view_data dataset."""
+
+    root_dir: str = "/home/me/Downloads/Total_view_data"
+    default_dataset: str = "ABC"
+    preferred_views: list[str] = Field(
+        default_factory=lambda: ["f", "r", "t"]
+    )
+    require_complete_triplet: bool = True
+    cache_dir: str = "experiments/total_view_data/cache"
+    svg_archives: dict[str, str] = Field(
+        default_factory=lambda: {
+            "ABC": "/home/me/Downloads/Total_view_data/SVG/ABC_data_SVG.zip",
+            "CSG": "/home/me/Downloads/Total_view_data/SVG/CSG_data_SVG.zip",
+        }
+    )
+    png_archives: dict[str, str] = Field(
+        default_factory=lambda: {
+            "ABC": "/home/me/Downloads/Total_view_data/PNG/ABC_data_PNG.zip",
+            "CSG": "/home/me/Downloads/Total_view_data/PNG/CSG_data_PNG.zip",
+        }
+    )
+
+    def get_svg_archive(self, dataset: str | None = None) -> Path:
+        """Return the SVG archive path for a configured dataset name."""
+        key = dataset or self.default_dataset
+        return Path(self.svg_archives[key])
+
+    def get_png_archive(self, dataset: str | None = None) -> Path | None:
+        """Return the PNG archive path when one is configured."""
+        key = dataset or self.default_dataset
+        path = self.png_archives.get(key)
+        return Path(path) if path else None
+
+
+class OrthographicReconstructionConfig(BaseModel):
+    """Deterministic orthographic reconstruction settings."""
+
+    enabled: bool = True
+    prefer_svg: bool = True
+    raster_max_dimension_px: int = 768
+    raster_padding_px: int = 10
+    contour_simplify_tolerance_px: float = 2.5
+    dilation_iterations: int = 1
+    min_component_area_ratio: float = 0.05
+    visible_stroke_colors: list[str] = Field(
+        default_factory=lambda: ["black", "#000000"]
+    )
+    hidden_feature_enabled: bool = True
+    hidden_feature_circle_min_points: int = 20
+    hidden_feature_circle_aspect_ratio_max: float = 1.1
+    hidden_feature_circle_fit_error_max: float = 0.03
+    hidden_feature_circle_min_coverage: float = 0.9
+    hidden_feature_circle_min_radius: float = 0.6
+    hidden_feature_match_center_tolerance: float = 0.5
+    hidden_feature_match_radius_tolerance: float = 0.5
+    hidden_feature_segment_merge_tolerance: float = 0.3
+    hidden_feature_segment_join_gap: float = 0.2
+    hidden_feature_z_cluster_tolerance: float = 0.5
+    hidden_feature_min_depth: float = 0.5
+    candidate_search_enabled: bool = True
+    axisymmetric_enabled: bool = True
+    axisymmetric_top_circularity_min: float = 0.9
+    axisymmetric_top_aspect_ratio_max: float = 1.1
+    axisymmetric_center_tolerance_ratio: float = 0.04
+    axisymmetric_profile_tolerance_ratio: float = 0.08
+    axisymmetric_profile_samples: int = 96
+
+
+class ReprojectionConfig(BaseModel):
+    """Rasterized reprojection benchmark settings."""
+
+    raster_size_px: int = 640
+    raster_padding_px: int = 20
+    line_width_px: int = 2
+    curve_samples: int = 48
+    hidden_line_subtract_dilation_px: int = 2
+    match_tolerance_px: int = 2
+    overlay_enabled: bool = True
+
+
 class OutputConfig(BaseModel):
     """Output configuration."""
     default_step_path: str = "output.step"
     experiments_dir: str = "experiments"
+    total_view_data_output_dir: str = "experiments/total_view_data/steps"
+    total_view_data_summary_path: str = "experiments/total_view_data/summary.json"
+    total_view_data_benchmark_dir: str = "experiments/total_view_data/benchmark"
+    total_view_data_benchmark_summary_path: str = (
+        "experiments/total_view_data/benchmark_summary.json"
+    )
 
 
 class PipelineConfig(BaseModel):
@@ -86,6 +173,11 @@ class PipelineConfig(BaseModel):
     inference: InferenceConfig = Field(default_factory=InferenceConfig)
     evaluation: EvaluationConfig = Field(default_factory=EvaluationConfig)
     prompts: PromptsConfig = Field(default_factory=PromptsConfig)
+    total_view_data: TotalViewDataConfig = Field(default_factory=TotalViewDataConfig)
+    orthographic_reconstruction: OrthographicReconstructionConfig = Field(
+        default_factory=OrthographicReconstructionConfig
+    )
+    reprojection: ReprojectionConfig = Field(default_factory=ReprojectionConfig)
     output: OutputConfig = Field(default_factory=OutputConfig)
 
     @classmethod
