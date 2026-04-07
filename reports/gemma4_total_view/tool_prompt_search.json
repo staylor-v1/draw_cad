@@ -1,0 +1,296 @@
+{
+  "mode": "tool",
+  "best_prompt_id": "tool_v1_candidates_first",
+  "best_prompt_path": "prompts/gemma4_total_view/tool_v1_candidates_first.md",
+  "candidates": [
+    {
+      "mode": "tool",
+      "prompt_id": "tool_v1_candidates_first",
+      "prompt_path": "prompts/gemma4_total_view/tool_v1_candidates_first.md",
+      "cases": [
+        {
+          "mode": "gemma4_with_tools",
+          "success": true,
+          "score": 0.3178984652588179,
+          "mean_visible_f1": 0.5029064178678002,
+          "mean_hidden_f1": 0.13289051264983553,
+          "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v1_candidates_first/00000053/tool_evaluations/visual_hull_hidden.py",
+          "step_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v1_candidates_first/00000053/tool_evaluations/visual_hull_hidden.step",
+          "error_category": "success",
+          "stderr": "",
+          "source": "visual_hull_hidden",
+          "hidden_feature_count": 0,
+          "used_verified_fallback": true,
+          "fallback_from_failed_final": true,
+          "case_id": "00000053",
+          "bucket": "axisymmetric",
+          "split": "calibration",
+          "duration_seconds": 14.232336150947958,
+          "tool_calls": 3,
+          "usage": {
+            "prompt_tokens": 6982,
+            "completion_tokens": 1620
+          },
+          "response_preview": "The candidate `visual_hull_hidden` scored higher (0.318) than `axisymmetric_hidden` (0.244). I will use the code from `visual_hull_hidden` as the best available deterministic reconstruction.\n\nSince the score is relatively low and the visual inspection suggests a complex object (a ring with a slot and a side feature), I will proceed with the code from the best candidate.<channel|>```python\nfrom build123d import *\n\ndef build123d(build_part):\n    # The candidate program uses visual_hull_hidden strategy.\n    # We reconstruct the part based on the best candidate's logic.\n    \n    # Based on the visual evidence and the best candidate's approach,\n    # the object is a ring with a central slot and a side feature.\n    \n    # 1. Outer Ring (Approximation from the views)\n    # The outer diameter seems to be around 90mm (from top view)\n    # The thickness seems to be around 20mm (from front/right view).\n    \n    # Let's define the main body as a thick ring.\n    outer_radius = 45.3\n    inner_radius = 35.3\n    thickness = 20.0\n    \n    # Create the main ring body\n    ring = part.ring(outer_radius, inner_radius, thickness)\n    \n    # 2. Central Slot (Visible in Front View)\n    # The slot appears to be centered and has a depth.\n    slot_width = 10.0\n    slot_height = 10.0\n    slot_depth = 15.0\n    \n    # Cut the slot into the ring\n    slot = part.box(slot_width, 2 * inner_radius + 2 * slot_width, slot_depth)\n    ring = ring.cut(slot)\n    \n    # 3. Side Feature (Visible in Top View)\n    # This feature is on the left side (assuming X-axis is left/right).\n    # It looks like a rectangular cutout or attachment point.\n    side_rect_width = 15.0\n    side_rect_height = 15.0\n    side_rect_depth = 15.0\n    \n    # Position it on the left side (negative X direction)\n    side_feature = part.box(-outer_radius + 10, side_rect_width, side_rect_height)\n    \n    # Since the top view shows a cutout/feature on the left, we might need to subtract it,\n    # or add a solid block if it's an attachment. Given the context of a ring,\n    # it's likely a feature on the main body.\n    \n    # Let's refine the side feature based on the top view:\n    # The top view shows a rectangular cutout on the left side of the main circle.\n    # Let's assume the main body is centered at (0, 0).\n    \n    # Re-evaluating the structure: It's a ring, and the side feature is a cutout.\n    \n    # Start with a solid block representing the overall bounding box (approximating the material)\n    # Max X: 45.3, Min X: -45.3\n    # Max Y: 45.3, Min Y: -45.3\n    # Max Z: 11.5, Min Z: 0\n    \n    # Let's stick to the ring and cut the features.\n    \n    # Re-creating the ring with the slot cut:\n    ring = part.ring(outer_radius, inner_radius, thickness)\n    \n    # Cut the slot (centered on Z-axis, extending through the thickness)\n    slot_cut = part.box(slot_width, 2 * inner_radius + 2 * slot_width, slot_depth)\n    ring = ring.cut(slot_cut)\n    \n    # Cut the side feature (assuming it's a cutout on the left side, centered vertically)\n    side_cut_x = -outer_radius + 10\n    side_cut_y = -15.0\n    side_cut_z = -15.0\n    side_cut = part.box(side_cut_x, 15.0, 30.0) # Adjusting dimensions based on visual estimation\n    \n    # A simpler approach: Use the bounding box and subtract the empty space.\n    \n    # Let's use the structure implied by the best candidate: a solid object with cutouts.\n    \n    # 1. Outer shape (approximated by the largest dimensions)\n    outer_box = part.box(90, 90, 20)\n    \n    # 2. Inner void (The ring shape)\n    inner_void = part.ring(45.3, 35.3, 20)\n    \n    # 3. Slot cutout (Front view)\n    slot_cut = part.box(10, 70, 15)\n    \n    # 4. Side cutout (Top view)\n    side_cut = part.box(-30, 30, 30) # Rough estimate for the left cutout\n    \n    # Combine the cuts (This is highly speculative without knowing the exact CAD intent)\n    \n    # Given the high uncertainty, I will use the structure from the best candidate's logic:\n    # A main body (ring) with a slot cut.\n    \n    # Reverting t",
+          "prompt_id": "tool_v1_candidates_first",
+          "prompt_path": "prompts/gemma4_total_view/tool_v1_candidates_first.md"
+        },
+        {
+          "mode": "gemma4_with_tools",
+          "success": true,
+          "score": 0.30476157211077093,
+          "mean_visible_f1": 0.4976880848360199,
+          "mean_hidden_f1": 0.11183505938552195,
+          "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v1_candidates_first/00000049/tool_evaluations/visual_hull_hidden.py",
+          "step_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v1_candidates_first/00000049/tool_evaluations/visual_hull_hidden.step",
+          "error_category": "success",
+          "stderr": "",
+          "source": "visual_hull_hidden",
+          "hidden_feature_count": 3,
+          "used_verified_fallback": true,
+          "fallback_from_failed_final": true,
+          "case_id": "00000049",
+          "bucket": "prismatic_hidden",
+          "split": "calibration",
+          "duration_seconds": 9.196176710072905,
+          "tool_calls": 4,
+          "usage": {
+            "prompt_tokens": 7001,
+            "completion_tokens": 322
+          },
+          "response_preview": "",
+          "prompt_id": "tool_v1_candidates_first",
+          "prompt_path": "prompts/gemma4_total_view/tool_v1_candidates_first.md"
+        },
+        {
+          "mode": "gemma4_with_tools",
+          "success": true,
+          "score": 0.4430132917599002,
+          "mean_visible_f1": 0.8249097768579957,
+          "mean_hidden_f1": 0.06111680666180472,
+          "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v1_candidates_first/00000068/tool_evaluations/visual_hull_hidden.py",
+          "step_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v1_candidates_first/00000068/tool_evaluations/visual_hull_hidden.step",
+          "error_category": "success",
+          "stderr": "",
+          "source": "visual_hull_hidden",
+          "hidden_feature_count": 0,
+          "used_verified_fallback": true,
+          "fallback_from_failed_final": true,
+          "case_id": "00000068",
+          "bucket": "prismatic",
+          "split": "calibration",
+          "duration_seconds": 21.63541128206998,
+          "tool_calls": 4,
+          "usage": {
+            "prompt_tokens": 8558,
+            "completion_tokens": 2890
+          },
+          "response_preview": "",
+          "prompt_id": "tool_v1_candidates_first",
+          "prompt_path": "prompts/gemma4_total_view/tool_v1_candidates_first.md"
+        }
+      ],
+      "aggregate": {
+        "total_cases": 3,
+        "successful_cases": 3,
+        "success_rate": 1.0,
+        "mean_score": 0.355224443043163,
+        "mean_visible_f1": 0.6085014265206053,
+        "mean_hidden_f1": 0.10194745956572072,
+        "mean_duration_seconds": 15.021308047696948,
+        "mean_tool_calls": 3.6666666666666665
+      },
+      "round_name": "tool_baseline"
+    },
+    {
+      "mode": "tool",
+      "prompt_id": "tool_v2_verify_before_edit",
+      "prompt_path": "prompts/gemma4_total_view/tool_v2_verify_before_edit.md",
+      "cases": [
+        {
+          "mode": "gemma4_with_tools",
+          "success": true,
+          "score": 0.3178984652588179,
+          "mean_visible_f1": 0.5029064178678002,
+          "mean_hidden_f1": 0.13289051264983553,
+          "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v2_verify_before_edit/00000053/tool_evaluations/visual_hull_hidden.py",
+          "step_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v2_verify_before_edit/00000053/tool_evaluations/visual_hull_hidden.step",
+          "error_category": "success",
+          "stderr": "",
+          "source": "visual_hull_hidden",
+          "hidden_feature_count": 0,
+          "used_verified_fallback": true,
+          "fallback_from_failed_final": true,
+          "case_id": "00000053",
+          "bucket": "axisymmetric",
+          "split": "calibration",
+          "duration_seconds": 11.250077689997852,
+          "tool_calls": 3,
+          "usage": {
+            "prompt_tokens": 6590,
+            "completion_tokens": 1375
+          },
+          "response_preview": "The candidate `visual_hull_hidden` scored higher (0.318) than `axisymmetric_hidden` (0.244). I will proceed with `visual_hull_hidden` as the best verified candidate.\n\n```python\nimport build123d as b123d\nfrom build123d.sketch import Sketch\nfrom build123d.sketch.sketch import SketchBuilder\nfrom build123d.sketch.sketch_utils import sketch_utils\n\ndef build_part():\n    # Create a sketch for the outer profile (front view)\n    sketch = Sketch()\n    # The outer profile is roughly a rectangle with rounded corners,\n    # but based on the views, it's a ring shape.\n    # Let's approximate the outer boundary from the front view.\n    # The front view suggests a shape with an outer rectangle and an inner cutout.\n    \n    # Outer rectangle dimensions (approximated from the views)\n    outer_width = 90.0\n    outer_height = 60.0\n    \n    # Inner cutout dimensions (approximated from the views)\n    inner_width = 50.0\n    inner_height = 40.0\n    \n    # Create the outer sketch (a rectangle)\n    outer_sketch = SketchBuilder(sketch)\n    outer_sketch.add_rectangle(b123d.Point3D(0, 0, 0), b123d.Point3D(outer_width, 0, 0), b123d.Point3D(0, outer_height, 0))\n    \n    # Create the inner sketch (a rectangle)\n    inner_sketch = SketchBuilder(sketch)\n    # Center the inner cutout relative to the outer sketch's center (assuming origin is bottom-left for simplicity)\n    # The views suggest the center is around (0, 0) for the cross-section.\n    # Let's assume the origin is at the center of the part for the sketch.\n    \n    # Re-evaluating based on the visual: The part is a hollow rectangular prism with rounded ends.\n    # The front view (X-Z) shows a rectangular cross-section with rounded ends.\n    # The top view (X-Y) shows a rectangular cross-section with rounded ends.\n    # The right view (Y-Z) shows a rectangular cross-section with rounded ends.\n    \n    # Let's model the cross-section in the X-Z plane (Front View)\n    # Outer dimensions: ~90 (X) by ~60 (Z)\n    # Inner cutout: ~50 (X) by ~40 (Z)\n    \n    # Since the tool used \"visual_hull_hidden\", it likely interpreted the object as a shell or a combination of features.\n    # I will try to construct the shell shape directly.\n    \n    # 1. Outer Box (approximated)\n    outer_box = b123d.Box(b123d.Point3D(-outer_width/2, -outer_height/2, 0), b123d.Point3D(outer_width/2, outer_height/2, 0))\n    \n    # 2. Inner Cutout Box (approximated)\n    inner_box = b123d.Box(b123d.Point3D(-inner_width/2, -inner_height/2, 0), b123d.Point3D(inner_width/2, inner_height/2, 0))\n    \n    # The shape is a hollow rectangular prism with rounded ends.\n    # This suggests a sweep or a combination of extrusion and subtraction.\n    \n    # Let's use the concept of a \"ring\" or \"tube\" shape.\n    \n    # Define the cross-section (in the X-Z plane, assuming Y is the extrusion direction)\n    # The cross-section is a rectangle with rounded ends.\n    \n    # For simplicity and to match the \"visual_hull_hidden\" approach, I will model the main body as a subtraction.\n    \n    # Outer profile (approximated as a large rectangle)\n    outer_profile = b123d.Box(b123d.Point3D(-45, -30, 0), b123d.Point3D(45, 30, 0))\n    \n    # Inner profile (approximated as a smaller rectangle)\n    inner_profile = b123d.Box(b123d.Point3D(-25, -20, 0), b123d.Point3D(25, 20, 0))\n    \n    # The length of the part (Y-axis) is not explicitly given, but the views suggest a length.\n    # Let's assume the length is 90 units based on the X-axis extent in the front view.\n    length = 90.0\n    \n    # Extrude the outer profile along Y\n    outer_body = outer_profile.extrude(b123d.Vector3D(0, length, 0))\n    \n    # Extrude the inner profile along Y\n    inner_body = inner_profile.extrude(b123d.Vector3D(0, length, 0))\n    \n    # Subtract the inner body from the outer body\n    final_part = outer_body - inner_body\n    \n    # Note: This simple extrusion/subtraction might not capture the rounded ends perfectly, \n    # but it's a robust attempt based on the orthographic views suggesting a hollow",
+          "prompt_id": "tool_v2_verify_before_edit",
+          "prompt_path": "prompts/gemma4_total_view/tool_v2_verify_before_edit.md"
+        },
+        {
+          "mode": "gemma4_with_tools",
+          "success": true,
+          "score": 0.30476157211077093,
+          "mean_visible_f1": 0.4976880848360199,
+          "mean_hidden_f1": 0.11183505938552195,
+          "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v2_verify_before_edit/00000049/tool_evaluations/visual_hull_hidden.py",
+          "step_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v2_verify_before_edit/00000049/tool_evaluations/visual_hull_hidden.step",
+          "error_category": "success",
+          "stderr": "",
+          "source": "visual_hull_hidden",
+          "hidden_feature_count": 3,
+          "used_verified_fallback": true,
+          "fallback_from_failed_final": true,
+          "case_id": "00000049",
+          "bucket": "prismatic_hidden",
+          "split": "calibration",
+          "duration_seconds": 13.635004523675889,
+          "tool_calls": 3,
+          "usage": {
+            "prompt_tokens": 6615,
+            "completion_tokens": 1415
+          },
+          "response_preview": "The candidate `visual_hull_hidden` scored higher (0.3048) than `visual_hull_base` (0.2966). The higher score suggests that accounting for hidden features is more appropriate for this part, which appears to be a threaded bolt or screw. I will proceed with `visual_hull_hidden` as the best candidate.\n\n```python\nimport build123d as build123d\nfrom build123d.core import *\n\ndef build_part():\n    # The candidate program uses visual_hull_hidden, which is designed to handle\n    # complex geometry by intersecting silhouettes and carving out hidden features.\n    # Since I cannot see the internal logic of the candidate program, I will assume\n    # that the best approach is to use the logic that scored highest, which was\n    # visual_hull_hidden. I will request the code for inspection/use if necessary,\n    # but for now, I will trust the evaluation result and assume the candidate\n    # program is correct.\n\n    # In a real scenario, I would call get_candidate_program(\"visual_hull_hidden\")\n    # and then evaluate the retrieved code. Since I cannot do that, I will\n    # assume the best practice is to use the logic that scored highest.\n    # For the final output, I must provide executable code. Given the constraints,\n    # and that the evaluation was successful, I will assume the candidate's logic\n    # is sound and use a placeholder structure that represents the intended\n    # operation if I were to retrieve and run the code.\n\n    # Since I cannot retrieve the code, I must rely on the evaluation.\n    # I will assume the best code is the one from the highest scoring candidate.\n    # If I had to write code from scratch based on the views (Front: X-Z, Right: Y-Z, Top: X-Y),\n    # it would involve creating a solid body from the intersection of the three profiles,\n    # and then subtracting the internal features (like the threads).\n\n    # Given the high score for visual_hull_hidden, I will assume the logic is correct\n    # and use a simplified representation of the final object based on the visual\n    # evidence (a bolt/threaded rod with a head).\n\n    # Since I cannot reproduce the complex logic, and the prompt asks me to return\n    # the best *verified* code, and the verification was done via evaluation,\n    # I will state that the best candidate is the one to use.\n    # However, the final output MUST be a runnable code block.\n\n    # I will use a generic structure that represents a bolt, as this is the object.\n    # This is a fallback because I cannot retrieve the code for the best candidate.\n    # A bolt has a head, a shank, and threads.\n\n    # Let's assume the candidate program successfully generated the correct geometry.\n    # I will use a placeholder that represents the successful execution of the best candidate.\n    # If I were forced to write code, I would model a simple bolt:\n    \n    # Head dimensions (approximated from views)\n    head_diameter = 13.8\n    head_height = 5.0\n    \n    # Shank dimensions (approximated)\n    shank_diameter = 10.0\n    shank_length = 40.0\n    \n    # Create the main body (cylinder)\n    body = build123d.cylinder(radius=shank_diameter/2, height=shank_length)\n    \n    # Create the head (cylinder)\n    head = build123d.cylinder(radius=head_diameter/2, height=head_height)\n    \n    # Combine them (this is a simplification, ignoring threads)\n    # The actual object is more complex due to the head shape and threads.\n    \n    # Given the context, I must trust the evaluation and assume the candidate code\n    # is the correct implementation. I will use a comment to reflect this.\n    \n    # *** Placeholder: The actual code should be retrieved from 'visual_hull_hidden' ***\n    # Since I cannot retrieve the code, I cannot provide the final executable code\n    # that matches the high-scoring candidate. I will output a minimal, correct\n    # structure that *would* be the output if the candidate code was available.\n    \n    # For the purpose of satisfying the output format, I will use a simple\n    # cylinder that represents the gene",
+          "prompt_id": "tool_v2_verify_before_edit",
+          "prompt_path": "prompts/gemma4_total_view/tool_v2_verify_before_edit.md"
+        },
+        {
+          "mode": "gemma4_with_tools",
+          "success": true,
+          "score": 0.4430132917599002,
+          "mean_visible_f1": 0.8249097768579957,
+          "mean_hidden_f1": 0.06111680666180472,
+          "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v2_verify_before_edit/00000068/tool_evaluations/visual_hull_hidden.py",
+          "step_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v2_verify_before_edit/00000068/tool_evaluations/visual_hull_hidden.step",
+          "error_category": "success",
+          "stderr": "",
+          "source": "visual_hull_hidden",
+          "hidden_feature_count": 0,
+          "used_verified_fallback": true,
+          "fallback_from_failed_final": true,
+          "case_id": "00000068",
+          "bucket": "prismatic",
+          "split": "calibration",
+          "duration_seconds": 13.025137699209154,
+          "tool_calls": 2,
+          "usage": {
+            "prompt_tokens": 4332,
+            "completion_tokens": 2080
+          },
+          "response_preview": "The candidate `visual_hull_hidden` scored 0.443, which is not ideal, especially given the low score on hidden features (0.061).\n\nThe object appears to be a capital 'I' shape with two circular holes at the ends of the vertical stem.\n\nI will try to generate the code manually based on the orthographic views to create a more accurate model.\n\nFrom the views:\n1.  **Top View (X-Y):** A rectangle with two circles cut out of the ends of the horizontal bar.\n2.  **Front View (X-Z):** A rectangle with two circles cut out of the ends of the vertical stem.\n3.  **Right View (Y-Z):** A rectangle with two circles cut out of the ends of the horizontal bar.\n\nLet's assume the overall dimensions are:\n*   Height (Z): The vertical stem seems to define the height.\n*   Width (X): The horizontal bar seems to define the width.\n*   Depth (Y): The depth is defined by the right view.\n\nI will use `build123d` to construct this shape. I'll start by creating a main block and then subtracting the holes.\n\nLet's estimate dimensions based on the provided images (assuming a standard unit scale):\n*   The overall shape looks like a cross-section of an 'I' beam.\n*   Let's define the main body as a rectangular prism.\n*   The holes are circles.\n\nI will write the code to model this structure.<channel|>",
+          "prompt_id": "tool_v2_verify_before_edit",
+          "prompt_path": "prompts/gemma4_total_view/tool_v2_verify_before_edit.md"
+        }
+      ],
+      "aggregate": {
+        "total_cases": 3,
+        "successful_cases": 3,
+        "success_rate": 1.0,
+        "mean_score": 0.355224443043163,
+        "mean_visible_f1": 0.6085014265206053,
+        "mean_hidden_f1": 0.10194745956572072,
+        "mean_duration_seconds": 12.636739970960965,
+        "mean_tool_calls": 2.6666666666666665
+      },
+      "round_name": "tool_baseline"
+    },
+    {
+      "mode": "tool",
+      "prompt_id": "tool_v3_score_driven",
+      "prompt_path": "prompts/gemma4_total_view/tool_v3_score_driven.md",
+      "cases": [
+        {
+          "mode": "gemma4_with_tools",
+          "success": false,
+          "score": 0.0,
+          "mean_visible_f1": 0.0,
+          "mean_hidden_f1": 0.0,
+          "code_path": null,
+          "step_path": null,
+          "error_category": "no_code",
+          "stderr": "",
+          "case_id": "00000053",
+          "bucket": "axisymmetric",
+          "split": "calibration",
+          "duration_seconds": 0.5845588641241193,
+          "tool_calls": 0,
+          "usage": {
+            "prompt_tokens": 1244,
+            "completion_tokens": 35
+          },
+          "response_preview": "```json\n[\n  {\n    \"tool_name\": \"list_candidate_programs\",\n    \"params\": {}\n  }\n]\n```",
+          "prompt_id": "tool_v3_score_driven",
+          "prompt_path": "prompts/gemma4_total_view/tool_v3_score_driven.md"
+        },
+        {
+          "mode": "gemma4_with_tools",
+          "success": true,
+          "score": 0.30476157211077093,
+          "mean_visible_f1": 0.4976880848360199,
+          "mean_hidden_f1": 0.11183505938552195,
+          "code_path": "experiments/gemma4_total_view_runtime/calibration_round_2/tool/tool_v3_score_driven/00000049/tool_evaluations/visual_hull_hidden.py",
+          "step_path": "experiments/gemma4_total_view_runtime/calibration_round_2/tool/tool_v3_score_driven/00000049/tool_evaluations/visual_hull_hidden.step",
+          "error_category": "success",
+          "stderr": "",
+          "source": "visual_hull_hidden",
+          "hidden_feature_count": 3,
+          "used_verified_fallback": true,
+          "fallback_from_failed_final": true,
+          "case_id": "00000049",
+          "bucket": "prismatic_hidden",
+          "split": "calibration",
+          "duration_seconds": 12.475186493247747,
+          "tool_calls": 4,
+          "usage": {
+            "prompt_tokens": 6559,
+            "completion_tokens": 1193
+          },
+          "response_preview": "",
+          "prompt_id": "tool_v3_score_driven",
+          "prompt_path": "prompts/gemma4_total_view/tool_v3_score_driven.md"
+        },
+        {
+          "mode": "gemma4_with_tools",
+          "success": false,
+          "score": 0.0,
+          "mean_visible_f1": 0.0,
+          "mean_hidden_f1": 0.0,
+          "code_path": null,
+          "step_path": null,
+          "error_category": "no_code",
+          "stderr": "",
+          "case_id": "00000068",
+          "bucket": "prismatic",
+          "split": "calibration",
+          "duration_seconds": 0.5686783958226442,
+          "tool_calls": 0,
+          "usage": {
+            "prompt_tokens": 1244,
+            "completion_tokens": 35
+          },
+          "response_preview": "```json\n[\n  {\n    \"tool_name\": \"list_candidate_programs\",\n    \"params\": {}\n  }\n]\n```",
+          "prompt_id": "tool_v3_score_driven",
+          "prompt_path": "prompts/gemma4_total_view/tool_v3_score_driven.md"
+        }
+      ],
+      "aggregate": {
+        "total_cases": 3,
+        "successful_cases": 1,
+        "success_rate": 0.3333333333333333,
+        "mean_score": 0.1015871907035903,
+        "mean_visible_f1": 0.1658960282786733,
+        "mean_hidden_f1": 0.037278353128507316,
+        "mean_duration_seconds": 4.542807917731504,
+        "mean_tool_calls": 1.3333333333333333
+      },
+      "round_name": "tool_refined"
+    }
+  ]
+}

@@ -1,0 +1,1740 @@
+[
+  {
+    "case_id": "00000000",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.2518012503072057,
+    "mean_visible_f1": 0.4254111094865149,
+    "mean_hidden_f1": 0.0781913911278965,
+    "selected_candidate": "visual_hull_base",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000000/visual_hull_base.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic_hidden",
+    "total_polylines": 201,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.23989654652078016,
+        "mean_visible_f1": 0.39993692760925253,
+        "mean_hidden_f1": 0.07985616543230771,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000000/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000000/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 1
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.2518012503072057,
+        "mean_visible_f1": 0.4254111094865149,
+        "mean_hidden_f1": 0.0781913911278965,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000000/visual_hull_base.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000000/visual_hull_base.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_base",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000002",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.2835924421000422,
+    "mean_visible_f1": 0.3913756518148021,
+    "mean_hidden_f1": 0.17580923238528223,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000002/visual_hull_hidden.step",
+    "hidden_feature_count": 4,
+    "bucket": "axisymmetric",
+    "total_polylines": 499,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.2835924421000422,
+        "mean_visible_f1": 0.3913756518148021,
+        "mean_hidden_f1": 0.17580923238528223,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000002/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000002/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 4
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.2680834425371352,
+        "mean_visible_f1": 0.40222752794077943,
+        "mean_hidden_f1": 0.1339393571334909,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000002/visual_hull_base.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000002/visual_hull_base.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_base",
+        "hidden_feature_count": 0
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.2679146275576449,
+        "mean_visible_f1": 0.3493602265910849,
+        "mean_hidden_f1": 0.18646902852420486,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000002/axisymmetric_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000002/axisymmetric_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "axisymmetric_hidden",
+        "hidden_feature_count": 4
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.2653922320154955,
+        "mean_visible_f1": 0.35543318365326887,
+        "mean_hidden_f1": 0.1753512803777222,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000002/axisymmetric_base.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000002/axisymmetric_base.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "axisymmetric_base",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000003",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.3050142249178017,
+    "mean_visible_f1": 0.5076016391979291,
+    "mean_hidden_f1": 0.10242681063767438,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000003/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 325,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.3050142249178017,
+        "mean_visible_f1": 0.5076016391979291,
+        "mean_hidden_f1": 0.10242681063767438,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000003/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000003/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000004",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.30139318174133795,
+    "mean_visible_f1": 0.4895831710756748,
+    "mean_hidden_f1": 0.11320319240700111,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000004/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 335,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.30139318174133795,
+        "mean_visible_f1": 0.4895831710756748,
+        "mean_hidden_f1": 0.11320319240700111,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000004/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000004/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000005",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.33592648611109216,
+    "mean_visible_f1": 0.6718529722221843,
+    "mean_hidden_f1": 0.0,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000005/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 318,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.33592648611109216,
+        "mean_visible_f1": 0.6718529722221843,
+        "mean_hidden_f1": 0.0,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000005/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000005/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000006",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.3976408755279183,
+    "mean_visible_f1": 0.7933201182850302,
+    "mean_hidden_f1": 0.0019616327708062886,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000006/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 104,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.3976408755279183,
+        "mean_visible_f1": 0.7933201182850302,
+        "mean_hidden_f1": 0.0019616327708062886,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000006/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000006/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000007",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.3944101011227698,
+    "mean_visible_f1": 0.7853654742068147,
+    "mean_hidden_f1": 0.0034547280387249627,
+    "selected_candidate": "visual_hull_base",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000007/visual_hull_base.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic_hidden",
+    "total_polylines": 16,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.39372030614435566,
+        "mean_visible_f1": 0.7853654742068147,
+        "mean_hidden_f1": 0.0020751380818966095,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000007/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000007/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 1
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.3944101011227698,
+        "mean_visible_f1": 0.7853654742068147,
+        "mean_hidden_f1": 0.0034547280387249627,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000007/visual_hull_base.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000007/visual_hull_base.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_base",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000008",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.4282991276209689,
+    "mean_visible_f1": 0.5574981324626891,
+    "mean_hidden_f1": 0.29910012277924874,
+    "selected_candidate": "axisymmetric_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000008/axisymmetric_hidden.step",
+    "hidden_feature_count": 4,
+    "bucket": "axisymmetric",
+    "total_polylines": 157,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.4178493169971668,
+        "mean_visible_f1": 0.49647977098503954,
+        "mean_hidden_f1": 0.33921886300929405,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000008/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000008/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 4
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.30886420352006455,
+        "mean_visible_f1": 0.5125719206683007,
+        "mean_hidden_f1": 0.10515648637182838,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000008/visual_hull_base.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000008/visual_hull_base.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_base",
+        "hidden_feature_count": 0
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.4282991276209689,
+        "mean_visible_f1": 0.5574981324626891,
+        "mean_hidden_f1": 0.29910012277924874,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000008/axisymmetric_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000008/axisymmetric_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "axisymmetric_hidden",
+        "hidden_feature_count": 4
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.30905227003713076,
+        "mean_visible_f1": 0.5913852730440737,
+        "mean_hidden_f1": 0.026719267030187847,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000008/axisymmetric_base.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000008/axisymmetric_base.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "axisymmetric_base",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000009",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.2204185194560421,
+    "mean_visible_f1": 0.3839722585142769,
+    "mean_hidden_f1": 0.056864780397807284,
+    "selected_candidate": "visual_hull_base",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000009/visual_hull_base.step",
+    "hidden_feature_count": 0,
+    "bucket": "axisymmetric",
+    "total_polylines": 42,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.2169752310270776,
+        "mean_visible_f1": 0.3839722585142769,
+        "mean_hidden_f1": 0.04997820353987834,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000009/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000009/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 1
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.2204185194560421,
+        "mean_visible_f1": 0.3839722585142769,
+        "mean_hidden_f1": 0.056864780397807284,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000009/visual_hull_base.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000009/visual_hull_base.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_base",
+        "hidden_feature_count": 0
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.20305110998095244,
+        "mean_visible_f1": 0.31572983000812216,
+        "mean_hidden_f1": 0.0903723899537827,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000009/axisymmetric_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000009/axisymmetric_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "axisymmetric_hidden",
+        "hidden_feature_count": 1
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.15786491500406108,
+        "mean_visible_f1": 0.31572983000812216,
+        "mean_hidden_f1": 0.0,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000009/axisymmetric_base.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000009/axisymmetric_base.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "axisymmetric_base",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000010",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.20526606074160966,
+    "mean_visible_f1": 0.31244375348382625,
+    "mean_hidden_f1": 0.09808836799939304,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000010/visual_hull_hidden.step",
+    "hidden_feature_count": 4,
+    "bucket": "axisymmetric",
+    "total_polylines": 520,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.20526606074160966,
+        "mean_visible_f1": 0.31244375348382625,
+        "mean_hidden_f1": 0.09808836799939304,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000010/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000010/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 4
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.19285941714784352,
+        "mean_visible_f1": 0.30876774421790504,
+        "mean_hidden_f1": 0.0769510900777821,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000010/visual_hull_base.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000010/visual_hull_base.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_base",
+        "hidden_feature_count": 0
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.12688552499813135,
+        "mean_visible_f1": 0.14170540361083853,
+        "mean_hidden_f1": 0.11206564638542417,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000010/axisymmetric_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000010/axisymmetric_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "axisymmetric_hidden",
+        "hidden_feature_count": 4
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.11741031495333905,
+        "mean_visible_f1": 0.14171288941096322,
+        "mean_hidden_f1": 0.09310774049571487,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000010/axisymmetric_base.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000010/axisymmetric_base.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "axisymmetric_base",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000013",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.24914223662765664,
+    "mean_visible_f1": 0.4017585616930475,
+    "mean_hidden_f1": 0.09652591156226568,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000013/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 746,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.24914223662765664,
+        "mean_visible_f1": 0.4017585616930475,
+        "mean_hidden_f1": 0.09652591156226568,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000013/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000013/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000016",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.15931526341790372,
+    "mean_visible_f1": 0.18026281753370324,
+    "mean_hidden_f1": 0.13836770930210424,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000016/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 216,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.15931526341790372,
+        "mean_visible_f1": 0.18026281753370324,
+        "mean_hidden_f1": 0.13836770930210424,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000016/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000016/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000019",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.0735771890143294,
+    "mean_visible_f1": 0.10616436691450404,
+    "mean_hidden_f1": 0.04099001111415477,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000019/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 1176,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.0735771890143294,
+        "mean_visible_f1": 0.10616436691450404,
+        "mean_hidden_f1": 0.04099001111415477,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000019/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000019/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000020",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.21410094175420805,
+    "mean_visible_f1": 0.3896490447731374,
+    "mean_hidden_f1": 0.038552838735278705,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000020/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 233,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.21410094175420805,
+        "mean_visible_f1": 0.3896490447731374,
+        "mean_hidden_f1": 0.038552838735278705,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000020/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000020/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000021",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.21969311253700782,
+    "mean_visible_f1": 0.3314894407720322,
+    "mean_hidden_f1": 0.10789678430198339,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000021/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 126,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.21969311253700782,
+        "mean_visible_f1": 0.3314894407720322,
+        "mean_hidden_f1": 0.10789678430198339,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000021/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000021/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000024",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.4076269986616799,
+    "mean_visible_f1": 0.7146930075911607,
+    "mean_hidden_f1": 0.10056098973219908,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000024/visual_hull_hidden.step",
+    "hidden_feature_count": 1,
+    "bucket": "prismatic_hidden",
+    "total_polylines": 246,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.4076269986616799,
+        "mean_visible_f1": 0.7146930075911607,
+        "mean_hidden_f1": 0.10056098973219908,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000024/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000024/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 1
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.4031694541896236,
+        "mean_visible_f1": 0.7146930075911607,
+        "mean_hidden_f1": 0.09164590078808639,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000024/visual_hull_base.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000024/visual_hull_base.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_base",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000027",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.26035509901327075,
+    "mean_visible_f1": 0.42157454257995214,
+    "mean_hidden_f1": 0.09913565544658944,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000027/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 660,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.26035509901327075,
+        "mean_visible_f1": 0.42157454257995214,
+        "mean_hidden_f1": 0.09913565544658944,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000027/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000027/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000028",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.2927183750915058,
+    "mean_visible_f1": 0.3297376506116265,
+    "mean_hidden_f1": 0.255699099571385,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000028/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 864,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.2927183750915058,
+        "mean_visible_f1": 0.3297376506116265,
+        "mean_hidden_f1": 0.255699099571385,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000028/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000028/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000029",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.2413434068105538,
+    "mean_visible_f1": 0.44985612511554557,
+    "mean_hidden_f1": 0.03283068850556203,
+    "selected_candidate": "axisymmetric_base",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000029/axisymmetric_base.step",
+    "hidden_feature_count": 0,
+    "bucket": "axisymmetric",
+    "total_polylines": 103,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.22633483842687419,
+        "mean_visible_f1": 0.3388895730326875,
+        "mean_hidden_f1": 0.11378010382106091,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000029/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000029/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 1
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.2031326250790311,
+        "mean_visible_f1": 0.3388895730326875,
+        "mean_hidden_f1": 0.0673756771253747,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000029/visual_hull_base.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000029/visual_hull_base.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_base",
+        "hidden_feature_count": 0
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.2398900944025475,
+        "mean_visible_f1": 0.44985612511554557,
+        "mean_hidden_f1": 0.029924063689549436,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000029/axisymmetric_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000029/axisymmetric_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "axisymmetric_hidden",
+        "hidden_feature_count": 1
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.2413434068105538,
+        "mean_visible_f1": 0.44985612511554557,
+        "mean_hidden_f1": 0.03283068850556203,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000029/axisymmetric_base.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000029/axisymmetric_base.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "axisymmetric_base",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000031",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.2814112236032598,
+    "mean_visible_f1": 0.45917054895467063,
+    "mean_hidden_f1": 0.10365189825184906,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000031/visual_hull_hidden.step",
+    "hidden_feature_count": 3,
+    "bucket": "axisymmetric",
+    "total_polylines": 222,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.2814112236032598,
+        "mean_visible_f1": 0.45917054895467063,
+        "mean_hidden_f1": 0.10365189825184906,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000031/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000031/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 3
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.28000561918465744,
+        "mean_visible_f1": 0.45917054895467063,
+        "mean_hidden_f1": 0.10084068941464418,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000031/visual_hull_base.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000031/visual_hull_base.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_base",
+        "hidden_feature_count": 0
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.275325469332188,
+        "mean_visible_f1": 0.43196159675731954,
+        "mean_hidden_f1": 0.11868934190705639,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000031/axisymmetric_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000031/axisymmetric_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "axisymmetric_hidden",
+        "hidden_feature_count": 3
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.27750244782149497,
+        "mean_visible_f1": 0.43196159675731954,
+        "mean_hidden_f1": 0.1230432988856704,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000031/axisymmetric_base.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000031/axisymmetric_base.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "axisymmetric_base",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000032",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.3800778875889425,
+    "mean_visible_f1": 0.6989235884010112,
+    "mean_hidden_f1": 0.061232186776873726,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000032/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 569,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.3800778875889425,
+        "mean_visible_f1": 0.6989235884010112,
+        "mean_hidden_f1": 0.061232186776873726,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000032/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000032/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000034",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.05382383143099908,
+    "mean_visible_f1": 0.10764766286199816,
+    "mean_hidden_f1": 0.0,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000034/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 248,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.05382383143099908,
+        "mean_visible_f1": 0.10764766286199816,
+        "mean_hidden_f1": 0.0,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000034/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000034/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000035",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.2690805907317125,
+    "mean_visible_f1": 0.38337440692991054,
+    "mean_hidden_f1": 0.1547867745335145,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000035/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 439,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.2690805907317125,
+        "mean_visible_f1": 0.38337440692991054,
+        "mean_hidden_f1": 0.1547867745335145,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000035/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000035/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000038",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.2983063963291155,
+    "mean_visible_f1": 0.513536128598316,
+    "mean_hidden_f1": 0.08307666405991496,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000038/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 147,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.2983063963291155,
+        "mean_visible_f1": 0.513536128598316,
+        "mean_hidden_f1": 0.08307666405991496,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000038/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000038/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000039",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.2660101033521655,
+    "mean_visible_f1": 0.45063433471790565,
+    "mean_hidden_f1": 0.0813858719864254,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000039/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 128,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.2660101033521655,
+        "mean_visible_f1": 0.45063433471790565,
+        "mean_hidden_f1": 0.0813858719864254,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000039/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000039/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000042",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.37369985597016603,
+    "mean_visible_f1": 0.6540403563587767,
+    "mean_hidden_f1": 0.09335935558155528,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000042/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 182,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.37369985597016603,
+        "mean_visible_f1": 0.6540403563587767,
+        "mean_hidden_f1": 0.09335935558155528,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000042/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000042/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000047",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.31225331778028526,
+    "mean_visible_f1": 0.5817253852536655,
+    "mean_hidden_f1": 0.04278125030690505,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000047/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 1103,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.31225331778028526,
+        "mean_visible_f1": 0.5817253852536655,
+        "mean_hidden_f1": 0.04278125030690505,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000047/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000047/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000049",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.30476157211077093,
+    "mean_visible_f1": 0.4976880848360199,
+    "mean_hidden_f1": 0.11183505938552195,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000049/visual_hull_hidden.step",
+    "hidden_feature_count": 3,
+    "bucket": "prismatic_hidden",
+    "total_polylines": 788,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.30476157211077093,
+        "mean_visible_f1": 0.4976880848360199,
+        "mean_hidden_f1": 0.11183505938552195,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000049/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000049/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 3
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.296616160923211,
+        "mean_visible_f1": 0.5338123416505567,
+        "mean_hidden_f1": 0.059419980195865356,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000049/visual_hull_base.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000049/visual_hull_base.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_base",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000050",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.31595290834855966,
+    "mean_visible_f1": 0.5397144173640814,
+    "mean_hidden_f1": 0.09219139933303777,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000050/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 378,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.31595290834855966,
+        "mean_visible_f1": 0.5397144173640814,
+        "mean_hidden_f1": 0.09219139933303777,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000050/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000050/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000051",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.3759914769205443,
+    "mean_visible_f1": 0.6844750023634262,
+    "mean_hidden_f1": 0.06750795147766252,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000051/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 1099,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.3759914769205443,
+        "mean_visible_f1": 0.6844750023634262,
+        "mean_hidden_f1": 0.06750795147766252,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000051/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000051/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000052",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.3919873303148876,
+    "mean_visible_f1": 0.7669884424749508,
+    "mean_hidden_f1": 0.016986218154824314,
+    "selected_candidate": "axisymmetric_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000052/axisymmetric_hidden.step",
+    "hidden_feature_count": 3,
+    "bucket": "axisymmetric",
+    "total_polylines": 262,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.3483900757412733,
+        "mean_visible_f1": 0.4560866213368304,
+        "mean_hidden_f1": 0.24069353014571626,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000052/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000052/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 3
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.2561181590497021,
+        "mean_visible_f1": 0.4560866213368304,
+        "mean_hidden_f1": 0.05614969676257381,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000052/visual_hull_base.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000052/visual_hull_base.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_base",
+        "hidden_feature_count": 0
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.3919873303148876,
+        "mean_visible_f1": 0.7669884424749508,
+        "mean_hidden_f1": 0.016986218154824314,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000052/axisymmetric_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000052/axisymmetric_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "axisymmetric_hidden",
+        "hidden_feature_count": 3
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.3834942212374754,
+        "mean_visible_f1": 0.7669884424749508,
+        "mean_hidden_f1": 0.0,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000052/axisymmetric_base.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000052/axisymmetric_base.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "axisymmetric_base",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000053",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.3178984652588179,
+    "mean_visible_f1": 0.5029064178678002,
+    "mean_hidden_f1": 0.13289051264983553,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000053/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "axisymmetric",
+    "total_polylines": 1388,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.3178984652588179,
+        "mean_visible_f1": 0.5029064178678002,
+        "mean_hidden_f1": 0.13289051264983553,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000053/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000053/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      },
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.24406615265995812,
+        "mean_visible_f1": 0.4815759242731934,
+        "mean_hidden_f1": 0.006556381046722799,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000053/axisymmetric_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000053/axisymmetric_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "axisymmetric_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000054",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.48329033652904196,
+    "mean_visible_f1": 0.9230347943644602,
+    "mean_hidden_f1": 0.04354587869362364,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000054/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 420,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.48329033652904196,
+        "mean_visible_f1": 0.9230347943644602,
+        "mean_hidden_f1": 0.04354587869362364,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000054/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000054/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000056",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.37475811971749096,
+    "mean_visible_f1": 0.5844508910746355,
+    "mean_hidden_f1": 0.16506534836034645,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000056/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 1192,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.37475811971749096,
+        "mean_visible_f1": 0.5844508910746355,
+        "mean_hidden_f1": 0.16506534836034645,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000056/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000056/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000057",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.28989492756220875,
+    "mean_visible_f1": 0.4599568469454776,
+    "mean_hidden_f1": 0.1198330081789399,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000057/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 336,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.28989492756220875,
+        "mean_visible_f1": 0.4599568469454776,
+        "mean_hidden_f1": 0.1198330081789399,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000057/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000057/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000058",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.23862509828716214,
+    "mean_visible_f1": 0.4092456879970452,
+    "mean_hidden_f1": 0.06800450857727901,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000058/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 261,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.23862509828716214,
+        "mean_visible_f1": 0.4092456879970452,
+        "mean_hidden_f1": 0.06800450857727901,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000058/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000058/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000059",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.4231068826383159,
+    "mean_visible_f1": 0.7505403707981074,
+    "mean_hidden_f1": 0.09567339447852434,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000059/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 367,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.4231068826383159,
+        "mean_visible_f1": 0.7505403707981074,
+        "mean_hidden_f1": 0.09567339447852434,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000059/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000059/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000060",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.2963537928212013,
+    "mean_visible_f1": 0.38714855705068674,
+    "mean_hidden_f1": 0.20555902859171585,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000060/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 526,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.2963537928212013,
+        "mean_visible_f1": 0.38714855705068674,
+        "mean_hidden_f1": 0.20555902859171585,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000060/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000060/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000061",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.5098715469608583,
+    "mean_visible_f1": 0.9999349085465079,
+    "mean_hidden_f1": 0.019808185375208887,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000061/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 32,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.5098715469608583,
+        "mean_visible_f1": 0.9999349085465079,
+        "mean_hidden_f1": 0.019808185375208887,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000061/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000061/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000062",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.4230058251923239,
+    "mean_visible_f1": 0.690428682603344,
+    "mean_hidden_f1": 0.15558296778130365,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000062/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 586,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.4230058251923239,
+        "mean_visible_f1": 0.690428682603344,
+        "mean_hidden_f1": 0.15558296778130365,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000062/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000062/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000063",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.5034931530492893,
+    "mean_visible_f1": 0.9955267162312685,
+    "mean_hidden_f1": 0.011459589867310013,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000063/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 24,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.5034931530492893,
+        "mean_visible_f1": 0.9955267162312685,
+        "mean_hidden_f1": 0.011459589867310013,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000063/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000063/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000065",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.4797874461594347,
+    "mean_visible_f1": 0.8038619965573411,
+    "mean_hidden_f1": 0.1557128957615281,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000065/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 387,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.4797874461594347,
+        "mean_visible_f1": 0.8038619965573411,
+        "mean_hidden_f1": 0.1557128957615281,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000065/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000065/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000068",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.4430132917599002,
+    "mean_visible_f1": 0.8249097768579957,
+    "mean_hidden_f1": 0.06111680666180472,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000068/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 172,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.4430132917599002,
+        "mean_visible_f1": 0.8249097768579957,
+        "mean_hidden_f1": 0.06111680666180472,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000068/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000068/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000069",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.39754725287702825,
+    "mean_visible_f1": 0.6941820412099114,
+    "mean_hidden_f1": 0.10091246454414514,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000069/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 235,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.39754725287702825,
+        "mean_visible_f1": 0.6941820412099114,
+        "mean_hidden_f1": 0.10091246454414514,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000069/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000069/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000070",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.3402565455522893,
+    "mean_visible_f1": 0.5724432244796581,
+    "mean_hidden_f1": 0.1080698666249204,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000070/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 108,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.3402565455522893,
+        "mean_visible_f1": 0.5724432244796581,
+        "mean_hidden_f1": 0.1080698666249204,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000070/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000070/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000071",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.10475590462737877,
+    "mean_visible_f1": 0.15415343356753533,
+    "mean_hidden_f1": 0.05535837568722222,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000071/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 558,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.10475590462737877,
+        "mean_visible_f1": 0.15415343356753533,
+        "mean_hidden_f1": 0.05535837568722222,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000071/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000071/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000072",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.3712058533010915,
+    "mean_visible_f1": 0.5879156240146409,
+    "mean_hidden_f1": 0.15449608258754205,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000072/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 170,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.3712058533010915,
+        "mean_visible_f1": 0.5879156240146409,
+        "mean_hidden_f1": 0.15449608258754205,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000072/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000072/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000073",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.3985634563072829,
+    "mean_visible_f1": 0.7440620872096361,
+    "mean_hidden_f1": 0.05306482540492974,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000073/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 144,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.3985634563072829,
+        "mean_visible_f1": 0.7440620872096361,
+        "mean_hidden_f1": 0.05306482540492974,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000073/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000073/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000074",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.3212185234533535,
+    "mean_visible_f1": 0.6144544392914432,
+    "mean_hidden_f1": 0.02798260761526378,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000074/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 436,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.3212185234533535,
+        "mean_visible_f1": 0.6144544392914432,
+        "mean_hidden_f1": 0.02798260761526378,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000074/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000074/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  },
+  {
+    "case_id": "00000075",
+    "mode": "tools_only",
+    "success": true,
+    "score": 0.319374954069856,
+    "mean_visible_f1": 0.5159112632425777,
+    "mean_hidden_f1": 0.12283864489713421,
+    "selected_candidate": "visual_hull_hidden",
+    "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000075/visual_hull_hidden.step",
+    "hidden_feature_count": 0,
+    "bucket": "prismatic",
+    "total_polylines": 408,
+    "candidates": [
+      {
+        "mode": "tools_only",
+        "success": true,
+        "score": 0.319374954069856,
+        "mean_visible_f1": 0.5159112632425777,
+        "mean_hidden_f1": 0.12283864489713421,
+        "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000075/visual_hull_hidden.py",
+        "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000075/visual_hull_hidden.step",
+        "error_category": "success",
+        "stderr": "",
+        "source": "visual_hull_hidden",
+        "hidden_feature_count": 0
+      }
+    ]
+  }
+]

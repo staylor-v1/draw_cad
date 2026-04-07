@@ -15,9 +15,12 @@ from src.reconstruction.reprojection import (
 )
 from src.reconstruction.total_view_dataset import (
     OrthographicTriplet,
+    PngOrthographicTriplet,
+    PngOrthographicView,
     SvgOrthographicView,
     SvgPolyline,
     TotalViewArchive,
+    TotalViewPngArchive,
 )
 
 __all__ = [
@@ -28,10 +31,13 @@ __all__ = [
     "OrthographicReconstructionResult",
     "OrthographicTriplet",
     "OrthographicTripletReconstructor",
+    "PngOrthographicTriplet",
+    "PngOrthographicView",
     "ReconstructionCandidate",
     "SvgOrthographicView",
     "SvgPolyline",
     "TotalViewArchive",
+    "TotalViewPngArchive",
     "ViewReprojectionScore",
     "evaluate_step_against_triplet",
 ]

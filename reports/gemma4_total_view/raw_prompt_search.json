@@ -1,0 +1,259 @@
+{
+  "mode": "raw",
+  "best_prompt_id": "raw_v1_direct",
+  "best_prompt_path": "prompts/gemma4_total_view/raw_v1_direct.md",
+  "candidates": [
+    {
+      "mode": "raw",
+      "prompt_id": "raw_v1_direct",
+      "prompt_path": "prompts/gemma4_total_view/raw_v1_direct.md",
+      "cases": [
+        {
+          "mode": "gemma4_raw",
+          "success": false,
+          "score": 0.0,
+          "mean_visible_f1": 0.0,
+          "mean_hidden_f1": 0.0,
+          "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/raw/raw_v1_direct/00000053/generated.py",
+          "step_path": null,
+          "error_category": "runtime_error",
+          "stderr": "Traceback (most recent call last):\n  File \"/tmp/tmpazt8n8li.py\", line 75, in <module>\n    part = build_box(length=100, width=80, height=40)\n           ^^^^^^^^^\nNameError: name 'build_box' is not defined\n",
+          "case_id": "00000053",
+          "bucket": "axisymmetric",
+          "split": "calibration",
+          "duration_seconds": 10.066669114865363,
+          "usage": {
+            "prompt_tokens": 1055,
+            "completion_tokens": 1905
+          },
+          "response_preview": "```python\nfrom build123d import *\n\n# Analyze the views:\n# Front View (X-Z): Shows a rectangular outer shape. The center has a slot/recess.\n# Right View (Y-Z): Shows a rectangular outer shape. The center has a slot/recess.\n# Top View (X-Y): Shows a large outer circle with a central rectangular cutout/slot.\n\n# Reconciling dimensions and shape:\n# The overall shape is roughly rectangular in the X and Y directions, but the top view suggests a circular outer boundary, which contradicts the rectangular nature of the front/right views.\n# Let's assume the overall bounding box is defined by the front/right views, and the top view defines the internal structure.\n\n# From Front/Right views:\n# The overall width (X) and height (Z) are defined by the outer rectangle.\n# The central feature appears to be a slot or recess.\n\n# From Top View (X-Y):\n# The outer shape is circular. Let's estimate the radius from the top view.\n# The central feature is a slot/recess.\n\n# Given the conflict (Rectangular vs Circular outer boundary), I will prioritize the features that define the main body and the internal structure, assuming the outer boundary is defined by the largest extent shown, which seems to be a combination of the rectangular frame and the circular top view.\n\n# Let's model the main body as a rectangular prism based on the front/right views, and then cut the internal features.\n\n# Dimensions estimation (assuming a consistent scale):\n# Let the overall length (X) be L, width (Y) be W, and height (Z) be H.\n\n# From Front View (X-Z):\n# Height (Z) seems constant.\n# Width (X) is the full extent.\n# The central slot has dimensions.\n\n# From Right View (Y-Z):\n# Height (Z) seems constant.\n# Depth (Y) is the full extent.\n# The central slot has dimensions.\n\n# From Top View (X-Y):\n# The outer shape is circular. Let's assume the center is (0, 0).\n# The outer radius R seems to be defined by the extent of the rectangular views, but the top view is clearly circular.\n\n# Re-evaluating: The object looks like a mounting bracket or housing. The top view suggests a circular mounting pattern, while the front/right views suggest a rectangular body. I will model the body as a rectangular block and incorporate the circular feature from the top view as a cutout or a specific feature, as the top view is the most defining feature for the internal structure.\n\n# Let's assume the object is a rectangular block with a circular cutout/feature on the top surface, and a slot running through the center.\n\n# Based on the top view, the object has a central rectangular slot and a large outer circular boundary.\n# Let's define the overall dimensions based on the rectangular views, and use the circular feature from the top view to define the main body shape if possible.\n\n# If we treat the object as a block with a circular hole:\n# Let's use the dimensions implied by the rectangular views for the overall size, and use the top view to define the internal cutout.\n\n# Let's try to build a solid that encompasses the visible structure:\n# 1. A main rectangular body.\n# 2. A central slot/recess.\n# 3. A circular feature on the top surface.\n\n# Given the ambiguity, I will construct a solid that is rectangular overall, and carve out the visible features.\n\n# Let's assume the overall dimensions are roughly:\n# X (Length): ~100 units\n# Y (Width/Depth): ~80 units\n# Z (Height): ~40 units\n\n# The top view shows a large circle. Let's assume the object is centered at (0, 0, 0) for simplicity in modeling.\n\n# Start with a large rectangular block (approximating the overall bounding box from front/right views).\npart = build_box(length=100, width=80, height=40)\n\n# Cut the central slot/recess visible in all views.\n# The slot seems to be centered and runs through the object.\n# Based on the top view, the slot is rectangular.\nslot_length = 60\nslot_width = 20\nslot_height = 30 # Assuming it goes through most of the height\n\n# Cut the central slot (This cut needs to be applied carefully to match the recess depth seen in the front/righ",
+          "prompt_id": "raw_v1_direct",
+          "prompt_path": "prompts/gemma4_total_view/raw_v1_direct.md"
+        },
+        {
+          "mode": "gemma4_raw",
+          "success": false,
+          "score": 0.0,
+          "mean_visible_f1": 0.0,
+          "mean_hidden_f1": 0.0,
+          "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/raw/raw_v1_direct/00000049/generated.py",
+          "step_path": null,
+          "error_category": "syntax_error",
+          "stderr": "  File \"/tmp/tmp6c6_4hox.py\", line 10\n    ```python\n    ^\nSyntaxError: invalid syntax\n",
+          "case_id": "00000049",
+          "bucket": "prismatic_hidden",
+          "split": "calibration",
+          "duration_seconds": 10.829308110289276,
+          "usage": {
+            "prompt_tokens": 1055,
+            "completion_tokens": 2048
+          },
+          "response_preview": "```python\nfrom build123d import *\n\n# Analyze the views:\n# Front View (X-Z): Shows a hexagonal head on top of a threaded body.\n# Right View (Y-Z): Shows the same hexagonal head and threaded body, confirming symmetry in the Y-direction.\n# Top View (X-Y): Shows a hexagonal outer profile and a central circular void/opening.\n\n# Dimensions inference (assuming standard units):\n# 1. Head: Hexagonal shape. The top view suggests the overall width/depth is defined by the hexagon.\n# 2. Body: Threaded section below the head.\n# 3. Overall structure: A bolt or cap screw.\n\n# Let's define the main components based on the top view (X-Y) and the cross-section implied by the front/right views.\n\n# The top view is a hexagon. Let's assume the overall width/height of the hexagon is related to the distance between parallel sides or vertices.\n# The front/right views show a distinct head and a threaded shank.\n\n# 1. Head Geometry:\n# The head appears to be a hexagonal prism section.\n# Let's estimate the dimensions from the top view. If we assume the distance between opposite vertices is W_max and between opposite flats is W_min.\n# The top view suggests a hexagonal cross-section.\n\n# 2. Shank Geometry:\n# The shank is threaded. We will model the main body as a cylinder/prism and then cut/add threads if necessary, but for a simple solid, we model the overall shape.\n\n# Reconciling the views:\n# The top view dictates the cross-section in the XY plane (a hexagon).\n# The front/right views dictate the height (Z) profile.\n\n# Let's model the main body as a hexagonal prism, and then refine the head and shank.\n\n# Based on the top view, the cross-section is a hexagon.\n# Let's use a standard hexagonal prism construction.\n\n# Estimate dimensions (relative):\n# Total height (Z): Let's say the head is H_head and the shank is H_shank.\n# The top view suggests the overall width/depth is defined by the hexagon.\n\n# Since the top view is a hexagon, we start with a hexagonal prism.\n# We will use the 'make_box' or similar primitive, but since the top view is explicitly hexagonal, we'll use a general prism approach or assume the bounding box and cut the hexagon.\n\n# A simpler approach: Model the head and shank separately and join them.\n\n# --- Head ---\n# The head is hexagonal. Let's assume a height for the head, say H_head = 10 units (arbitrary scaling).\n# The top view defines the cross-section.\n# We will use a hexagonal prism for the head.\n\n# --- Shank ---\n# The shank is threaded. We model the main body as a cylinder/prism and then add the threads detail if possible, but sticking to the solid silhouette, we model the main body.\n\n# Given the constraints and the nature of the object (a bolt), we will model the overall solid shape: Hexagonal Head -> Cylindrical/Tapered Shank.\n\n# Let's assume the overall shape is a hexagonal prism for the head, transitioning to a smaller diameter cylinder for the shank.\n\n# Since the top view is a hexagon, we define the cross-section using the hexagon.\n# We will use a combination of extrusion and subtraction/addition.\n\n# 1. Define the hexagonal cross-section (from the top view).\n# We approximate the hexagon based on the visual representation.\n# Let's assume the overall width/depth of the hexagon is W and the height of the head is H_head.\n\n# Due to the complexity of accurately deriving dimensions from just the silhouette, we will construct the most plausible solid shape: a hexagonal head attached to a threaded shank.\n\n# Let's use a simplified approach: A hexagonal prism for the head, and a cylinder for the shank, respecting the hexagonal profile where possible.\n\n# If we treat the entire object as a single extrusion along the Z-axis, the cross-section changes.\n\n# Let's model the head as a hexagonal prism of height H_head.\nH_head = 15.0\n# The top view defines the cross-section. We need to create a hexagon profile.\n# Assuming the hexagon fits within a bounding box of W x W.\n# We will use a placeholder for the hexagonal cross-section definition, as build123d mig",
+          "prompt_id": "raw_v1_direct",
+          "prompt_path": "prompts/gemma4_total_view/raw_v1_direct.md"
+        },
+        {
+          "mode": "gemma4_raw",
+          "success": false,
+          "score": 0.0,
+          "mean_visible_f1": 0.0,
+          "mean_hidden_f1": 0.0,
+          "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/raw/raw_v1_direct/00000068/generated.py",
+          "step_path": null,
+          "error_category": "syntax_error",
+          "stderr": "  File \"/tmp/tmpb430_4jn.py\", line 10\n    ```python\n    ^\nSyntaxError: invalid syntax\n",
+          "case_id": "00000068",
+          "bucket": "prismatic",
+          "split": "calibration",
+          "duration_seconds": 10.765888944733888,
+          "usage": {
+            "prompt_tokens": 1055,
+            "completion_tokens": 2048
+          },
+          "response_preview": "```python\nfrom build123d import *\n\n# Analyze the views:\n# Front View (X-Z): A vertical shape with a wider base.\n# Right View (Y-Z): Identical to the front view, suggesting symmetry in the Y-direction.\n# Top View (X-Y): A rectangular shape with two circular cutouts on the ends.\n\n# Dimensions inference (assuming a consistent scale):\n# Let's establish a coordinate system based on the views.\n\n# From Top View (X-Y):\n# The overall width (X) seems to be defined by the outer edges.\n# The overall depth (Y) seems to be defined by the outer edges.\n# The central body appears rectangular.\n# The end circles suggest a width/depth for the connecting arms.\n\n# From Front View (X-Z) and Right View (Y-Z):\n# The overall height (Z) is the maximum height.\n# The central vertical section has a certain height.\n# The base section has a certain height.\n\n# Reconciling the shape: It looks like a capital 'I' shape with rounded/circular ends.\n\n# Let's define the main body dimensions based on the top view's rectangular nature and the front/right view's vertical structure.\n\n# 1. Overall bounding box estimation:\n# Let's assume the overall width (X) and depth (Y) are determined by the top view.\n# Let's assume the overall height (Z) is determined by the front/right view.\n\n# The shape is symmetrical. We can model it using extrusion or boolean operations.\n\n# Strategy: Model the central rectangular body and then add the rounded ends.\n\n# Based on the top view, the overall shape is rectangular, with two circular cutouts at the ends.\n# Let's estimate the dimensions from the top view:\n# Overall X (width) seems to be around 100 units.\n# Overall Y (depth) seems to be around 100 units.\n# The central rectangular part seems to have dimensions (e.g., 60x60).\n# The end circles seem to have a diameter (e.g., 20 units).\n\n# Based on the front/right view, the overall height (Z) is the maximum height.\n# The central vertical part seems to have a height (e.g., 80 units).\n# The base part seems to have a height (e.g., 30 units).\n\n# Let's use a simpler approach: Extrude a cross-section along the Z-axis, or use a combination of primitives.\n\n# The shape is essentially a rectangular prism with rounded ends.\n\n# Let's define the cross-section in the X-Y plane (Top View) and extrude it along Z.\n# The cross-section is a rectangle with two semi-circular cutouts at the ends, but the top view shows the *outline* of the object, not just the cross-section.\n\n# The object is a 3D solid. Let's model the main body first.\n\n# 1. Central rectangular body (approximating the main vertical part):\n# Let's assume the central body is centered at (0, 0).\n# Height (Z): Max height from front view.\n# Width (X) and Depth (Y): From top view.\n\n# Let's use the overall bounding box suggested by the top view for X and Y, and the height from the front view for Z.\n\n# Estimate dimensions (relative units):\n# Overall X: ~100\n# Overall Y: ~100\n# Overall Z: ~100 (Max height)\n\n# The object looks like a thick 'I' beam with rounded ends.\n\n# Let's model the central rectangular part first (the 'I' core).\n# Core dimensions (X_core, Y_core, Z_core)\n# Based on the front view, the core width (X) is smaller than the overall width.\n# Based on the top view, the core width (X) and depth (Y) are defined.\n\n# Let's assume the overall dimensions are roughly 100x100x100.\n\n# Create a main rectangular block representing the overall volume.\n# We will use subtraction to carve out the empty space if necessary, or build up the solid.\n\n# Given the structure, it's best to model the solid cross-section and then extrude it.\n# The cross-section in the X-Y plane (Top View) is the profile.\n# The extrusion direction is Z (Height).\n\n# The profile in the X-Y plane:\n# It's a rectangle of size W x D, with two semi-circles removed from the ends, but the top view shows the *outer* boundary.\n\n# Let's assume the object is formed by taking a large rectangular block and carving out the empty space.\n\n# 1. Outer bounding box (approximated by the top view's extent):\n# Box",
+          "prompt_id": "raw_v1_direct",
+          "prompt_path": "prompts/gemma4_total_view/raw_v1_direct.md"
+        }
+      ],
+      "aggregate": {
+        "total_cases": 3,
+        "successful_cases": 0,
+        "success_rate": 0.0,
+        "mean_score": 0.0,
+        "mean_visible_f1": 0.0,
+        "mean_hidden_f1": 0.0,
+        "mean_duration_seconds": 10.553955389962843,
+        "mean_tool_calls": 0.0
+      },
+      "round_name": "raw_baseline"
+    },
+    {
+      "mode": "raw",
+      "prompt_id": "raw_v2_consensus",
+      "prompt_path": "prompts/gemma4_total_view/raw_v2_consensus.md",
+      "cases": [
+        {
+          "mode": "gemma4_raw",
+          "success": false,
+          "score": 0.0,
+          "mean_visible_f1": 0.0,
+          "mean_hidden_f1": 0.0,
+          "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/raw/raw_v2_consensus/00000053/generated.py",
+          "step_path": null,
+          "error_category": "syntax_error",
+          "stderr": "  File \"/tmp/tmp4ai7136o.py\", line 10\n    ```python\n    ^\nSyntaxError: invalid syntax\n",
+          "case_id": "00000053",
+          "bucket": "axisymmetric",
+          "split": "calibration",
+          "duration_seconds": 10.82408973108977,
+          "usage": {
+            "prompt_tokens": 1141,
+            "completion_tokens": 2048
+          },
+          "response_preview": "```python\nfrom build123d import *\n\npart = BuildPart()\n\n# --- Analysis ---\n# 1. Global Extents:\n#    - Front View (X-Z): Max X (approx 100), Min X (approx -100). Max Z (approx 100), Min Z (approx -100).\n#    - Right View (Y-Z): Max Y (approx 100), Min Y (approx -100). Max Z (approx 100), Min Z (approx -100).\n#    - Top View (X-Y): Max X (approx 100), Min X (approx -100). Max Y (approx 100), Min Y (approx -100).\n#    The overall bounding box is roughly centered at (0, 0, 0) with dimensions of 200x200x200.\n\n# 2. Base Primitive:\n#    The object is generally a hollow, rectangular/rounded tube shape. We can start with a large box/cylinder and subtract features.\n\n# 3. Features (Inferred from views):\n#    - Overall shape: A rectangular outer profile with rounded corners, suggesting a box or extrusion from a profile.\n#    - Center: A large central void.\n#    - Left/Right ends (Front/Right views): There are rectangular cutouts/features on the left and right sides of the central void.\n#    - Top View (X-Y): Shows a central rectangular cutout, and the outer shape is defined by the overall bounding box.\n#    - Top View (X-Y): Shows a distinct circular feature on the right end.\n#    - Front View (X-Z): Shows a rectangular cutout on the left side, and a rectangular cutout on the right side, both aligned with the central void.\n\n# Strategy: Model the main body as a box, then subtract the internal voids and add/subtract the specific features.\n\n# Dimensions estimation (assuming a coordinate system where the center is (0,0,0)):\n# Overall Length (X-axis): ~200\n# Overall Width (Y-axis): ~200\n# Overall Height (Z-axis): ~200\n\n# 1. Outer Shell (Approximation using a large box)\nouter_box = Box(center=(0, 0, 0), size=(200, 200, 200))\npart.add(outer_box)\n\n# 2. Central Void (The main hollow area)\n# The central void appears to be a rectangular channel running through the object.\n# Based on the front/right views, the void is not perfectly centered or uniform.\n# Let's model the main body as a solid block and subtract the voids.\n\n# Re-evaluating: The object looks like a thick-walled pipe or bracket.\n# Let's define the outer profile first (Top View suggests a rectangular cross-section with rounded ends).\n\n# Let's use the overall bounding box and subtract the empty space.\n\n# A. Main Body Extrusion (Approximation based on the overall silhouette)\n# The object is roughly a rectangular prism with rounded ends.\n# Let's define the main body as a box and then refine the ends.\n\n# Box dimensions: Length (X) ~ 200, Width (Y) ~ 200, Height (Z) ~ 200\n# We will use the central void subtraction method.\n\n# B. Central Void (The main empty space)\n# The void seems to be a rectangular channel running through the center.\n# Let's estimate the void dimensions:\n# X-axis: ~150 (leaving ~25 clearance on each side)\n# Y-axis: ~150\n# Z-axis: ~150\nvoid_box = Box(center=(0, 0, 0), size=(150, 150, 150))\npart.subtract(void_box)\n\n# C. End Features (Circular feature on the right end, Front/Right view cutouts)\n# The right end has a circular feature (Top View). This suggests the object is not a simple box.\n\n# Let's model the object as a combination of extruded profiles.\n\n# 1. Main Body (Approximation: A box with rounded ends)\n# Since the top view shows a clear rectangular cross-section with rounded ends, we'll use a combination of extrusion and subtraction.\n\n# Let's assume the main body is defined by the outer dimensions (200x200x200) and subtract the internal voids.\n\n# 2. Internal Voids (Based on Front/Right views)\n# Left cutout (Front View): Rectangular, centered vertically, offset left.\n# Right cutout (Front View): Rectangular, centered vertically, offset right.\n# These cutouts seem to define the internal structure around the central void.\n\n# Given the complexity and the need to match all views, we will build the solid structure and subtract the empty spaces.\n\n# Solid Block (Outer boundary)\nsolid_block = Box(center=(0, 0, 0), size=(200, 200, 200))\npart.add(solid_block)\n\n# Subtracting the main ",
+          "prompt_id": "raw_v2_consensus",
+          "prompt_path": "prompts/gemma4_total_view/raw_v2_consensus.md"
+        },
+        {
+          "mode": "gemma4_raw",
+          "success": false,
+          "score": 0.0,
+          "mean_visible_f1": 0.0,
+          "mean_hidden_f1": 0.0,
+          "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/raw/raw_v2_consensus/00000049/generated.py",
+          "step_path": null,
+          "error_category": "runtime_error",
+          "stderr": "Traceback (most recent call last):\n  File \"/tmp/tmp1tpl5c2l.py\", line 31, in <module>\n    Rectangle(point=(0, 0), size=(20, 20)) # Placeholder for sketch plane\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: Rectangle.__init__() got an unexpected keyword argument 'point'\n",
+          "case_id": "00000049",
+          "bucket": "prismatic_hidden",
+          "split": "calibration",
+          "duration_seconds": 7.991121390834451,
+          "usage": {
+            "prompt_tokens": 1141,
+            "completion_tokens": 1496
+          },
+          "response_preview": "```python\nfrom build123d import *\n\npart = BuildPart()\n\n# 1. Infer global extents and base shape:\n# The object is a bolt/stud with a hexagonal head and threaded shank.\n# Top view (X-Y) shows a hexagon.\n# Front/Right views (X-Z/Y-Z) show the height and the hexagonal cross-section.\n\n# Dimensions estimation based on views (assuming standard proportions):\n# Head Height (Z): ~10mm (from front/right view)\n# Head Width (X/Y): ~20mm (from top view)\n# Shank Length (Z): ~40mm (total length)\n# Shank Diameter (D): ~10mm (from top view, inscribed circle)\n\n# 2. Construct the main body: Head + Shank\n\n# --- Head (Hexagonal Prism) ---\n# The head is a hexagonal prism. We'll model the outer boundary first.\n# The top view defines the hexagon.\nhead_sketch = BuildSketch(\n    Rectangle(point=(0, 0), size=(20, 20)) # Placeholder for sketch plane\n)\n# Since the top view is a hexagon, we need to sketch a hexagon.\n# We'll approximate the hexagon using points or a series of lines/arcs if necessary,\n# but for simplicity and robustness, we'll use a Box/Cylinder approach if possible,\n# or define the hexagonal profile.\n\n# Let's define the hexagonal profile in the X-Y plane (Top View).\n# Assuming the center is at (0, 0).\n# Vertices for a hexagon of width ~20mm:\n# (10, 10), (-10, 10), (-10, -10), (-10, -10), (10, -10) - This is a square approximation.\n# For a true hexagon fitting the view:\n# Let's use a sketch and define the points based on the visual proportions.\n# Top view suggests a width of about 2 * (side length * cos(30)) or similar.\n# Given the constraints, we'll model the head as a hexagonal prism extruded downwards.\n\n# A simpler approach: Model the head as a box and subtract the inner features,\n# or use a specialized hexagonal extrusion if available. Since we must use basic primitives,\n# we'll use a sketch defining the hexagon and extrude it.\n\n# Sketching the Hexagon (Top View)\n# Center at (0, 0). Let the distance from center to vertex be R.\n# If the width is 20, R might be around 10.\n# Vertices: (R, 0), (R/2, R*sqrt(3)/2), (-R/2, R*sqrt(3)/2), (-R, 0), ...\n# Let's assume the bounding box is 20x20, and the hexagon fits well.\n# We will use a Polyline sketch to define the outer boundary.\n\n# Approximate coordinates for a hexagon centered at (0,0) with width ~20:\n# (10, 5.77), (5.19, 10), (-5.19, 10), (-10, 5.77), (-5.19, -10), (5.19, -10)\n# This is complex. Let's simplify by modeling the head as a cylinder/box and subtracting the inner features,\n# or by assuming the head is a simple extruded shape based on the visible profile.\n\n# Given the clear hexagonal profile, we will use a sketch and extrude it.\n# We'll define the sketch on the X-Y plane.\nhead_sketch = BuildSketch()\n# Manually defining the hexagon points for extrusion (approximating the view):\npoints = [\n    (10, 5.77), (5.19, 10), (-5.19, 10),\n    (-10, 5.77), (-5.19, -10), (5.19, -10)\n]\n# Create a closed polyline from these points\nfor i in range(len(points)):\n    p1 = points[i]\n    p2 = points[(i + 1) % len(points)]\n    head_sketch.add(Line(p1, p2))\n\n# Extrude the head sketch downwards (Z direction)\nhead_height = 10.0\nhead = head_sketch.extrude(height=head_height)\npart.add(head)\n\n# --- Shank (Cylinder/Threaded Section) ---\n# The shank is cylindrical with threads.\n# The top view shows the shank diameter is smaller than the head.\n# The front/right views show the shank diameter and length.\nshank_diameter = 10.0\nshank_length = 30.0 # Total length - Head height (40 - 10 = 30)\n\n# The shank is a cylinder.\nshank_sketch = BuildSketch()\n# Sketch a circle representing the outer diameter of the shank.\nshank_sketch.add(Circle(center=(0, 0), radius=shank_diameter / 2.0))\n\n# Extrude the shank sketch downwards.\nshank = shank_sketch.extrude(height=shank_length)\npart.add(shank)\n\n# 3. Add cutouts/features:\n# The head has a central bore (visible in top view).\n# The bore diameter appears to be slightly smaller than the shank diameter, maybe 8mm.\n# Let's assume the bore diameter is 8mm.\nbore_sketch = BuildSketch()\nbore_s",
+          "prompt_id": "raw_v2_consensus",
+          "prompt_path": "prompts/gemma4_total_view/raw_v2_consensus.md"
+        },
+        {
+          "mode": "gemma4_raw",
+          "success": false,
+          "score": 0.0,
+          "mean_visible_f1": 0.0,
+          "mean_hidden_f1": 0.0,
+          "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/raw/raw_v2_consensus/00000068/generated.py",
+          "step_path": null,
+          "error_category": "syntax_error",
+          "stderr": "  File \"/tmp/tmp0zvqj11r.py\", line 10\n    ```python\n    ^\nSyntaxError: invalid syntax\n",
+          "case_id": "00000068",
+          "bucket": "prismatic",
+          "split": "calibration",
+          "duration_seconds": 10.821099972352386,
+          "usage": {
+            "prompt_tokens": 1141,
+            "completion_tokens": 2048
+          },
+          "response_preview": "```python\nfrom build123d import *\n\npart = BuildPart()\n\n# Analyze the views:\n# Front View (X-Z): Shows a symmetrical 'I' shape with two circular holes at the bottom ends.\n# Right View (Y-Z): Shows the same 'I' shape, confirming symmetry in the Y-direction.\n# Top View (X-Y): Shows the overall width and the placement of the two circular holes.\n\n# Dimensions estimation (assuming a reasonable scale):\n# Height (Z): Let's estimate the total height.\n# Width (X): The top view suggests the overall width.\n# Depth (Y): The right view suggests the overall depth.\n\n# The shape is essentially a rectangular block with a central cutout (the 'I' cross-section)\n# and two circular features at the bottom.\n\n# 1. Define the main body (approximating the outer silhouette)\n# Let's define the overall bounding box first.\n# Based on the top view, let's assume the overall width (X) and depth (Y) are defined by the outer edges.\n# Based on the front view, let's assume the overall height (Z) is defined.\n\n# Let's model the 'I' shape profile first (looking from the front/right).\n# The 'I' shape suggests a central rectangular section connecting two end sections.\n\n# Sketching the cross-section (e.g., in the X-Z plane, using the front view):\n# The overall height is defined by the front view.\n# The width of the top/bottom flanges is defined by the top view.\n# The thickness of the vertical web is defined by the side view.\n\n# Let's use a Box and subtract the empty space, or build it up. Building up seems cleaner.\n\n# Dimensions estimation based on visual proportions (relative units):\n# Total Height (Z): ~10 units\n# Total Width (X): ~10 units\n# Total Depth (Y): ~10 units\n\n# Let's define the main body as a box, and then cut out the internal structure.\n# However, the 'I' shape is better modeled by extruding the cross-section.\n\n# Cross-section sketch (in X-Z plane, representing the front view):\n# 1. Outer rectangle (Bounding box for the 'I')\n# 2. Inner cutout (The empty space in the middle)\n\n# Let's define the profile in the X-Z plane (Front View):\n# Outer dimensions: X_max, Z_max\n# Inner cutout dimensions: X_inner, Z_inner\n\n# The bottom part has two circles. This suggests the extrusion axis is along Y.\n# Let's sketch the profile in the X-Z plane and extrude along Y.\n\n# Sketching the profile (X-Z plane):\n# 1. Top flange: Rectangle from (X_start, Z_top) to (X_end, Z_top)\n# 2. Vertical web: Rectangle connecting the flanges.\n# 3. Bottom flanges: Two circles centered at the bottom ends.\n\n# Given the symmetry and the circular holes, it's best to model the central rectangular body first,\n# and then add the circular features.\n\n# Let's assume the overall dimensions are roughly 10x10x10 for simplicity, matching the visual aspect ratio.\n\n# 1. Main Body (The central rectangular part)\n# We will extrude a cross-section along the Y-axis (depth).\n\n# Sketching the cross-section in the X-Z plane:\nwith BuildSketch(part):\n    # Top flange\n    Rectangle(point=(0, 10), size=(10, 1)).add() # Assuming 10 wide, 1 high at the top\n    # Bottom flange (This is tricky because the bottom has circles)\n\n# Alternative: Model the central rectangular part first (the 'I' without the circles)\n# Let's assume the central rectangular part has dimensions:\n# Width (X): 10\n# Height (Z): 10\n# Thickness (Y): 10\n\n# We will use a Box and subtract the empty space.\n\n# Outer Box (Bounding box)\nouter_box = Box(center=(0, 0, 0), size=(10, 10, 10))\npart.add(outer_box)\n\n# Cutout the empty space (The 'I' cutout)\n# The cutout is a central rectangle running through the middle.\n# Let's estimate the cutout dimensions:\n# Width (X): 10 (full width)\n# Height (Z): 10 (full height)\n# The cutout is not a simple subtraction from a box, as the flanges are solid.\n\n# Let's stick to the extrusion method using the cross-section profile.\n\n# Cross-section sketch (X-Z plane):\nwith BuildSketch(part):\n    # Define the overall bounding box for the sketch area\n    # We need to draw the outline of the cross-section.\n\n    # Top flange (Rectangle)\n   ",
+          "prompt_id": "raw_v2_consensus",
+          "prompt_path": "prompts/gemma4_total_view/raw_v2_consensus.md"
+        }
+      ],
+      "aggregate": {
+        "total_cases": 3,
+        "successful_cases": 0,
+        "success_rate": 0.0,
+        "mean_score": 0.0,
+        "mean_visible_f1": 0.0,
+        "mean_hidden_f1": 0.0,
+        "mean_duration_seconds": 9.87877036475887,
+        "mean_tool_calls": 0.0
+      },
+      "round_name": "raw_baseline"
+    },
+    {
+      "mode": "raw",
+      "prompt_id": "raw_v3_api_guardrails",
+      "prompt_path": "prompts/gemma4_total_view/raw_v3_api_guardrails.md",
+      "cases": [
+        {
+          "mode": "gemma4_raw",
+          "success": false,
+          "score": 0.0,
+          "mean_visible_f1": 0.0,
+          "mean_hidden_f1": 0.0,
+          "code_path": "experiments/gemma4_total_view_runtime/calibration_round_2/raw/raw_v3_api_guardrails/00000053/generated.py",
+          "step_path": null,
+          "error_category": "geometry_error",
+          "stderr": "Traceback (most recent call last):\n  File \"/tmp/tmpnlaz08ko.py\", line 48, in <module>\n    base_sketch.add(Circle(center=(0, 0), radius=R_out))\n    ^^^^^^^^^^^^^^^\n  File \"/home/me/gits/draw_cad/.venv/lib/python3.12/site-packages/build123d/build_common.py\", line 830, in __getattr__\n    raise AttributeError(\nAttributeError: 'BuildSketch' has no attribute 'add'. Did you intend '<BuildSketch>.sketch.add'?\n",
+          "case_id": "00000053",
+          "bucket": "axisymmetric",
+          "split": "calibration",
+          "duration_seconds": 9.44097646791488,
+          "usage": {
+            "prompt_tokens": 1144,
+            "completion_tokens": 1778
+          },
+          "response_preview": "```python\nfrom build123d import *\n\nwith BuildPart() as part:\n    # The overall shape is a rectangular block with a central circular feature.\n    # From the top view (X-Y), the overall width and depth are defined.\n    # From the front/right views (X-Z, Y-Z), the height is defined.\n\n    # 1. Create the main outer block (approximating the bounding box)\n    # Let's estimate dimensions based on the views.\n    # Top view suggests a width (X) and depth (Y).\n    # Front/Right views suggest a height (Z).\n\n    # Based on the top view, let's assume the outer dimensions are roughly:\n    # X_max = 100, Y_max = 100 (arbitrary scaling for relative proportions)\n    # Based on the front/right views, the height (Z) is also around 100.\n\n    # Start with a large block encompassing the entire object.\n    # We will use the central circular feature as the primary guide.\n\n    # The object appears to be a ring structure with a rectangular cutout/feature in the center.\n\n    # 2. Model the main outer ring structure (using the top view as a guide for the profile)\n    # The top view shows a large outer circle and a smaller inner cutout.\n    # The front/right views show the thickness and the central rectangular feature.\n\n    # Let's define the main body by extruding the profile seen in the top view.\n    # The profile in the top view is a large circle with a smaller, rectangular cutout in the center.\n\n    # Outer circle radius (R_out)\n    R_out = 50\n    # Inner cutout dimensions (approximated from the top view)\n    # The cutout seems to be a rectangle centered within the ring.\n    cutout_width = 30\n    cutout_height = 30\n\n    # Create the base ring shape in the XY plane (Top View)\n    # Start with a large circle\n    base_sketch = BuildSketch()\n    base_sketch.add(Circle(center=(0, 0), radius=R_out))\n\n    # Subtract the inner cutout rectangle\n    inner_cutout_sketch = BuildSketch()\n    inner_cutout_sketch.add(Rectangle(corner1=(-cutout_width/2, -cutout_height/2), corner2=(cutout_width/2, cutout_height/2)))\n\n    # Combine sketches to form the ring profile (This is complex in pure sketch operations,\n    # so we will use subtraction on a solid body).\n\n    # Create the solid body representing the ring profile in the XY plane\n    # Extrude this profile along the Z-axis (Height).\n    # The height (Z) is determined by the front/right views. Let's estimate the height H.\n    H = 100\n\n    # Create the solid ring by subtracting the inner cutout from the outer cylinder.\n    outer_cylinder = Cylinder(radius=R_out, height=H)\n\n    # Create the inner void (the cutout)\n    # The cutout is rectangular in the top view, but the front/right views suggest the object\n    # has a uniform thickness around the ring, and the central feature is rectangular.\n\n    # Re-evaluating based on the front/right views:\n    # The object is essentially a thick rectangular block (the outer boundary)\n    # with a central rectangular void, and the top view shows the ring structure.\n\n    # Let's model the main body as a rectangular prism first, matching the overall bounding box.\n    # Bounding box: X_max=100, Y_max=100, Z_max=100 (assuming centered at origin)\n    main_block = Box(corner1=(-50, -50, -50), corner2=(50, 50, 50))\n\n    # The top view suggests the object is hollowed out in the center, forming a ring.\n    # The inner void in the top view is rectangular (30x30).\n    # The front/right views show the object is not a simple box, but has rounded ends/features.\n\n    # Let's follow the ring structure suggested by the top view, and use the height from the side views.\n\n    # 1. Outer shape: A large cylinder/box matching the overall dimensions.\n    # Let's assume the outer dimensions are defined by the largest extent in all views.\n    # Outer dimensions: ~100 x 100 x 100.\n    outer_solid = Box(corner1=(-50, -50, -50), corner2=(50, 50, 50))\n\n    # 2. Inner void (The ring cutout):\n    # The top view shows a rectangular void of 30x30 centered.\n    # The front/right views show the object is not just a sim",
+          "prompt_id": "raw_v3_api_guardrails",
+          "prompt_path": "prompts/gemma4_total_view/raw_v3_api_guardrails.md"
+        },
+        {
+          "mode": "gemma4_raw",
+          "success": false,
+          "score": 0.0,
+          "mean_visible_f1": 0.0,
+          "mean_hidden_f1": 0.0,
+          "code_path": "experiments/gemma4_total_view_runtime/calibration_round_2/raw/raw_v3_api_guardrails/00000049/generated.py",
+          "step_path": null,
+          "error_category": "syntax_error",
+          "stderr": "  File \"/tmp/tmpc_wfxgjl.py\", line 10\n    ```python\n    ^\nSyntaxError: invalid syntax\n",
+          "case_id": "00000049",
+          "bucket": "prismatic_hidden",
+          "split": "calibration",
+          "duration_seconds": 10.802881225012243,
+          "usage": {
+            "prompt_tokens": 1144,
+            "completion_tokens": 2048
+          },
+          "response_preview": "```python\nfrom build123d import *\n\nwith BuildPart() as part:\n    # The object is a bolt/screw.\n    # The overall shape is a hexagonal head, a cylindrical shank, and external threads.\n\n    # Dimensions estimation based on views (assuming standard units):\n    # Head: Hexagonal, appears to have a certain height (H_head) and width (W_head).\n    # Shank: Cylindrical, appears to have a certain height (H_shank) and diameter (D_shank).\n    # Threads: Spiral feature on the shank.\n\n    # 1. Define the main body shape (Head + Shank) using a combination of solids.\n\n    # --- Head Sketch (Top View: X-Y plane) ---\n    # The top view is a hexagon. Let's assume the outer dimensions define the bounding box.\n    # The inner circle suggests a central hole or the start of the threads/shank.\n    # We will model the head as a hexagonal prism, and then subtract the shank area if necessary,\n    # but since the shank is continuous, we model the head as a solid block first.\n\n    # Let's estimate dimensions based on the views:\n    # Top View (X-Y): Hexagon. Let's assume the overall width/height is around 3 units.\n    # Front/Right View (Z-axis): The head height (H_head) is visible. The shank height (H_shank) is visible.\n\n    # A simplified approach: Model the head as a hexagonal prism, and the shank as a cylinder,\n    # and then combine them, accounting for the threads later.\n\n    # --- Head Construction (Hexagonal Prism) ---\n    # We need to define the hexagon in the X-Y plane.\n    # Assuming the hexagon is centered at (0, 0).\n    # Let's approximate the hexagon vertices for a reasonable size.\n    # If the overall width is W and height is H, a regular hexagon has W=H.\n    # Let's assume the outer dimensions are roughly 3x3.\n    \n    # Creating a sketch for the hexagon profile in the XY plane.\n    sketch_head = BuildSketch()\n    # Using a polygon approximation for the hexagon based on the top view.\n    # Vertices for a hexagon of side length 's' centered at origin: (s, 0), (s/2, s*sqrt(3)/2), etc.\n    # Let's use a simple polygon approximation for robustness.\n    points = [\n        (1.5, 0.866), (0.866, 1.5), (-0.866, 1.5),\n        (-1.5, 0.866), (-0.866, -1.5), (0.866, -1.5)\n    ]\n    \n    # Since build123d doesn't have a direct Polygon constructor from points, we'll use a series of lines\n    # or rely on the fact that the overall shape is prismatic.\n    \n    # For simplicity and robustness, we will use a Box/Cylinder approach and subtract/add features.\n    # Let's define the head as a block and then cut the inner part.\n    \n    # Estimate Head Dimensions:\n    H_head = 1.0  # Height of the head (from front/right view)\n    W_head = 3.0  # Width of the head (from top view)\n    D_head = 3.0  # Depth of the head (from top view)\n\n    # Create a bounding box for the head (approximating the hexagon with a square for the base solid)\n    head_base = Box(center=(0, 0, 0), size=(W_head, D_head, 1.0))\n    \n    # To enforce the hexagonal shape, we must use a sketch and extrude.\n    # Let's define the hexagon sketch in the XY plane.\n    sketch_hex = BuildSketch()\n    # Manually defining the hexagon vertices for extrusion (assuming Z=0 plane)\n    sketch_hex.add_points([\n        (1.5, 0.866), (0.866, 1.5), (-0.866, 1.5),\n        (-1.5, 0.866), (-0.866, -1.5), (0.866, -1.5)\n    ])\n    \n    # Since we cannot guarantee the Polygon constructor, we will use a simpler, conservative solid:\n    # A cylinder for the shank, and a box/cylinder for the head, assuming the threads are cut later.\n    \n    # --- Shank Construction (Cylinder) ---\n    D_shank = 1.0  # Diameter of the shank (visible in cross-section)\n    H_shank = 4.0  # Height of the shank (visible in front/right view)\n    \n    shank = Cylinder(center=(0, 0, 0), radius=D_shank/2, height=H_shank)\n    \n    # --- Head Construction (Approximation) ---\n    # The head is wider than the shank. Let's use a box for the main body and refine the top.\n    H_head_total = 1.0 # Total height of the head section\n    \n    # The head is",
+          "prompt_id": "raw_v3_api_guardrails",
+          "prompt_path": "prompts/gemma4_total_view/raw_v3_api_guardrails.md"
+        },
+        {
+          "mode": "gemma4_raw",
+          "success": false,
+          "score": 0.0,
+          "mean_visible_f1": 0.0,
+          "mean_hidden_f1": 0.0,
+          "code_path": "experiments/gemma4_total_view_runtime/calibration_round_2/raw/raw_v3_api_guardrails/00000068/generated.py",
+          "step_path": null,
+          "error_category": "runtime_error",
+          "stderr": "Traceback (most recent call last):\n  File \"/tmp/tmpedrt5v2s.py\", line 71, in <module>\n    base_box = Box(point=(0, 0, 0), size=(spine_length, spine_width, spine_height))\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: Box.__init__() got an unexpected keyword argument 'point'\n",
+          "case_id": "00000068",
+          "bucket": "prismatic",
+          "split": "calibration",
+          "duration_seconds": 10.116017543710768,
+          "usage": {
+            "prompt_tokens": 1144,
+            "completion_tokens": 1904
+          },
+          "response_preview": "```python\nfrom build123d import *\n\nwith BuildPart() as part:\n    # Analyze the views:\n    # Front View (X-Z): Shows a shape with a central vertical section and two rounded ends.\n    # Right View (Y-Z): Shows the same shape, confirming symmetry in the Y-direction.\n    # Top View (X-Y): Shows a rectangular shape with two circular cutouts on the ends.\n\n    # The overall shape is an I-beam like structure, but with rounded ends.\n    # Let's establish a coordinate system based on the views.\n    # Assume the overall length is along X (from Top View).\n    # Assume the height is along Z (from Front/Right Views).\n    # Assume the width is along Y (from Top View).\n\n    # 1. Determine the main body dimensions (approximating from the views)\n    # From Top View (X-Y): The overall width (Y) is constant. The length (X) is composed of a central section and two end sections.\n    # From Front/Right View (X-Z): The height (Z) is constant.\n\n    # The structure appears to be formed by a central rectangular body with rounded caps on the ends.\n\n    # Let's model the central rectangular part first (the 'I' spine).\n    # Estimate dimensions based on the visual proportions.\n    # Let the overall length be L_total.\n    # Let the height be H.\n    # Let the width be W.\n\n    # The top view suggests a rectangular cross-section in the Y-direction, and the front/right views suggest a rectangular cross-section in the X-direction.\n\n    # We will use a combination of extrusion and subtraction.\n\n    # 1. Create the main rectangular block (approximating the central spine)\n    # Let's assume the central spine is rectangular in cross-section (Y-Z plane) and extruded along X.\n    # Based on the top view, the width (Y) is constant.\n    # Based on the front view, the height (Z) is constant.\n\n    # Let's define the overall bounding box first, and then cut/add features.\n\n    # The shape is symmetric. We can model the cross-section in the Y-Z plane and sweep it along X, or vice versa.\n\n    # Method: Extrude a cross-section along the X-axis.\n    # The cross-section in the Y-Z plane is complex due to the rounded ends.\n\n    # Let's model the central rectangular part (the 'I' body) first.\n    # Estimate dimensions:\n    # Height (Z): ~10 units\n    # Width (Y): ~10 units\n    # Length (X): The central part seems to be about 60% of the total length.\n\n    # Let's simplify by creating a large block and subtracting material.\n\n    # 1. Create a base block encompassing the entire shape.\n    # Estimate overall dimensions: L_total=150, H=30, W=30 (arbitrary scaling for structure)\n    # Since we don't have explicit dimensions, we rely on relative proportions.\n\n    # Let's model the central rectangular body (the spine) first.\n    # Assume the spine is centered at (0, 0, 0).\n    spine_length = 100.0\n    spine_height = 20.0\n    spine_width = 20.0\n\n    # Create the main rectangular body along the X-axis\n    base_box = Box(point=(0, 0, 0), size=(spine_length, spine_width, spine_height))\n    part.add(base_box)\n\n    # 2. Model the rounded ends.\n    # The ends are circular in the top view (X-Y plane) and appear to have a constant cross-section in the Y-Z plane.\n    # The ends are perpendicular to the X-axis.\n\n    # We need to subtract material from the ends of the base_box to create the rounded caps.\n    # This suggests the shape is not a simple extrusion of a constant cross-section.\n\n    # Re-evaluating: The shape is best described as a central rectangular body connected to two semi-circular end caps.\n\n    # Let's define the cross-section perpendicular to the X-axis.\n    # The cross-section is a rectangle (for the middle) connected to two semi-circles (for the ends).\n\n    # A. Central Rectangular Section (Spine)\n    spine_length = 80.0\n    spine_height = 20.0\n    spine_width = 20.0\n    spine = Box(point=(-spine_length/2, -spine_width/2, -spine_height/2), size=(spine_length, spine_width, spine_height))\n    part.add(spine)\n\n    # B. End Caps (Cylindrical/Rounded)\n    # The ends are circular in the",
+          "prompt_id": "raw_v3_api_guardrails",
+          "prompt_path": "prompts/gemma4_total_view/raw_v3_api_guardrails.md"
+        }
+      ],
+      "aggregate": {
+        "total_cases": 3,
+        "successful_cases": 0,
+        "success_rate": 0.0,
+        "mean_score": 0.0,
+        "mean_visible_f1": 0.0,
+        "mean_hidden_f1": 0.0,
+        "mean_duration_seconds": 10.11995841221263,
+        "mean_tool_calls": 0.0
+      },
+      "round_name": "raw_refined"
+    }
+  ]
+}

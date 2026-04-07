@@ -1,0 +1,44 @@
+pipeline_config: "config/total_view_data.yaml"
+dataset: "ABC"
+report_dir: "reports/gemma4_total_view"
+scratch_dir: "experiments/gemma4_total_view_runtime"
+
+model:
+  name: "gemma4:e4b"
+  api_url: "http://localhost:11434/api/chat"
+  temperature: 0.0
+  max_tokens: 2048
+  max_tool_rounds: 4
+
+selection:
+  scan_limit: 50
+  min_baseline_score: 0.25
+  calibration_per_bucket: 1
+  evaluation_per_bucket: 2
+  window_multiplier: 3
+
+prompt_search:
+  raw:
+    rounds:
+      - name: "raw_baseline"
+        candidates:
+          - id: "raw_v1_direct"
+            path: "prompts/gemma4_total_view/raw_v1_direct.md"
+          - id: "raw_v2_consensus"
+            path: "prompts/gemma4_total_view/raw_v2_consensus.md"
+      - name: "raw_refined"
+        candidates:
+          - id: "raw_v3_api_guardrails"
+            path: "prompts/gemma4_total_view/raw_v3_api_guardrails.md"
+  tool:
+    rounds:
+      - name: "tool_baseline"
+        candidates:
+          - id: "tool_v1_candidates_first"
+            path: "prompts/gemma4_total_view/tool_v1_candidates_first.md"
+          - id: "tool_v2_verify_before_edit"
+            path: "prompts/gemma4_total_view/tool_v2_verify_before_edit.md"
+      - name: "tool_refined"
+        candidates:
+          - id: "tool_v3_score_driven"
+            path: "prompts/gemma4_total_view/tool_v3_score_driven.md"

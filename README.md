@@ -78,6 +78,30 @@ The manifest inventories the reconstruction, reprojection, CAD execution, and da
 helper functions we added, including internal helpers. Stable entrypoints another AI
 agent can call directly are also exposed through `src.ai_toolbox.invoke_tool(...)`.
 
+## Gemma 4 Total_view_data Benchmark
+
+The repo now includes a dedicated Gemma 4 experiment runner that compares three modes
+on a selected slice of `Total_view_data`:
+
+- `gemma4_raw`: direct multimodal code generation from PNG orthographic views.
+- `gemma4_with_tools`: Gemma 4 with access to deterministic candidate-generation and
+  evaluation tools, plus a verified-candidate fallback.
+- `tools_only`: the deterministic toolbox baseline without Gemma in the loop.
+
+Run it with:
+
+```bash
+.venv/bin/python scripts/run_gemma4_total_view_experiment.py \
+  --config config/gemma4_total_view.yaml
+```
+
+The checked-in experiment artifacts live under `reports/gemma4_total_view/`, including:
+
+- `report.md`: human-readable summary.
+- `results.json`: machine-readable aggregates and per-case records.
+- `selected_cases.yaml`: the selected calibration and evaluation cases.
+- `selected_cases_contact_sheet.png`: the chosen orthographic triplets.
+
 ## Structure
 
 -   `agent_loop.py`: Core logic for the agentic loop.
