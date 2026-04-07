@@ -243,6 +243,8 @@ def render_report(results: dict) -> str:
         "against the expanded candidate set that adds searched profile-extrusion plans from the training SVG triplets.",
         "",
         "Closed-loop selection uses orthographic reprojection back into the source drawing views.",
+        "Profile-extrusion candidates are now searched over two profile sources: `raster` contours and",
+        "`hybrid` contours that combine raster silhouettes with exact stitched vector loops when available.",
         "",
         "## Summary",
         "",

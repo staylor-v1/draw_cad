@@ -70,7 +70,7 @@ class PreparedOrthographicData:
     consensus_extents: dict[str, float]
     axisymmetric_profile: list[tuple[float, float]] | None
     hidden_cylinders: list[CylindricalCut]
-    closed_profiles: dict[str, list[ClosedProfile]]
+    profile_sets: dict[str, dict[str, list[ClosedProfile]]]
 
 
 @dataclass(frozen=True)
@@ -100,6 +100,7 @@ class TechniquePlan:
     base_strategy: str
     hidden_feature_enabled: bool
     profile_extrusion_suffix: str | None = None
+    profile_source: str | None = None
 
 
 class OrthographicTripletReconstructor:
@@ -216,10 +217,17 @@ class OrthographicTripletReconstructor:
             consensus["y"] = diameter
 
         hidden_cylinders = self._infer_hidden_cylinders(triplet, consensus)
-        closed_profiles = {
-            front_suffix: self._extract_closed_profiles(front_view),
-            right_suffix: self._extract_closed_profiles(right_view),
-            top_suffix: self._extract_closed_profiles(top_view),
+        profile_sets = {
+            "raster": {
+                front_suffix: self._extract_closed_profiles(front_view, include_vector_loops=False),
+                right_suffix: self._extract_closed_profiles(right_view, include_vector_loops=False),
+                top_suffix: self._extract_closed_profiles(top_view, include_vector_loops=False),
+            },
+            "hybrid": {
+                front_suffix: self._extract_closed_profiles(front_view, include_vector_loops=True),
+                right_suffix: self._extract_closed_profiles(right_view, include_vector_loops=True),
+                top_suffix: self._extract_closed_profiles(top_view, include_vector_loops=True),
+            },
         }
 
         return PreparedOrthographicData(
@@ -232,19 +240,20 @@ class OrthographicTripletReconstructor:
             consensus_extents=consensus,
             axisymmetric_profile=axisymmetric_profile,
             hidden_cylinders=hidden_cylinders,
-            closed_profiles=closed_profiles,
+            profile_sets=profile_sets,
         )
 
     def _plan_candidates(self, analysis: PreparedOrthographicData) -> list[TechniquePlan]:
         plans: list[TechniquePlan] = []
 
-        for suffix in self._profile_extrusion_suffixes(analysis):
+        for profile_source, suffix in self._profile_extrusion_variants(analysis):
             plans.append(
                 TechniquePlan(
-                    name=f"profile_extrude_{suffix}",
+                    name=f"profile_extrude_{suffix}_{profile_source}",
                     base_strategy="profile_extrude",
                     hidden_feature_enabled=bool(analysis.hidden_cylinders),
                     profile_extrusion_suffix=suffix,
+                    profile_source=profile_source,
                 )
             )
 
@@ -280,22 +289,28 @@ class OrthographicTripletReconstructor:
         )
         return plans
 
-    def _profile_extrusion_suffixes(self, analysis: PreparedOrthographicData) -> list[str]:
-        eligible: list[tuple[str, float]] = []
-        for suffix, profiles in analysis.closed_profiles.items():
-            if len(profiles) < 2:
-                continue
-            outer = profiles[0]
-            inners = [
-                profile
-                for profile in profiles[1:]
-                if is_bbox_inside(profile.bbox, outer.bbox)
-            ]
-            if not inners:
-                continue
-            eligible.append((suffix, sum(profile.area for profile in inners)))
-        eligible.sort(key=lambda item: item[1], reverse=True)
-        return [suffix for suffix, _ in eligible]
+    def _profile_extrusion_variants(
+        self,
+        analysis: PreparedOrthographicData,
+    ) -> list[tuple[str, str]]:
+        eligible: list[tuple[str, str, float]] = []
+        for profile_source, profile_map in analysis.profile_sets.items():
+            for suffix, profiles in profile_map.items():
+                if len(profiles) < 2:
+                    continue
+                outer = profiles[0]
+                inners = [
+                    profile
+                    for profile in profiles[1:]
+                    if is_bbox_inside(profile.bbox, outer.bbox)
+                ]
+                if not inners:
+                    continue
+                eligible.append(
+                    (profile_source, suffix, sum(profile.area for profile in inners))
+                )
+        eligible.sort(key=lambda item: item[2], reverse=True)
+        return [(profile_source, suffix) for profile_source, suffix, _ in eligible]
 
     def _generate_from_plan(
         self,
@@ -315,11 +330,11 @@ class OrthographicTripletReconstructor:
                 hidden_cylinders=hidden_cylinders,
             )
         elif plan.base_strategy == "profile_extrude":
-            if plan.profile_extrusion_suffix is None:
+            if plan.profile_extrusion_suffix is None or plan.profile_source is None:
                 raise ValueError("Profile-extrusion plan requested without a source view.")
             code = self._build_profile_extrusion_code(
                 suffix=plan.profile_extrusion_suffix,
-                contours=analysis.closed_profiles[plan.profile_extrusion_suffix],
+                contours=analysis.profile_sets[plan.profile_source][plan.profile_extrusion_suffix],
                 consensus_extents=analysis.consensus_extents,
                 hidden_cylinders=hidden_cylinders,
             )
@@ -436,7 +451,11 @@ class OrthographicTripletReconstructor:
             extents=extents,
         )
 
-    def _extract_closed_profiles(self, view: SvgOrthographicView) -> list[ClosedProfile]:
+    def _extract_closed_profiles(
+        self,
+        view: SvgOrthographicView,
+        include_vector_loops: bool = True,
+    ) -> list[ClosedProfile]:
         visible_polylines = [
             polyline
             for polyline in view.polylines
@@ -444,6 +463,10 @@ class OrthographicTripletReconstructor:
         ]
         if not visible_polylines:
             return []
+
+        raw_profiles: list[list[tuple[float, float]]] = []
+        if include_vector_loops:
+            raw_profiles.extend(self._extract_vector_closed_profile_points(visible_polylines))
 
         min_x, min_y, width, height = view.view_box
         scale = self.config.raster_max_dimension_px / max(width, height)
@@ -485,10 +508,9 @@ class OrthographicTripletReconstructor:
         largest_component_size = max(size for _, size in filled_components)
         min_component_size = max(
             16.0,
-            largest_component_size * self.config.min_component_area_ratio,
+            largest_component_size * self.config.profile_component_area_ratio,
         )
 
-        raw_profiles: list[list[tuple[float, float]]] = []
         for component, component_size in filled_components:
             if component_size < min_component_size:
                 continue
@@ -540,11 +562,39 @@ class OrthographicTripletReconstructor:
                 )
             )
 
+        profiles = dedupe_closed_profiles(profiles)
         profiles.sort(key=lambda profile: profile.area, reverse=True)
         if not profiles:
             return []
         outer = profiles[0]
         return [outer, *[profile for profile in profiles[1:] if is_bbox_inside(profile.bbox, outer.bbox)]]
+
+    @staticmethod
+    def _extract_vector_closed_profile_points(
+        visible_polylines: list[SvgPolyline],
+    ) -> list[list[tuple[float, float]]]:
+        profiles: list[list[tuple[float, float]]] = []
+        open_polylines: list[list[tuple[float, float]]] = []
+        for polyline in visible_polylines:
+            if len(polyline.points) < 4:
+                open_polylines.append(list(polyline.points))
+                continue
+            if math.dist(polyline.points[0], polyline.points[-1]) <= 1e-3:
+                points = list(polyline.points[:-1])
+                if polygon_area(points) > 1e-3:
+                    profiles.append(points)
+                continue
+            open_polylines.append(list(polyline.points))
+
+        profiles.extend(stitch_open_polylines_into_loops(open_polylines))
+        deduped: list[list[tuple[float, float]]] = []
+        for points in profiles:
+            if polygon_area(points) <= 1e-3:
+                continue
+            if any(polyline_loops_match(points, existing) for existing in deduped):
+                continue
+            deduped.append(points)
+        return deduped
 
     def _infer_axisymmetric_profile(
         self,
@@ -1275,6 +1325,124 @@ def is_bbox_inside(
         and inner_bbox[2] <= outer_bbox[2] + tolerance
         and inner_bbox[3] <= outer_bbox[3] + tolerance
     )
+
+
+def dedupe_closed_profiles(profiles: list[ClosedProfile]) -> list[ClosedProfile]:
+    """Remove duplicate profiles coming from vector and raster extraction."""
+    deduped: list[ClosedProfile] = []
+    for profile in sorted(
+        profiles,
+        key=lambda item: (len(item.points), item.area),
+        reverse=True,
+    ):
+        if any(closed_profiles_match(profile, existing) for existing in deduped):
+            continue
+        deduped.append(profile)
+    return deduped
+
+
+def closed_profiles_match(
+    first: ClosedProfile,
+    second: ClosedProfile,
+) -> bool:
+    """Return True when two closed profiles describe the same enclosed loop."""
+    bbox_tol = max(
+        2.5,
+        0.05 * max(
+            first.bbox[2] - first.bbox[0],
+            first.bbox[3] - first.bbox[1],
+            second.bbox[2] - second.bbox[0],
+            second.bbox[3] - second.bbox[1],
+        ),
+    )
+    area_max = max(first.area, second.area, 1e-6)
+    return (
+        abs(first.bbox[0] - second.bbox[0]) <= bbox_tol
+        and abs(first.bbox[1] - second.bbox[1]) <= bbox_tol
+        and abs(first.bbox[2] - second.bbox[2]) <= bbox_tol
+        and abs(first.bbox[3] - second.bbox[3]) <= bbox_tol
+        and abs(first.area - second.area) / area_max <= 0.2
+    )
+
+
+def stitch_open_polylines_into_loops(
+    polylines: list[list[tuple[float, float]]],
+    tolerance: float = 1e-3,
+) -> list[list[tuple[float, float]]]:
+    """Greedily stitch endpoint-connected visible polylines into closed loops."""
+    if not polylines:
+        return []
+
+    endpoint_index: dict[tuple[int, int], list[tuple[int, bool]]] = {}
+    for polyline_index, points in enumerate(polylines):
+        if len(points) < 2:
+            continue
+        for is_start, point in ((True, points[0]), (False, points[-1])):
+            endpoint_index.setdefault(snap_point(point, tolerance), []).append(
+                (polyline_index, is_start)
+            )
+
+    visited: set[int] = set()
+    loops: list[list[tuple[float, float]]] = []
+    for polyline_index, points in enumerate(polylines):
+        if polyline_index in visited or len(points) < 2:
+            continue
+        visited.add(polyline_index)
+        path = list(points)
+        while math.dist(path[0], path[-1]) > tolerance:
+            key = snap_point(path[-1], tolerance)
+            candidates = endpoint_index.get(key, [])
+            next_polyline_index = None
+            next_points: list[tuple[float, float]] | None = None
+            for candidate_index, candidate_is_start in candidates:
+                if candidate_index in visited or candidate_index == polyline_index:
+                    continue
+                candidate_points = polylines[candidate_index]
+                start_point = candidate_points[0]
+                end_point = candidate_points[-1]
+                if math.dist(path[-1], start_point) <= tolerance:
+                    next_polyline_index = candidate_index
+                    next_points = candidate_points[1:]
+                    break
+                if math.dist(path[-1], end_point) <= tolerance:
+                    next_polyline_index = candidate_index
+                    next_points = list(reversed(candidate_points[:-1]))
+                    break
+            if next_polyline_index is None or next_points is None:
+                break
+            visited.add(next_polyline_index)
+            path.extend(next_points)
+
+        if len(path) < 4 or math.dist(path[0], path[-1]) > tolerance:
+            continue
+        loops.append(path[:-1])
+    return loops
+
+
+def snap_point(point: tuple[float, float], tolerance: float) -> tuple[int, int]:
+    """Quantize a point for endpoint matching."""
+    return (
+        int(round(point[0] / tolerance)),
+        int(round(point[1] / tolerance)),
+    )
+
+
+def polyline_loops_match(
+    first: list[tuple[float, float]],
+    second: list[tuple[float, float]],
+) -> bool:
+    """Return True when two stitched/vector loops describe the same geometry."""
+    xs_first = [x for x, _ in first]
+    ys_first = [y for _, y in first]
+    xs_second = [x for x, _ in second]
+    ys_second = [y for _, y in second]
+    bbox_first = (min(xs_first), min(ys_first), max(xs_first), max(ys_first))
+    bbox_second = (min(xs_second), min(ys_second), max(xs_second), max(ys_second))
+    area_first = polygon_area(first)
+    area_second = polygon_area(second)
+    first_profile = ClosedProfile("tmp", first, area_first, bbox_first)
+    second_profile = ClosedProfile("tmp", second, area_second, bbox_second)
+    return closed_profiles_match(first_profile, second_profile)
 
 
 def cluster_values(values: list[float], tolerance: float) -> list[list[float]]:

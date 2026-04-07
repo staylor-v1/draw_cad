@@ -118,6 +118,7 @@ class OrthographicReconstructionConfig(BaseModel):
     contour_simplify_tolerance_px: float = 2.5
     dilation_iterations: int = 1
     min_component_area_ratio: float = 0.05
+    profile_component_area_ratio: float = 0.005
     visible_stroke_colors: list[str] = Field(
         default_factory=lambda: ["black", "#000000"]
     )

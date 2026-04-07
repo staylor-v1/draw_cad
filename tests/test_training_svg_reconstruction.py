@@ -73,15 +73,18 @@ def test_parse_training_svg_triplet_maps_standard_layout():
 
     reconstructor = OrthographicTripletReconstructor()
     candidate_names = [candidate.name for candidate in reconstructor.generate_candidate_programs(triplet)]
-    assert "profile_extrude_f" in candidate_names
+    assert any(name.startswith("profile_extrude_f") for name in candidate_names)
 
 
 def test_profile_candidate_improves_selected_hollow_training_case():
     scores = _candidate_reprojection_scores("119452_114cbeb4_0000")
 
-    assert "profile_extrude_f" in scores
+    profile_scores = {
+        name: score for name, score in scores.items() if name.startswith("profile_extrude_f")
+    }
+    assert profile_scores
     assert "visual_hull_hidden" in scores
-    assert scores["profile_extrude_f"] > scores["visual_hull_hidden"]
+    assert max(profile_scores.values()) > scores["visual_hull_hidden"]
 
 
 def test_candidate_search_does_not_degrade_triangle_plate_case():
@@ -89,3 +92,9 @@ def test_candidate_search_does_not_degrade_triangle_plate_case():
 
     assert "visual_hull_hidden" in scores
     assert max(scores.values()) >= scores["visual_hull_hidden"]
+
+
+def test_hybrid_profile_source_beats_raster_on_triangle_plate_case():
+    scores = _candidate_reprojection_scores("26764_ab35159a_0002")
+
+    assert scores["profile_extrude_t_hybrid"] > scores["profile_extrude_t_raster"]

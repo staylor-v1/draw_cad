@@ -72,6 +72,7 @@ orthographic_reconstruction:
   contour_simplify_tolerance_px: 2.5
   dilation_iterations: 1
   min_component_area_ratio: 0.05
+  profile_component_area_ratio: 0.005
   visible_stroke_colors: ["black", "#000000"]
   hidden_feature_enabled: true
   hidden_feature_circle_min_points: 20

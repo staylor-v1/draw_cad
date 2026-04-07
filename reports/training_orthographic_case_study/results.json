@@ -7,9 +7,9 @@
       "reference_step_path": "training_data/shapes_step/119452_114cbeb4_0000.step",
       "candidate_records": [
         {
-          "name": "profile_extrude_f",
-          "code_path": "reports/training_orthographic_case_study/code/119452_114cbeb4_0000__profile_extrude_f.py",
-          "step_path": "reports/training_orthographic_case_study/steps/119452_114cbeb4_0000__profile_extrude_f.step",
+          "name": "profile_extrude_f_raster",
+          "code_path": "reports/training_orthographic_case_study/code/119452_114cbeb4_0000__profile_extrude_f_raster.py",
+          "step_path": "reports/training_orthographic_case_study/steps/119452_114cbeb4_0000__profile_extrude_f_raster.step",
           "success": true,
           "stderr": "",
           "bounding_box_iou": 7.300804991626806e-05,
@@ -40,6 +40,43 @@
               "score": 0.65971643850875,
               "visible_f1": 0.8402929540393227,
               "hidden_f1": 0.4791399229781771
+            }
+          }
+        },
+        {
+          "name": "profile_extrude_f_hybrid",
+          "code_path": "reports/training_orthographic_case_study/code/119452_114cbeb4_0000__profile_extrude_f_hybrid.py",
+          "step_path": "reports/training_orthographic_case_study/steps/119452_114cbeb4_0000__profile_extrude_f_hybrid.step",
+          "success": true,
+          "stderr": "",
+          "bounding_box_iou": 7.300804991626306e-05,
+          "volume_ratio": 0.00014702177834216226,
+          "face_count_ratio": 0.1891891891891892,
+          "reprojection_score": 0.5201317659556077,
+          "visible_line_f1": 0.7202763890911243,
+          "hidden_line_f1": 0.31998714282009105,
+          "bbox_scale_ratio": 18.953001897822826,
+          "consensus_extents": {
+            "x": 482.8125,
+            "y": 962.8125,
+            "z": 482.8125
+          },
+          "hidden_feature_count": 0,
+          "views": {
+            "f": {
+              "score": 0.2830878554319686,
+              "visible_f1": 0.5661757108639373,
+              "hidden_f1": 0.0
+            },
+            "r": {
+              "score": 0.6219938692796663,
+              "visible_f1": 0.7638980021600055,
+              "hidden_f1": 0.480089736399327
+            },
+            "t": {
+              "score": 0.6553135731551882,
+              "visible_f1": 0.8307554542494302,
+              "hidden_f1": 0.4798716920609462
             }
           }
         },
@@ -119,9 +156,9 @@
         }
       },
       "enhanced_best": {
-        "name": "profile_extrude_f",
-        "code_path": "reports/training_orthographic_case_study/code/119452_114cbeb4_0000__profile_extrude_f.py",
-        "step_path": "reports/training_orthographic_case_study/steps/119452_114cbeb4_0000__profile_extrude_f.step",
+        "name": "profile_extrude_f_raster",
+        "code_path": "reports/training_orthographic_case_study/code/119452_114cbeb4_0000__profile_extrude_f_raster.py",
+        "step_path": "reports/training_orthographic_case_study/steps/119452_114cbeb4_0000__profile_extrude_f_raster.step",
         "success": true,
         "stderr": "",
         "bounding_box_iou": 7.300804991626806e-05,
@@ -161,6 +198,43 @@
       "drawing_path": "training_data/drawings_svg/51509_fd5fcb9c_0001.svg",
       "reference_step_path": "training_data/shapes_step/51509_fd5fcb9c_0001.step",
       "candidate_records": [
+        {
+          "name": "profile_extrude_f_hybrid",
+          "code_path": "reports/training_orthographic_case_study/code/51509_fd5fcb9c_0001__profile_extrude_f_hybrid.py",
+          "step_path": "reports/training_orthographic_case_study/steps/51509_fd5fcb9c_0001__profile_extrude_f_hybrid.step",
+          "success": true,
+          "stderr": "",
+          "bounding_box_iou": 0.00011102844824703486,
+          "volume_ratio": 0.00043154597696644706,
+          "face_count_ratio": 0.6,
+          "reprojection_score": 0.34171898312693166,
+          "visible_line_f1": 0.6804434139327511,
+          "hidden_line_f1": 0.002994552321112263,
+          "bbox_scale_ratio": 10.026417657931733,
+          "consensus_extents": {
+            "x": 993.2169351425168,
+            "y": 950.271468887329,
+            "z": 54.223890625000024
+          },
+          "hidden_feature_count": 0,
+          "views": {
+            "f": {
+              "score": 0.4772813184360659,
+              "visible_f1": 0.9545626368721318,
+              "hidden_f1": 0.0
+            },
+            "r": {
+              "score": 0.49950641658440276,
+              "visible_f1": 0.9990128331688055,
+              "hidden_f1": 0.0
+            },
+            "t": {
+              "score": 0.0483692143603264,
+              "visible_f1": 0.08775477175731601,
+              "hidden_f1": 0.008983656963336788
+            }
+          }
+        },
         {
           "name": "visual_hull_hidden",
           "code_path": "reports/training_orthographic_case_study/code/51509_fd5fcb9c_0001__visual_hull_hidden.py",
@@ -280,9 +354,9 @@
       "reference_step_path": "training_data/shapes_step/26764_ab35159a_0002.step",
       "candidate_records": [
         {
-          "name": "profile_extrude_t",
-          "code_path": "reports/training_orthographic_case_study/code/26764_ab35159a_0002__profile_extrude_t.py",
-          "step_path": "reports/training_orthographic_case_study/steps/26764_ab35159a_0002__profile_extrude_t.step",
+          "name": "profile_extrude_t_raster",
+          "code_path": "reports/training_orthographic_case_study/code/26764_ab35159a_0002__profile_extrude_t_raster.py",
+          "step_path": "reports/training_orthographic_case_study/steps/26764_ab35159a_0002__profile_extrude_t_raster.step",
           "success": true,
           "stderr": "",
           "bounding_box_iou": 0.0,
@@ -312,6 +386,43 @@
             "t": {
               "score": 0.2452589280225021,
               "visible_f1": 0.4905178560450042,
+              "hidden_f1": 0.0
+            }
+          }
+        },
+        {
+          "name": "profile_extrude_t_hybrid",
+          "code_path": "reports/training_orthographic_case_study/code/26764_ab35159a_0002__profile_extrude_t_hybrid.py",
+          "step_path": "reports/training_orthographic_case_study/steps/26764_ab35159a_0002__profile_extrude_t_hybrid.step",
+          "success": true,
+          "stderr": "",
+          "bounding_box_iou": 0.0,
+          "volume_ratio": 0.00016486012711519754,
+          "face_count_ratio": 0.085,
+          "reprojection_score": 0.42884792261222854,
+          "visible_line_f1": 0.7548314684380633,
+          "hidden_line_f1": 0.10286437678639376,
+          "bbox_scale_ratio": 17.084292603590754,
+          "consensus_extents": {
+            "x": 871.2989267578123,
+            "y": 767.8812809244789,
+            "z": 20.155385416666718
+          },
+          "hidden_feature_count": 0,
+          "views": {
+            "f": {
+              "score": 0.47602715808685114,
+              "visible_f1": 0.7456817178824432,
+              "hidden_f1": 0.20637259829125912
+            },
+            "r": {
+              "score": 0.5162572732473217,
+              "visible_f1": 0.9302940144267213,
+              "hidden_f1": 0.10222053206792216
+            },
+            "t": {
+              "score": 0.2942593365025126,
+              "visible_f1": 0.5885186730050253,
               "hidden_f1": 0.0
             }
           }
