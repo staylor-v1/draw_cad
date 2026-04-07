@@ -13,6 +13,10 @@ from src.reconstruction.reprojection import (
     ViewReprojectionScore,
     evaluate_step_against_triplet,
 )
+from src.reconstruction.training_svg_dataset import (
+    load_training_svg_triplet,
+    parse_training_svg_triplet,
+)
 from src.reconstruction.total_view_dataset import (
     OrthographicTriplet,
     PngOrthographicTriplet,
@@ -40,4 +44,6 @@ __all__ = [
     "TotalViewPngArchive",
     "ViewReprojectionScore",
     "evaluate_step_against_triplet",
+    "load_training_svg_triplet",
+    "parse_training_svg_triplet",
 ]

@@ -45,6 +45,9 @@ class EvaluationMetrics(BaseModel):
     bounding_box_iou: float = 0.0
     volume_ratio: float = 0.0
     face_count_ratio: float = 0.0
+    reprojection_score: float = 0.0
+    visible_line_f1: float = 0.0
+    hidden_line_f1: float = 0.0
     geometry_valid: float = 0.0
     retry_efficiency: float = 1.0
     composite_score: float = 0.0
@@ -109,6 +112,7 @@ class BenchmarkReport(BaseModel):
         metric_fields = [
             "dimension_fidelity", "feature_recall", "feature_precision",
             "bounding_box_iou", "volume_ratio", "face_count_ratio",
+            "reprojection_score", "visible_line_f1", "hidden_line_f1",
             "geometry_valid", "retry_efficiency",
         ]
         for field_name in metric_fields:

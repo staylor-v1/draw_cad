@@ -4,12 +4,15 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
 
+from src.reconstruction.reprojection import evaluate_step_against_triplet
 from src.schemas.evaluation_result import DimensionCheck, FeatureCheck, ValidationResult
+from src.schemas.pipeline_config import ReprojectionConfig
 from src.tools.mesh_validator import compute_bounding_box_iou, validate_step_file
 from src.tools.step_analyzer import StepProperties, analyze_step_file
 from src.utils.logging_config import get_logger
 
 if TYPE_CHECKING:
+    from src.reconstruction.total_view_dataset import OrthographicTriplet
     from src.training.ground_truth import StepGroundTruth
 
 logger = get_logger(__name__)
@@ -115,6 +118,28 @@ class StepComparator:
             face_count_ratio=result["face_count_ratio"],
         )
         return result
+
+    def compare_with_orthographic_triplet(
+        self,
+        generated_path: str | Path,
+        triplet: OrthographicTriplet,
+        config: ReprojectionConfig | None = None,
+    ) -> dict:
+        """Compare a generated STEP file by closed-loop orthographic reprojection."""
+        score, rendered = evaluate_step_against_triplet(
+            generated_path,
+            triplet,
+            config=config,
+        )
+        visible_line_f1 = sum(view.visible.f1 for view in score.views.values()) / max(len(score.views), 1)
+        hidden_line_f1 = sum(view.hidden.f1 for view in score.views.values()) / max(len(score.views), 1)
+        return {
+            "reprojection_score": score.score,
+            "visible_line_f1": visible_line_f1,
+            "hidden_line_f1": hidden_line_f1,
+            "reprojection_views": score.views,
+            "rendered": rendered,
+        }
 
     def check_dimensions_from_reference(
         self,

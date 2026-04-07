@@ -102,6 +102,32 @@ The checked-in experiment artifacts live under `reports/gemma4_total_view/`, inc
 - `selected_cases.yaml`: the selected calibration and evaluation cases.
 - `selected_cases_contact_sheet.png`: the chosen orthographic triplets.
 
+## Training SVG Orthographic Case Study
+
+The repo now also includes a closed-loop case-study runner for the local `training_data`
+SVG/STEP pairs that present standard front/right/top layouts in a single drawing.
+
+That path:
+
+- parses the single FreeCAD-style SVG into an orthographic triplet,
+- expands deterministic candidate generation with searched profile-extrusion plans for
+  nested closed profiles,
+- reprojects each candidate back into the source views, and
+- compares the legacy candidate families against the enhanced searched candidate set.
+
+Run it with:
+
+```bash
+.venv/bin/python scripts/run_training_orthographic_case_study.py \
+  --config config/total_view_data.yaml
+```
+
+The checked-in artifacts live under `reports/training_orthographic_case_study/`, including:
+
+- `report.md`: human-readable summary of the selected case and regression slice.
+- `results.json`: per-candidate metrics, including reprojection scores.
+- `overlays/`: source-vs-reprojection overlay images for each evaluated candidate.
+
 ## Structure
 
 -   `agent_loop.py`: Core logic for the agentic loop.
