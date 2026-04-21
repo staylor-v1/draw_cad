@@ -101,6 +101,67 @@ class EnrichedGeometry(BaseModel):
     ocr_dimensions: list[Dimension] = Field(default_factory=list)
 
 
+class DrawingMetadata(BaseModel):
+    """High-level metadata parsed from drawing title block text."""
+    title: Optional[str] = None
+    author: Optional[str] = None
+    drawing_number: Optional[str] = None
+    revision: Optional[str] = None
+    scale: Optional[str] = None
+    date: Optional[str] = None
+    raw_fields: dict[str, str] = Field(default_factory=dict)
+
+
+class GDTRemark(BaseModel):
+    """A GD&T annotation extracted from OCR text."""
+    text: str
+    bbox: list[float] = Field(default_factory=list)
+    confidence: float = 1.0
+
+
+class DrawingTextRepresentation(BaseModel):
+    """Text-forward representation of a drawing with vectorized geometry."""
+    metadata: DrawingMetadata = Field(default_factory=DrawingMetadata)
+    gdt_markups: list[GDTRemark] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+    dimensions: list[str] = Field(default_factory=list)
+    svg: str = ""
+    masked_image_path: Optional[str] = None
+
+    def to_text(self) -> str:
+        """Serialize the representation into a compact text form."""
+        lines: list[str] = ["# Drawing Representation"]
+        lines.append("## Metadata")
+        lines.append(f"- Title: {self.metadata.title or 'unknown'}")
+        lines.append(f"- Author: {self.metadata.author or 'unknown'}")
+        lines.append(f"- Drawing Number: {self.metadata.drawing_number or 'unknown'}")
+        lines.append(f"- Revision: {self.metadata.revision or 'unknown'}")
+        lines.append(f"- Scale: {self.metadata.scale or 'unknown'}")
+        lines.append(f"- Date: {self.metadata.date or 'unknown'}")
+
+        if self.metadata.raw_fields:
+            lines.append("- Raw Fields:")
+            for key, value in sorted(self.metadata.raw_fields.items()):
+                lines.append(f"  - {key}: {value}")
+
+        lines.append("## GD&T")
+        if not self.gdt_markups:
+            lines.append("- none detected")
+        else:
+            for mark in self.gdt_markups:
+                lines.append(f"- {mark.text} @ {mark.bbox}")
+
+        lines.append("## Dimensions")
+        lines.extend(f"- {item}" for item in self.dimensions) if self.dimensions else lines.append("- none detected")
+
+        lines.append("## Notes")
+        lines.extend(f"- {item}" for item in self.notes) if self.notes else lines.append("- none detected")
+
+        lines.append("## SVG")
+        lines.append(self.svg)
+        return "\n".join(lines)
+
+
 class ReconciledGeometry(BaseModel):
     """Single 3D description reconciled from multiple 2D views."""
     overall_dimensions: dict[str, float] = Field(default_factory=dict)  # length, width, height
