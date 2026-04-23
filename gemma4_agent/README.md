@@ -11,7 +11,14 @@ generated drawing -> Gemma/tool CAD reconstruction -> STEP part B
 compare STEP part A and STEP part B
 ```
 
-The generated drawings can differ from the original drawing. The acceptance condition is that the two STEP parts are geometrically equivalent.
+The generated drawings can differ from the original drawing. The basic stability
+condition is that the two STEP parts are geometrically equivalent.
+
+For raster engineering drawings, roundtrip equivalence is only a stability check. It is
+not sufficient evidence that the first STEP understood the source drawing. The stricter
+GD&T training loop also requires source-drawing fidelity: the original drawing is judged
+against the generated STEP contact sheet, and fallback envelope geometry is recorded as a
+non-passing baseline.
 
 ## Requirements
 
@@ -69,3 +76,25 @@ Compare two STEP files:
 ```bash
 .venv/bin/python -m gemma4_agent.cli compare part_a.step part_b.step
 ```
+
+## GD&T Prompt Training Loop
+
+Run iterative prompt tuning on the local GD&T raster drawings:
+
+```bash
+.venv/bin/python scripts/tune_gemma4_gdt_roundtrip.py \
+  --input-dir training_data/gdt \
+  --output-dir experiments/gemma4_agent/gdt_training_loop \
+  --timeout-hours 8
+```
+
+Each case passes only when:
+
+- `pass_1.step` and `pass_2.step` are geometrically equivalent.
+- Neither pass used fallback envelope geometry.
+- Gemma judges the generated contact sheet as faithful to the original drawing.
+
+The loop writes per-iteration profiles under
+`experiments/gemma4_agent/gdt_training_loop/profiles/` and feeds failed cases back into
+the next profile revision. Add `--promote-best-profile` to overwrite
+`gemma4_agent/prompts/agent.md` with the best profile from the run.

@@ -4,7 +4,8 @@ Raster engineering drawing policy:
 
 - Reconstruct the main manufactured part shown in the drawing, not the sheet, border, title block, notes, GD&T symbols, tolerance tables, section labels, arrows, or dimension text.
 - Use dimensions from the drawing when legible. When a dimension is unreadable, infer a proportional value from the views and leave a short code comment naming the assumption.
-- Prefer a simple valid solid over an elaborate invalid model. A stable approximation that preserves the main envelope, holes, bosses, slots, cutouts, and revolved profiles is better than failing execution.
+- Prefer a simple valid solid over an elaborate invalid model, but never reduce a drawing to its paper envelope or a plain bounding box when holes, bosses, slots, cutouts, shafts, flanges, ribs, steps, chamfers, fillets, or revolved profiles are visible.
+- Before coding, list the physical features implied by the drawing in your private reasoning and make sure the CAD contains each major feature unless the linework is genuinely ambiguous.
 - Treat GD&T feature-control frames as manufacturing constraints, not 3D geometry.
 - For multi-view drawings, identify front/top/right/section views and reconcile them into one part. Ignore duplicate detail views unless they clarify a feature.
 - For shaded isometric views, use them only to resolve ambiguity; do not model visual styling, line weights, paper shadows, or annotations.
@@ -24,3 +25,4 @@ Roundtrip policy:
 - If `first_step_path` is present in context, compare successful candidates to it with `compare_cad_parts`.
 - Do not replace a close verified candidate with speculative custom code unless the custom STEP compares better.
 - Translation of the CAD origin is acceptable; preserve shape, extents, volume, topology, and feature placement.
+- Part-to-part equivalence is not enough for the first pass. The first STEP must also resemble the original source drawing's physical part; a self-consistent wrong part is a failure.

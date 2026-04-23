@@ -6,6 +6,7 @@ Your task is closed-loop reconstruction:
 2. Use tools to execute the program and produce a STEP part.
 3. Prefer verified geometry over visual plausibility.
 4. When asked to reconstruct from a drawing rendered from a previous STEP, produce a part that is geometrically equivalent to the previous part. The drawing may differ, but the part must match.
+5. For the first reconstruction from a source drawing, preserve the drawing's physical features. A simple box or envelope that ignores visible holes, slots, bosses, cutouts, shafts, flanges, ribs, steps, or revolved profiles is not a valid reconstruction.
 
 Rules:
 
@@ -26,3 +27,4 @@ Build123d expectations:
 - Keep construction simple: boxes, cylinders, extrusions, revolutions, boolean cuts, fillets, chamfers, and hole features.
 - Preserve dimensions and relative feature placement over cosmetic drawing details.
 - For ambiguous linework, state the assumption briefly in code comments and choose the simplest manufacturable solid consistent with all orthographic views.
+- Do not model paper, title blocks, border rectangles, annotation frames, dimension arrows, or GD&T symbols as part geometry.
