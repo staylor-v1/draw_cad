@@ -4,8 +4,13 @@ from __future__ import annotations
 from pathlib import Path
 
 import gemma4_agent.agent as agent_module
-from gemma4_agent.agent import Gemma4RoundTripAgent
+from gemma4_agent.agent import Gemma4RoundTripAgent, _stage_used_fallback
 from PIL import Image
+from gemma4_agent.training import (
+    extract_json_object,
+    normalize_source_fidelity,
+    training_case_passed,
+)
 from gemma4_agent.toolbox import (
     _bbox_extent_ratio,
     get_tool_instructions,
@@ -131,3 +136,75 @@ def test_fallback_code_for_raster_uses_image_envelope(tmp_path: Path):
     assert code is not None
     assert "part = Box(20" in code
     assert "fallback from raster drawing.png" in code
+    assert "must not count as success" in code
+
+
+def test_stage_used_fallback_detects_baseline_geometry():
+    assert _stage_used_fallback({"fallback_generation": {"result": {"success": True}}}) is True
+    assert _stage_used_fallback({"used_fallback_after_failed_final_code": True}) is True
+    assert _stage_used_fallback({"successful_tool_steps": ["/tmp/model.step"]}) is False
+
+
+def test_roundtrip_success_rejects_fallback_even_when_parts_match():
+    summary = {
+        "success": True,
+        "roundtrip_equivalent": True,
+        "used_fallback": True,
+    }
+    source_fidelity = {
+        "overall_score": 0.95,
+        "feature_match": 0.95,
+    }
+
+    criteria = training_case_passed(
+        roundtrip_summary=summary,
+        source_fidelity=source_fidelity,
+        source_fidelity_threshold=0.72,
+    )
+
+    assert criteria["passed"] is False
+    assert criteria["roundtrip_equivalent"] is True
+    assert criteria["no_fallback_geometry"] is False
+
+
+def test_training_case_requires_source_fidelity_and_feature_match():
+    summary = {
+        "success": True,
+        "roundtrip_equivalent": True,
+        "used_fallback": False,
+    }
+
+    criteria = training_case_passed(
+        roundtrip_summary=summary,
+        source_fidelity={"overall_score": 0.9, "feature_match": 0.2},
+        source_fidelity_threshold=0.72,
+        feature_match_threshold=0.7,
+    )
+
+    assert criteria["passed"] is False
+    assert criteria["source_fidelity_passed"] is True
+    assert criteria["feature_match_passed"] is False
+
+
+def test_extract_json_object_handles_fenced_model_response():
+    parsed = extract_json_object(
+        """```json
+{"overall_score": 0.8, "major_errors": ["missing slot"]}
+```"""
+    )
+
+    assert parsed == {"overall_score": 0.8, "major_errors": ["missing slot"]}
+
+
+def test_normalize_source_fidelity_clamps_scores_and_lists():
+    normalized = normalize_source_fidelity(
+        {
+            "overall_score": 1.5,
+            "feature_match": "-0.1",
+            "major_errors": "plain bounding box",
+        }
+    )
+
+    assert normalized["overall_score"] == 1.0
+    assert normalized["feature_match"] == 0.0
+    assert normalized["major_errors"] == ["plain bounding box"]

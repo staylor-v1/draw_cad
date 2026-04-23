@@ -126,10 +126,13 @@ def _record_from_summary(
     return {
         "case": image_path.name,
         "success": bool(summary.get("success")),
+        "roundtrip_equivalent": bool(summary.get("roundtrip_equivalent", comparison.get("equivalent"))),
+        "used_fallback": bool(summary.get("used_fallback")),
         "resumed": resumed,
         "output_dir": summary.get("output_dir"),
         "first_step_path": summary.get("first_step_path"),
         "second_step_path": summary.get("second_step_path"),
+        "success_criteria": summary.get("success_criteria", {}),
         "metrics": metrics,
     }
 
