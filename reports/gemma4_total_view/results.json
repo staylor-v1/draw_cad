@@ -1,0 +1,1283 @@
+{
+  "config_path": "config/gemma4_total_view.yaml",
+  "dataset": "ABC",
+  "model": "gemma4:e4b",
+  "selected_cases": [
+    {
+      "case_id": "00000053",
+      "dataset": "ABC",
+      "bucket": "axisymmetric",
+      "split": "calibration",
+      "baseline_score": 0.3178984652588179,
+      "baseline_visible_f1": 0.5029064178678002,
+      "baseline_hidden_f1": 0.13289051264983553,
+      "selected_candidate": "visual_hull_hidden",
+      "hidden_feature_count": 0,
+      "total_polylines": 1388
+    },
+    {
+      "case_id": "00000049",
+      "dataset": "ABC",
+      "bucket": "prismatic_hidden",
+      "split": "calibration",
+      "baseline_score": 0.30476157211077093,
+      "baseline_visible_f1": 0.4976880848360199,
+      "baseline_hidden_f1": 0.11183505938552195,
+      "selected_candidate": "visual_hull_hidden",
+      "hidden_feature_count": 3,
+      "total_polylines": 788
+    },
+    {
+      "case_id": "00000068",
+      "dataset": "ABC",
+      "bucket": "prismatic",
+      "split": "calibration",
+      "baseline_score": 0.4430132917599002,
+      "baseline_visible_f1": 0.8249097768579957,
+      "baseline_hidden_f1": 0.06111680666180472,
+      "selected_candidate": "visual_hull_hidden",
+      "hidden_feature_count": 0,
+      "total_polylines": 172
+    },
+    {
+      "case_id": "00000008",
+      "dataset": "ABC",
+      "bucket": "axisymmetric",
+      "split": "evaluation",
+      "baseline_score": 0.4282991276209689,
+      "baseline_visible_f1": 0.5574981324626891,
+      "baseline_hidden_f1": 0.29910012277924874,
+      "selected_candidate": "axisymmetric_hidden",
+      "hidden_feature_count": 4,
+      "total_polylines": 157
+    },
+    {
+      "case_id": "00000031",
+      "dataset": "ABC",
+      "bucket": "axisymmetric",
+      "split": "evaluation",
+      "baseline_score": 0.2814112236032598,
+      "baseline_visible_f1": 0.45917054895467063,
+      "baseline_hidden_f1": 0.10365189825184906,
+      "selected_candidate": "visual_hull_hidden",
+      "hidden_feature_count": 3,
+      "total_polylines": 222
+    },
+    {
+      "case_id": "00000024",
+      "dataset": "ABC",
+      "bucket": "prismatic_hidden",
+      "split": "evaluation",
+      "baseline_score": 0.4076269986616799,
+      "baseline_visible_f1": 0.7146930075911607,
+      "baseline_hidden_f1": 0.10056098973219908,
+      "selected_candidate": "visual_hull_hidden",
+      "hidden_feature_count": 1,
+      "total_polylines": 246
+    },
+    {
+      "case_id": "00000000",
+      "dataset": "ABC",
+      "bucket": "prismatic_hidden",
+      "split": "evaluation",
+      "baseline_score": 0.2518012503072057,
+      "baseline_visible_f1": 0.4254111094865149,
+      "baseline_hidden_f1": 0.0781913911278965,
+      "selected_candidate": "visual_hull_base",
+      "hidden_feature_count": 0,
+      "total_polylines": 201
+    },
+    {
+      "case_id": "00000061",
+      "dataset": "ABC",
+      "bucket": "prismatic",
+      "split": "evaluation",
+      "baseline_score": 0.5098715469608583,
+      "baseline_visible_f1": 0.9999349085465079,
+      "baseline_hidden_f1": 0.019808185375208887,
+      "selected_candidate": "visual_hull_hidden",
+      "hidden_feature_count": 0,
+      "total_polylines": 32
+    },
+    {
+      "case_id": "00000006",
+      "dataset": "ABC",
+      "bucket": "prismatic",
+      "split": "evaluation",
+      "baseline_score": 0.3976408755279183,
+      "baseline_visible_f1": 0.7933201182850302,
+      "baseline_hidden_f1": 0.0019616327708062886,
+      "selected_candidate": "visual_hull_hidden",
+      "hidden_feature_count": 0,
+      "total_polylines": 104
+    }
+  ],
+  "prompt_search": {
+    "raw": {
+      "mode": "raw",
+      "best_prompt_id": "raw_v1_direct",
+      "best_prompt_path": "prompts/gemma4_total_view/raw_v1_direct.md",
+      "candidates": [
+        {
+          "mode": "raw",
+          "prompt_id": "raw_v1_direct",
+          "prompt_path": "prompts/gemma4_total_view/raw_v1_direct.md",
+          "cases": [
+            {
+              "mode": "gemma4_raw",
+              "success": false,
+              "score": 0.0,
+              "mean_visible_f1": 0.0,
+              "mean_hidden_f1": 0.0,
+              "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/raw/raw_v1_direct/00000053/generated.py",
+              "step_path": null,
+              "error_category": "runtime_error",
+              "stderr": "Traceback (most recent call last):\n  File \"/tmp/tmpazt8n8li.py\", line 75, in <module>\n    part = build_box(length=100, width=80, height=40)\n           ^^^^^^^^^\nNameError: name 'build_box' is not defined\n",
+              "case_id": "00000053",
+              "bucket": "axisymmetric",
+              "split": "calibration",
+              "duration_seconds": 10.066669114865363,
+              "usage": {
+                "prompt_tokens": 1055,
+                "completion_tokens": 1905
+              },
+              "response_preview": "```python\nfrom build123d import *\n\n# Analyze the views:\n# Front View (X-Z): Shows a rectangular outer shape. The center has a slot/recess.\n# Right View (Y-Z): Shows a rectangular outer shape. The center has a slot/recess.\n# Top View (X-Y): Shows a large outer circle with a central rectangular cutout/slot.\n\n# Reconciling dimensions and shape:\n# The overall shape is roughly rectangular in the X and Y directions, but the top view suggests a circular outer boundary, which contradicts the rectangular nature of the front/right views.\n# Let's assume the overall bounding box is defined by the front/right views, and the top view defines the internal structure.\n\n# From Front/Right views:\n# The overall width (X) and height (Z) are defined by the outer rectangle.\n# The central feature appears to be a slot or recess.\n\n# From Top View (X-Y):\n# The outer shape is circular. Let's estimate the radius from the top view.\n# The central feature is a slot/recess.\n\n# Given the conflict (Rectangular vs Circular outer boundary), I will prioritize the features that define the main body and the internal structure, assuming the outer boundary is defined by the largest extent shown, which seems to be a combination of the rectangular frame and the circular top view.\n\n# Let's model the main body as a rectangular prism based on the front/right views, and then cut the internal features.\n\n# Dimensions estimation (assuming a consistent scale):\n# Let the overall length (X) be L, width (Y) be W, and height (Z) be H.\n\n# From Front View (X-Z):\n# Height (Z) seems constant.\n# Width (X) is the full extent.\n# The central slot has dimensions.\n\n# From Right View (Y-Z):\n# Height (Z) seems constant.\n# Depth (Y) is the full extent.\n# The central slot has dimensions.\n\n# From Top View (X-Y):\n# The outer shape is circular. Let's assume the center is (0, 0).\n# The outer radius R seems to be defined by the extent of the rectangular views, but the top view is clearly circular.\n\n# Re-evaluating: The object looks like a mounting bracket or housing. The top view suggests a circular mounting pattern, while the front/right views suggest a rectangular body. I will model the body as a rectangular block and incorporate the circular feature from the top view as a cutout or a specific feature, as the top view is the most defining feature for the internal structure.\n\n# Let's assume the object is a rectangular block with a circular cutout/feature on the top surface, and a slot running through the center.\n\n# Based on the top view, the object has a central rectangular slot and a large outer circular boundary.\n# Let's define the overall dimensions based on the rectangular views, and use the circular feature from the top view to define the main body shape if possible.\n\n# If we treat the object as a block with a circular hole:\n# Let's use the dimensions implied by the rectangular views for the overall size, and use the top view to define the internal cutout.\n\n# Let's try to build a solid that encompasses the visible structure:\n# 1. A main rectangular body.\n# 2. A central slot/recess.\n# 3. A circular feature on the top surface.\n\n# Given the ambiguity, I will construct a solid that is rectangular overall, and carve out the visible features.\n\n# Let's assume the overall dimensions are roughly:\n# X (Length): ~100 units\n# Y (Width/Depth): ~80 units\n# Z (Height): ~40 units\n\n# The top view shows a large circle. Let's assume the object is centered at (0, 0, 0) for simplicity in modeling.\n\n# Start with a large rectangular block (approximating the overall bounding box from front/right views).\npart = build_box(length=100, width=80, height=40)\n\n# Cut the central slot/recess visible in all views.\n# The slot seems to be centered and runs through the object.\n# Based on the top view, the slot is rectangular.\nslot_length = 60\nslot_width = 20\nslot_height = 30 # Assuming it goes through most of the height\n\n# Cut the central slot (This cut needs to be applied carefully to match the recess depth seen in the front/righ",
+              "prompt_id": "raw_v1_direct",
+              "prompt_path": "prompts/gemma4_total_view/raw_v1_direct.md"
+            },
+            {
+              "mode": "gemma4_raw",
+              "success": false,
+              "score": 0.0,
+              "mean_visible_f1": 0.0,
+              "mean_hidden_f1": 0.0,
+              "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/raw/raw_v1_direct/00000049/generated.py",
+              "step_path": null,
+              "error_category": "syntax_error",
+              "stderr": "  File \"/tmp/tmp6c6_4hox.py\", line 10\n    ```python\n    ^\nSyntaxError: invalid syntax\n",
+              "case_id": "00000049",
+              "bucket": "prismatic_hidden",
+              "split": "calibration",
+              "duration_seconds": 10.829308110289276,
+              "usage": {
+                "prompt_tokens": 1055,
+                "completion_tokens": 2048
+              },
+              "response_preview": "```python\nfrom build123d import *\n\n# Analyze the views:\n# Front View (X-Z): Shows a hexagonal head on top of a threaded body.\n# Right View (Y-Z): Shows the same hexagonal head and threaded body, confirming symmetry in the Y-direction.\n# Top View (X-Y): Shows a hexagonal outer profile and a central circular void/opening.\n\n# Dimensions inference (assuming standard units):\n# 1. Head: Hexagonal shape. The top view suggests the overall width/depth is defined by the hexagon.\n# 2. Body: Threaded section below the head.\n# 3. Overall structure: A bolt or cap screw.\n\n# Let's define the main components based on the top view (X-Y) and the cross-section implied by the front/right views.\n\n# The top view is a hexagon. Let's assume the overall width/height of the hexagon is related to the distance between parallel sides or vertices.\n# The front/right views show a distinct head and a threaded shank.\n\n# 1. Head Geometry:\n# The head appears to be a hexagonal prism section.\n# Let's estimate the dimensions from the top view. If we assume the distance between opposite vertices is W_max and between opposite flats is W_min.\n# The top view suggests a hexagonal cross-section.\n\n# 2. Shank Geometry:\n# The shank is threaded. We will model the main body as a cylinder/prism and then cut/add threads if necessary, but for a simple solid, we model the overall shape.\n\n# Reconciling the views:\n# The top view dictates the cross-section in the XY plane (a hexagon).\n# The front/right views dictate the height (Z) profile.\n\n# Let's model the main body as a hexagonal prism, and then refine the head and shank.\n\n# Based on the top view, the cross-section is a hexagon.\n# Let's use a standard hexagonal prism construction.\n\n# Estimate dimensions (relative):\n# Total height (Z): Let's say the head is H_head and the shank is H_shank.\n# The top view suggests the overall width/depth is defined by the hexagon.\n\n# Since the top view is a hexagon, we start with a hexagonal prism.\n# We will use the 'make_box' or similar primitive, but since the top view is explicitly hexagonal, we'll use a general prism approach or assume the bounding box and cut the hexagon.\n\n# A simpler approach: Model the head and shank separately and join them.\n\n# --- Head ---\n# The head is hexagonal. Let's assume a height for the head, say H_head = 10 units (arbitrary scaling).\n# The top view defines the cross-section.\n# We will use a hexagonal prism for the head.\n\n# --- Shank ---\n# The shank is threaded. We model the main body as a cylinder/prism and then add the threads detail if possible, but sticking to the solid silhouette, we model the main body.\n\n# Given the constraints and the nature of the object (a bolt), we will model the overall solid shape: Hexagonal Head -> Cylindrical/Tapered Shank.\n\n# Let's assume the overall shape is a hexagonal prism for the head, transitioning to a smaller diameter cylinder for the shank.\n\n# Since the top view is a hexagon, we define the cross-section using the hexagon.\n# We will use a combination of extrusion and subtraction/addition.\n\n# 1. Define the hexagonal cross-section (from the top view).\n# We approximate the hexagon based on the visual representation.\n# Let's assume the overall width/depth of the hexagon is W and the height of the head is H_head.\n\n# Due to the complexity of accurately deriving dimensions from just the silhouette, we will construct the most plausible solid shape: a hexagonal head attached to a threaded shank.\n\n# Let's use a simplified approach: A hexagonal prism for the head, and a cylinder for the shank, respecting the hexagonal profile where possible.\n\n# If we treat the entire object as a single extrusion along the Z-axis, the cross-section changes.\n\n# Let's model the head as a hexagonal prism of height H_head.\nH_head = 15.0\n# The top view defines the cross-section. We need to create a hexagon profile.\n# Assuming the hexagon fits within a bounding box of W x W.\n# We will use a placeholder for the hexagonal cross-section definition, as build123d mig",
+              "prompt_id": "raw_v1_direct",
+              "prompt_path": "prompts/gemma4_total_view/raw_v1_direct.md"
+            },
+            {
+              "mode": "gemma4_raw",
+              "success": false,
+              "score": 0.0,
+              "mean_visible_f1": 0.0,
+              "mean_hidden_f1": 0.0,
+              "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/raw/raw_v1_direct/00000068/generated.py",
+              "step_path": null,
+              "error_category": "syntax_error",
+              "stderr": "  File \"/tmp/tmpb430_4jn.py\", line 10\n    ```python\n    ^\nSyntaxError: invalid syntax\n",
+              "case_id": "00000068",
+              "bucket": "prismatic",
+              "split": "calibration",
+              "duration_seconds": 10.765888944733888,
+              "usage": {
+                "prompt_tokens": 1055,
+                "completion_tokens": 2048
+              },
+              "response_preview": "```python\nfrom build123d import *\n\n# Analyze the views:\n# Front View (X-Z): A vertical shape with a wider base.\n# Right View (Y-Z): Identical to the front view, suggesting symmetry in the Y-direction.\n# Top View (X-Y): A rectangular shape with two circular cutouts on the ends.\n\n# Dimensions inference (assuming a consistent scale):\n# Let's establish a coordinate system based on the views.\n\n# From Top View (X-Y):\n# The overall width (X) seems to be defined by the outer edges.\n# The overall depth (Y) seems to be defined by the outer edges.\n# The central body appears rectangular.\n# The end circles suggest a width/depth for the connecting arms.\n\n# From Front View (X-Z) and Right View (Y-Z):\n# The overall height (Z) is the maximum height.\n# The central vertical section has a certain height.\n# The base section has a certain height.\n\n# Reconciling the shape: It looks like a capital 'I' shape with rounded/circular ends.\n\n# Let's define the main body dimensions based on the top view's rectangular nature and the front/right view's vertical structure.\n\n# 1. Overall bounding box estimation:\n# Let's assume the overall width (X) and depth (Y) are determined by the top view.\n# Let's assume the overall height (Z) is determined by the front/right view.\n\n# The shape is symmetrical. We can model it using extrusion or boolean operations.\n\n# Strategy: Model the central rectangular body and then add the rounded ends.\n\n# Based on the top view, the overall shape is rectangular, with two circular cutouts at the ends.\n# Let's estimate the dimensions from the top view:\n# Overall X (width) seems to be around 100 units.\n# Overall Y (depth) seems to be around 100 units.\n# The central rectangular part seems to have dimensions (e.g., 60x60).\n# The end circles seem to have a diameter (e.g., 20 units).\n\n# Based on the front/right view, the overall height (Z) is the maximum height.\n# The central vertical part seems to have a height (e.g., 80 units).\n# The base part seems to have a height (e.g., 30 units).\n\n# Let's use a simpler approach: Extrude a cross-section along the Z-axis, or use a combination of primitives.\n\n# The shape is essentially a rectangular prism with rounded ends.\n\n# Let's define the cross-section in the X-Y plane (Top View) and extrude it along Z.\n# The cross-section is a rectangle with two semi-circular cutouts at the ends, but the top view shows the *outline* of the object, not just the cross-section.\n\n# The object is a 3D solid. Let's model the main body first.\n\n# 1. Central rectangular body (approximating the main vertical part):\n# Let's assume the central body is centered at (0, 0).\n# Height (Z): Max height from front view.\n# Width (X) and Depth (Y): From top view.\n\n# Let's use the overall bounding box suggested by the top view for X and Y, and the height from the front view for Z.\n\n# Estimate dimensions (relative units):\n# Overall X: ~100\n# Overall Y: ~100\n# Overall Z: ~100 (Max height)\n\n# The object looks like a thick 'I' beam with rounded ends.\n\n# Let's model the central rectangular part first (the 'I' core).\n# Core dimensions (X_core, Y_core, Z_core)\n# Based on the front view, the core width (X) is smaller than the overall width.\n# Based on the top view, the core width (X) and depth (Y) are defined.\n\n# Let's assume the overall dimensions are roughly 100x100x100.\n\n# Create a main rectangular block representing the overall volume.\n# We will use subtraction to carve out the empty space if necessary, or build up the solid.\n\n# Given the structure, it's best to model the solid cross-section and then extrude it.\n# The cross-section in the X-Y plane (Top View) is the profile.\n# The extrusion direction is Z (Height).\n\n# The profile in the X-Y plane:\n# It's a rectangle of size W x D, with two semi-circles removed from the ends, but the top view shows the *outer* boundary.\n\n# Let's assume the object is formed by taking a large rectangular block and carving out the empty space.\n\n# 1. Outer bounding box (approximated by the top view's extent):\n# Box",
+              "prompt_id": "raw_v1_direct",
+              "prompt_path": "prompts/gemma4_total_view/raw_v1_direct.md"
+            }
+          ],
+          "aggregate": {
+            "total_cases": 3,
+            "successful_cases": 0,
+            "success_rate": 0.0,
+            "mean_score": 0.0,
+            "mean_visible_f1": 0.0,
+            "mean_hidden_f1": 0.0,
+            "mean_duration_seconds": 10.553955389962843,
+            "mean_tool_calls": 0.0
+          },
+          "round_name": "raw_baseline"
+        },
+        {
+          "mode": "raw",
+          "prompt_id": "raw_v2_consensus",
+          "prompt_path": "prompts/gemma4_total_view/raw_v2_consensus.md",
+          "cases": [
+            {
+              "mode": "gemma4_raw",
+              "success": false,
+              "score": 0.0,
+              "mean_visible_f1": 0.0,
+              "mean_hidden_f1": 0.0,
+              "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/raw/raw_v2_consensus/00000053/generated.py",
+              "step_path": null,
+              "error_category": "syntax_error",
+              "stderr": "  File \"/tmp/tmp4ai7136o.py\", line 10\n    ```python\n    ^\nSyntaxError: invalid syntax\n",
+              "case_id": "00000053",
+              "bucket": "axisymmetric",
+              "split": "calibration",
+              "duration_seconds": 10.82408973108977,
+              "usage": {
+                "prompt_tokens": 1141,
+                "completion_tokens": 2048
+              },
+              "response_preview": "```python\nfrom build123d import *\n\npart = BuildPart()\n\n# --- Analysis ---\n# 1. Global Extents:\n#    - Front View (X-Z): Max X (approx 100), Min X (approx -100). Max Z (approx 100), Min Z (approx -100).\n#    - Right View (Y-Z): Max Y (approx 100), Min Y (approx -100). Max Z (approx 100), Min Z (approx -100).\n#    - Top View (X-Y): Max X (approx 100), Min X (approx -100). Max Y (approx 100), Min Y (approx -100).\n#    The overall bounding box is roughly centered at (0, 0, 0) with dimensions of 200x200x200.\n\n# 2. Base Primitive:\n#    The object is generally a hollow, rectangular/rounded tube shape. We can start with a large box/cylinder and subtract features.\n\n# 3. Features (Inferred from views):\n#    - Overall shape: A rectangular outer profile with rounded corners, suggesting a box or extrusion from a profile.\n#    - Center: A large central void.\n#    - Left/Right ends (Front/Right views): There are rectangular cutouts/features on the left and right sides of the central void.\n#    - Top View (X-Y): Shows a central rectangular cutout, and the outer shape is defined by the overall bounding box.\n#    - Top View (X-Y): Shows a distinct circular feature on the right end.\n#    - Front View (X-Z): Shows a rectangular cutout on the left side, and a rectangular cutout on the right side, both aligned with the central void.\n\n# Strategy: Model the main body as a box, then subtract the internal voids and add/subtract the specific features.\n\n# Dimensions estimation (assuming a coordinate system where the center is (0,0,0)):\n# Overall Length (X-axis): ~200\n# Overall Width (Y-axis): ~200\n# Overall Height (Z-axis): ~200\n\n# 1. Outer Shell (Approximation using a large box)\nouter_box = Box(center=(0, 0, 0), size=(200, 200, 200))\npart.add(outer_box)\n\n# 2. Central Void (The main hollow area)\n# The central void appears to be a rectangular channel running through the object.\n# Based on the front/right views, the void is not perfectly centered or uniform.\n# Let's model the main body as a solid block and subtract the voids.\n\n# Re-evaluating: The object looks like a thick-walled pipe or bracket.\n# Let's define the outer profile first (Top View suggests a rectangular cross-section with rounded ends).\n\n# Let's use the overall bounding box and subtract the empty space.\n\n# A. Main Body Extrusion (Approximation based on the overall silhouette)\n# The object is roughly a rectangular prism with rounded ends.\n# Let's define the main body as a box and then refine the ends.\n\n# Box dimensions: Length (X) ~ 200, Width (Y) ~ 200, Height (Z) ~ 200\n# We will use the central void subtraction method.\n\n# B. Central Void (The main empty space)\n# The void seems to be a rectangular channel running through the center.\n# Let's estimate the void dimensions:\n# X-axis: ~150 (leaving ~25 clearance on each side)\n# Y-axis: ~150\n# Z-axis: ~150\nvoid_box = Box(center=(0, 0, 0), size=(150, 150, 150))\npart.subtract(void_box)\n\n# C. End Features (Circular feature on the right end, Front/Right view cutouts)\n# The right end has a circular feature (Top View). This suggests the object is not a simple box.\n\n# Let's model the object as a combination of extruded profiles.\n\n# 1. Main Body (Approximation: A box with rounded ends)\n# Since the top view shows a clear rectangular cross-section with rounded ends, we'll use a combination of extrusion and subtraction.\n\n# Let's assume the main body is defined by the outer dimensions (200x200x200) and subtract the internal voids.\n\n# 2. Internal Voids (Based on Front/Right views)\n# Left cutout (Front View): Rectangular, centered vertically, offset left.\n# Right cutout (Front View): Rectangular, centered vertically, offset right.\n# These cutouts seem to define the internal structure around the central void.\n\n# Given the complexity and the need to match all views, we will build the solid structure and subtract the empty spaces.\n\n# Solid Block (Outer boundary)\nsolid_block = Box(center=(0, 0, 0), size=(200, 200, 200))\npart.add(solid_block)\n\n# Subtracting the main ",
+              "prompt_id": "raw_v2_consensus",
+              "prompt_path": "prompts/gemma4_total_view/raw_v2_consensus.md"
+            },
+            {
+              "mode": "gemma4_raw",
+              "success": false,
+              "score": 0.0,
+              "mean_visible_f1": 0.0,
+              "mean_hidden_f1": 0.0,
+              "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/raw/raw_v2_consensus/00000049/generated.py",
+              "step_path": null,
+              "error_category": "runtime_error",
+              "stderr": "Traceback (most recent call last):\n  File \"/tmp/tmp1tpl5c2l.py\", line 31, in <module>\n    Rectangle(point=(0, 0), size=(20, 20)) # Placeholder for sketch plane\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: Rectangle.__init__() got an unexpected keyword argument 'point'\n",
+              "case_id": "00000049",
+              "bucket": "prismatic_hidden",
+              "split": "calibration",
+              "duration_seconds": 7.991121390834451,
+              "usage": {
+                "prompt_tokens": 1141,
+                "completion_tokens": 1496
+              },
+              "response_preview": "```python\nfrom build123d import *\n\npart = BuildPart()\n\n# 1. Infer global extents and base shape:\n# The object is a bolt/stud with a hexagonal head and threaded shank.\n# Top view (X-Y) shows a hexagon.\n# Front/Right views (X-Z/Y-Z) show the height and the hexagonal cross-section.\n\n# Dimensions estimation based on views (assuming standard proportions):\n# Head Height (Z): ~10mm (from front/right view)\n# Head Width (X/Y): ~20mm (from top view)\n# Shank Length (Z): ~40mm (total length)\n# Shank Diameter (D): ~10mm (from top view, inscribed circle)\n\n# 2. Construct the main body: Head + Shank\n\n# --- Head (Hexagonal Prism) ---\n# The head is a hexagonal prism. We'll model the outer boundary first.\n# The top view defines the hexagon.\nhead_sketch = BuildSketch(\n    Rectangle(point=(0, 0), size=(20, 20)) # Placeholder for sketch plane\n)\n# Since the top view is a hexagon, we need to sketch a hexagon.\n# We'll approximate the hexagon using points or a series of lines/arcs if necessary,\n# but for simplicity and robustness, we'll use a Box/Cylinder approach if possible,\n# or define the hexagonal profile.\n\n# Let's define the hexagonal profile in the X-Y plane (Top View).\n# Assuming the center is at (0, 0).\n# Vertices for a hexagon of width ~20mm:\n# (10, 10), (-10, 10), (-10, -10), (-10, -10), (10, -10) - This is a square approximation.\n# For a true hexagon fitting the view:\n# Let's use a sketch and define the points based on the visual proportions.\n# Top view suggests a width of about 2 * (side length * cos(30)) or similar.\n# Given the constraints, we'll model the head as a hexagonal prism extruded downwards.\n\n# A simpler approach: Model the head as a box and subtract the inner features,\n# or use a specialized hexagonal extrusion if available. Since we must use basic primitives,\n# we'll use a sketch defining the hexagon and extrude it.\n\n# Sketching the Hexagon (Top View)\n# Center at (0, 0). Let the distance from center to vertex be R.\n# If the width is 20, R might be around 10.\n# Vertices: (R, 0), (R/2, R*sqrt(3)/2), (-R/2, R*sqrt(3)/2), (-R, 0), ...\n# Let's assume the bounding box is 20x20, and the hexagon fits well.\n# We will use a Polyline sketch to define the outer boundary.\n\n# Approximate coordinates for a hexagon centered at (0,0) with width ~20:\n# (10, 5.77), (5.19, 10), (-5.19, 10), (-10, 5.77), (-5.19, -10), (5.19, -10)\n# This is complex. Let's simplify by modeling the head as a cylinder/box and subtracting the inner features,\n# or by assuming the head is a simple extruded shape based on the visible profile.\n\n# Given the clear hexagonal profile, we will use a sketch and extrude it.\n# We'll define the sketch on the X-Y plane.\nhead_sketch = BuildSketch()\n# Manually defining the hexagon points for extrusion (approximating the view):\npoints = [\n    (10, 5.77), (5.19, 10), (-5.19, 10),\n    (-10, 5.77), (-5.19, -10), (5.19, -10)\n]\n# Create a closed polyline from these points\nfor i in range(len(points)):\n    p1 = points[i]\n    p2 = points[(i + 1) % len(points)]\n    head_sketch.add(Line(p1, p2))\n\n# Extrude the head sketch downwards (Z direction)\nhead_height = 10.0\nhead = head_sketch.extrude(height=head_height)\npart.add(head)\n\n# --- Shank (Cylinder/Threaded Section) ---\n# The shank is cylindrical with threads.\n# The top view shows the shank diameter is smaller than the head.\n# The front/right views show the shank diameter and length.\nshank_diameter = 10.0\nshank_length = 30.0 # Total length - Head height (40 - 10 = 30)\n\n# The shank is a cylinder.\nshank_sketch = BuildSketch()\n# Sketch a circle representing the outer diameter of the shank.\nshank_sketch.add(Circle(center=(0, 0), radius=shank_diameter / 2.0))\n\n# Extrude the shank sketch downwards.\nshank = shank_sketch.extrude(height=shank_length)\npart.add(shank)\n\n# 3. Add cutouts/features:\n# The head has a central bore (visible in top view).\n# The bore diameter appears to be slightly smaller than the shank diameter, maybe 8mm.\n# Let's assume the bore diameter is 8mm.\nbore_sketch = BuildSketch()\nbore_s",
+              "prompt_id": "raw_v2_consensus",
+              "prompt_path": "prompts/gemma4_total_view/raw_v2_consensus.md"
+            },
+            {
+              "mode": "gemma4_raw",
+              "success": false,
+              "score": 0.0,
+              "mean_visible_f1": 0.0,
+              "mean_hidden_f1": 0.0,
+              "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/raw/raw_v2_consensus/00000068/generated.py",
+              "step_path": null,
+              "error_category": "syntax_error",
+              "stderr": "  File \"/tmp/tmp0zvqj11r.py\", line 10\n    ```python\n    ^\nSyntaxError: invalid syntax\n",
+              "case_id": "00000068",
+              "bucket": "prismatic",
+              "split": "calibration",
+              "duration_seconds": 10.821099972352386,
+              "usage": {
+                "prompt_tokens": 1141,
+                "completion_tokens": 2048
+              },
+              "response_preview": "```python\nfrom build123d import *\n\npart = BuildPart()\n\n# Analyze the views:\n# Front View (X-Z): Shows a symmetrical 'I' shape with two circular holes at the bottom ends.\n# Right View (Y-Z): Shows the same 'I' shape, confirming symmetry in the Y-direction.\n# Top View (X-Y): Shows the overall width and the placement of the two circular holes.\n\n# Dimensions estimation (assuming a reasonable scale):\n# Height (Z): Let's estimate the total height.\n# Width (X): The top view suggests the overall width.\n# Depth (Y): The right view suggests the overall depth.\n\n# The shape is essentially a rectangular block with a central cutout (the 'I' cross-section)\n# and two circular features at the bottom.\n\n# 1. Define the main body (approximating the outer silhouette)\n# Let's define the overall bounding box first.\n# Based on the top view, let's assume the overall width (X) and depth (Y) are defined by the outer edges.\n# Based on the front view, let's assume the overall height (Z) is defined.\n\n# Let's model the 'I' shape profile first (looking from the front/right).\n# The 'I' shape suggests a central rectangular section connecting two end sections.\n\n# Sketching the cross-section (e.g., in the X-Z plane, using the front view):\n# The overall height is defined by the front view.\n# The width of the top/bottom flanges is defined by the top view.\n# The thickness of the vertical web is defined by the side view.\n\n# Let's use a Box and subtract the empty space, or build it up. Building up seems cleaner.\n\n# Dimensions estimation based on visual proportions (relative units):\n# Total Height (Z): ~10 units\n# Total Width (X): ~10 units\n# Total Depth (Y): ~10 units\n\n# Let's define the main body as a box, and then cut out the internal structure.\n# However, the 'I' shape is better modeled by extruding the cross-section.\n\n# Cross-section sketch (in X-Z plane, representing the front view):\n# 1. Outer rectangle (Bounding box for the 'I')\n# 2. Inner cutout (The empty space in the middle)\n\n# Let's define the profile in the X-Z plane (Front View):\n# Outer dimensions: X_max, Z_max\n# Inner cutout dimensions: X_inner, Z_inner\n\n# The bottom part has two circles. This suggests the extrusion axis is along Y.\n# Let's sketch the profile in the X-Z plane and extrude along Y.\n\n# Sketching the profile (X-Z plane):\n# 1. Top flange: Rectangle from (X_start, Z_top) to (X_end, Z_top)\n# 2. Vertical web: Rectangle connecting the flanges.\n# 3. Bottom flanges: Two circles centered at the bottom ends.\n\n# Given the symmetry and the circular holes, it's best to model the central rectangular body first,\n# and then add the circular features.\n\n# Let's assume the overall dimensions are roughly 10x10x10 for simplicity, matching the visual aspect ratio.\n\n# 1. Main Body (The central rectangular part)\n# We will extrude a cross-section along the Y-axis (depth).\n\n# Sketching the cross-section in the X-Z plane:\nwith BuildSketch(part):\n    # Top flange\n    Rectangle(point=(0, 10), size=(10, 1)).add() # Assuming 10 wide, 1 high at the top\n    # Bottom flange (This is tricky because the bottom has circles)\n\n# Alternative: Model the central rectangular part first (the 'I' without the circles)\n# Let's assume the central rectangular part has dimensions:\n# Width (X): 10\n# Height (Z): 10\n# Thickness (Y): 10\n\n# We will use a Box and subtract the empty space.\n\n# Outer Box (Bounding box)\nouter_box = Box(center=(0, 0, 0), size=(10, 10, 10))\npart.add(outer_box)\n\n# Cutout the empty space (The 'I' cutout)\n# The cutout is a central rectangle running through the middle.\n# Let's estimate the cutout dimensions:\n# Width (X): 10 (full width)\n# Height (Z): 10 (full height)\n# The cutout is not a simple subtraction from a box, as the flanges are solid.\n\n# Let's stick to the extrusion method using the cross-section profile.\n\n# Cross-section sketch (X-Z plane):\nwith BuildSketch(part):\n    # Define the overall bounding box for the sketch area\n    # We need to draw the outline of the cross-section.\n\n    # Top flange (Rectangle)\n   ",
+              "prompt_id": "raw_v2_consensus",
+              "prompt_path": "prompts/gemma4_total_view/raw_v2_consensus.md"
+            }
+          ],
+          "aggregate": {
+            "total_cases": 3,
+            "successful_cases": 0,
+            "success_rate": 0.0,
+            "mean_score": 0.0,
+            "mean_visible_f1": 0.0,
+            "mean_hidden_f1": 0.0,
+            "mean_duration_seconds": 9.87877036475887,
+            "mean_tool_calls": 0.0
+          },
+          "round_name": "raw_baseline"
+        },
+        {
+          "mode": "raw",
+          "prompt_id": "raw_v3_api_guardrails",
+          "prompt_path": "prompts/gemma4_total_view/raw_v3_api_guardrails.md",
+          "cases": [
+            {
+              "mode": "gemma4_raw",
+              "success": false,
+              "score": 0.0,
+              "mean_visible_f1": 0.0,
+              "mean_hidden_f1": 0.0,
+              "code_path": "experiments/gemma4_total_view_runtime/calibration_round_2/raw/raw_v3_api_guardrails/00000053/generated.py",
+              "step_path": null,
+              "error_category": "geometry_error",
+              "stderr": "Traceback (most recent call last):\n  File \"/tmp/tmpnlaz08ko.py\", line 48, in <module>\n    base_sketch.add(Circle(center=(0, 0), radius=R_out))\n    ^^^^^^^^^^^^^^^\n  File \"/home/me/gits/draw_cad/.venv/lib/python3.12/site-packages/build123d/build_common.py\", line 830, in __getattr__\n    raise AttributeError(\nAttributeError: 'BuildSketch' has no attribute 'add'. Did you intend '<BuildSketch>.sketch.add'?\n",
+              "case_id": "00000053",
+              "bucket": "axisymmetric",
+              "split": "calibration",
+              "duration_seconds": 9.44097646791488,
+              "usage": {
+                "prompt_tokens": 1144,
+                "completion_tokens": 1778
+              },
+              "response_preview": "```python\nfrom build123d import *\n\nwith BuildPart() as part:\n    # The overall shape is a rectangular block with a central circular feature.\n    # From the top view (X-Y), the overall width and depth are defined.\n    # From the front/right views (X-Z, Y-Z), the height is defined.\n\n    # 1. Create the main outer block (approximating the bounding box)\n    # Let's estimate dimensions based on the views.\n    # Top view suggests a width (X) and depth (Y).\n    # Front/Right views suggest a height (Z).\n\n    # Based on the top view, let's assume the outer dimensions are roughly:\n    # X_max = 100, Y_max = 100 (arbitrary scaling for relative proportions)\n    # Based on the front/right views, the height (Z) is also around 100.\n\n    # Start with a large block encompassing the entire object.\n    # We will use the central circular feature as the primary guide.\n\n    # The object appears to be a ring structure with a rectangular cutout/feature in the center.\n\n    # 2. Model the main outer ring structure (using the top view as a guide for the profile)\n    # The top view shows a large outer circle and a smaller inner cutout.\n    # The front/right views show the thickness and the central rectangular feature.\n\n    # Let's define the main body by extruding the profile seen in the top view.\n    # The profile in the top view is a large circle with a smaller, rectangular cutout in the center.\n\n    # Outer circle radius (R_out)\n    R_out = 50\n    # Inner cutout dimensions (approximated from the top view)\n    # The cutout seems to be a rectangle centered within the ring.\n    cutout_width = 30\n    cutout_height = 30\n\n    # Create the base ring shape in the XY plane (Top View)\n    # Start with a large circle\n    base_sketch = BuildSketch()\n    base_sketch.add(Circle(center=(0, 0), radius=R_out))\n\n    # Subtract the inner cutout rectangle\n    inner_cutout_sketch = BuildSketch()\n    inner_cutout_sketch.add(Rectangle(corner1=(-cutout_width/2, -cutout_height/2), corner2=(cutout_width/2, cutout_height/2)))\n\n    # Combine sketches to form the ring profile (This is complex in pure sketch operations,\n    # so we will use subtraction on a solid body).\n\n    # Create the solid body representing the ring profile in the XY plane\n    # Extrude this profile along the Z-axis (Height).\n    # The height (Z) is determined by the front/right views. Let's estimate the height H.\n    H = 100\n\n    # Create the solid ring by subtracting the inner cutout from the outer cylinder.\n    outer_cylinder = Cylinder(radius=R_out, height=H)\n\n    # Create the inner void (the cutout)\n    # The cutout is rectangular in the top view, but the front/right views suggest the object\n    # has a uniform thickness around the ring, and the central feature is rectangular.\n\n    # Re-evaluating based on the front/right views:\n    # The object is essentially a thick rectangular block (the outer boundary)\n    # with a central rectangular void, and the top view shows the ring structure.\n\n    # Let's model the main body as a rectangular prism first, matching the overall bounding box.\n    # Bounding box: X_max=100, Y_max=100, Z_max=100 (assuming centered at origin)\n    main_block = Box(corner1=(-50, -50, -50), corner2=(50, 50, 50))\n\n    # The top view suggests the object is hollowed out in the center, forming a ring.\n    # The inner void in the top view is rectangular (30x30).\n    # The front/right views show the object is not a simple box, but has rounded ends/features.\n\n    # Let's follow the ring structure suggested by the top view, and use the height from the side views.\n\n    # 1. Outer shape: A large cylinder/box matching the overall dimensions.\n    # Let's assume the outer dimensions are defined by the largest extent in all views.\n    # Outer dimensions: ~100 x 100 x 100.\n    outer_solid = Box(corner1=(-50, -50, -50), corner2=(50, 50, 50))\n\n    # 2. Inner void (The ring cutout):\n    # The top view shows a rectangular void of 30x30 centered.\n    # The front/right views show the object is not just a sim",
+              "prompt_id": "raw_v3_api_guardrails",
+              "prompt_path": "prompts/gemma4_total_view/raw_v3_api_guardrails.md"
+            },
+            {
+              "mode": "gemma4_raw",
+              "success": false,
+              "score": 0.0,
+              "mean_visible_f1": 0.0,
+              "mean_hidden_f1": 0.0,
+              "code_path": "experiments/gemma4_total_view_runtime/calibration_round_2/raw/raw_v3_api_guardrails/00000049/generated.py",
+              "step_path": null,
+              "error_category": "syntax_error",
+              "stderr": "  File \"/tmp/tmpc_wfxgjl.py\", line 10\n    ```python\n    ^\nSyntaxError: invalid syntax\n",
+              "case_id": "00000049",
+              "bucket": "prismatic_hidden",
+              "split": "calibration",
+              "duration_seconds": 10.802881225012243,
+              "usage": {
+                "prompt_tokens": 1144,
+                "completion_tokens": 2048
+              },
+              "response_preview": "```python\nfrom build123d import *\n\nwith BuildPart() as part:\n    # The object is a bolt/screw.\n    # The overall shape is a hexagonal head, a cylindrical shank, and external threads.\n\n    # Dimensions estimation based on views (assuming standard units):\n    # Head: Hexagonal, appears to have a certain height (H_head) and width (W_head).\n    # Shank: Cylindrical, appears to have a certain height (H_shank) and diameter (D_shank).\n    # Threads: Spiral feature on the shank.\n\n    # 1. Define the main body shape (Head + Shank) using a combination of solids.\n\n    # --- Head Sketch (Top View: X-Y plane) ---\n    # The top view is a hexagon. Let's assume the outer dimensions define the bounding box.\n    # The inner circle suggests a central hole or the start of the threads/shank.\n    # We will model the head as a hexagonal prism, and then subtract the shank area if necessary,\n    # but since the shank is continuous, we model the head as a solid block first.\n\n    # Let's estimate dimensions based on the views:\n    # Top View (X-Y): Hexagon. Let's assume the overall width/height is around 3 units.\n    # Front/Right View (Z-axis): The head height (H_head) is visible. The shank height (H_shank) is visible.\n\n    # A simplified approach: Model the head as a hexagonal prism, and the shank as a cylinder,\n    # and then combine them, accounting for the threads later.\n\n    # --- Head Construction (Hexagonal Prism) ---\n    # We need to define the hexagon in the X-Y plane.\n    # Assuming the hexagon is centered at (0, 0).\n    # Let's approximate the hexagon vertices for a reasonable size.\n    # If the overall width is W and height is H, a regular hexagon has W=H.\n    # Let's assume the outer dimensions are roughly 3x3.\n    \n    # Creating a sketch for the hexagon profile in the XY plane.\n    sketch_head = BuildSketch()\n    # Using a polygon approximation for the hexagon based on the top view.\n    # Vertices for a hexagon of side length 's' centered at origin: (s, 0), (s/2, s*sqrt(3)/2), etc.\n    # Let's use a simple polygon approximation for robustness.\n    points = [\n        (1.5, 0.866), (0.866, 1.5), (-0.866, 1.5),\n        (-1.5, 0.866), (-0.866, -1.5), (0.866, -1.5)\n    ]\n    \n    # Since build123d doesn't have a direct Polygon constructor from points, we'll use a series of lines\n    # or rely on the fact that the overall shape is prismatic.\n    \n    # For simplicity and robustness, we will use a Box/Cylinder approach and subtract/add features.\n    # Let's define the head as a block and then cut the inner part.\n    \n    # Estimate Head Dimensions:\n    H_head = 1.0  # Height of the head (from front/right view)\n    W_head = 3.0  # Width of the head (from top view)\n    D_head = 3.0  # Depth of the head (from top view)\n\n    # Create a bounding box for the head (approximating the hexagon with a square for the base solid)\n    head_base = Box(center=(0, 0, 0), size=(W_head, D_head, 1.0))\n    \n    # To enforce the hexagonal shape, we must use a sketch and extrude.\n    # Let's define the hexagon sketch in the XY plane.\n    sketch_hex = BuildSketch()\n    # Manually defining the hexagon vertices for extrusion (assuming Z=0 plane)\n    sketch_hex.add_points([\n        (1.5, 0.866), (0.866, 1.5), (-0.866, 1.5),\n        (-1.5, 0.866), (-0.866, -1.5), (0.866, -1.5)\n    ])\n    \n    # Since we cannot guarantee the Polygon constructor, we will use a simpler, conservative solid:\n    # A cylinder for the shank, and a box/cylinder for the head, assuming the threads are cut later.\n    \n    # --- Shank Construction (Cylinder) ---\n    D_shank = 1.0  # Diameter of the shank (visible in cross-section)\n    H_shank = 4.0  # Height of the shank (visible in front/right view)\n    \n    shank = Cylinder(center=(0, 0, 0), radius=D_shank/2, height=H_shank)\n    \n    # --- Head Construction (Approximation) ---\n    # The head is wider than the shank. Let's use a box for the main body and refine the top.\n    H_head_total = 1.0 # Total height of the head section\n    \n    # The head is",
+              "prompt_id": "raw_v3_api_guardrails",
+              "prompt_path": "prompts/gemma4_total_view/raw_v3_api_guardrails.md"
+            },
+            {
+              "mode": "gemma4_raw",
+              "success": false,
+              "score": 0.0,
+              "mean_visible_f1": 0.0,
+              "mean_hidden_f1": 0.0,
+              "code_path": "experiments/gemma4_total_view_runtime/calibration_round_2/raw/raw_v3_api_guardrails/00000068/generated.py",
+              "step_path": null,
+              "error_category": "runtime_error",
+              "stderr": "Traceback (most recent call last):\n  File \"/tmp/tmpedrt5v2s.py\", line 71, in <module>\n    base_box = Box(point=(0, 0, 0), size=(spine_length, spine_width, spine_height))\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: Box.__init__() got an unexpected keyword argument 'point'\n",
+              "case_id": "00000068",
+              "bucket": "prismatic",
+              "split": "calibration",
+              "duration_seconds": 10.116017543710768,
+              "usage": {
+                "prompt_tokens": 1144,
+                "completion_tokens": 1904
+              },
+              "response_preview": "```python\nfrom build123d import *\n\nwith BuildPart() as part:\n    # Analyze the views:\n    # Front View (X-Z): Shows a shape with a central vertical section and two rounded ends.\n    # Right View (Y-Z): Shows the same shape, confirming symmetry in the Y-direction.\n    # Top View (X-Y): Shows a rectangular shape with two circular cutouts on the ends.\n\n    # The overall shape is an I-beam like structure, but with rounded ends.\n    # Let's establish a coordinate system based on the views.\n    # Assume the overall length is along X (from Top View).\n    # Assume the height is along Z (from Front/Right Views).\n    # Assume the width is along Y (from Top View).\n\n    # 1. Determine the main body dimensions (approximating from the views)\n    # From Top View (X-Y): The overall width (Y) is constant. The length (X) is composed of a central section and two end sections.\n    # From Front/Right View (X-Z): The height (Z) is constant.\n\n    # The structure appears to be formed by a central rectangular body with rounded caps on the ends.\n\n    # Let's model the central rectangular part first (the 'I' spine).\n    # Estimate dimensions based on the visual proportions.\n    # Let the overall length be L_total.\n    # Let the height be H.\n    # Let the width be W.\n\n    # The top view suggests a rectangular cross-section in the Y-direction, and the front/right views suggest a rectangular cross-section in the X-direction.\n\n    # We will use a combination of extrusion and subtraction.\n\n    # 1. Create the main rectangular block (approximating the central spine)\n    # Let's assume the central spine is rectangular in cross-section (Y-Z plane) and extruded along X.\n    # Based on the top view, the width (Y) is constant.\n    # Based on the front view, the height (Z) is constant.\n\n    # Let's define the overall bounding box first, and then cut/add features.\n\n    # The shape is symmetric. We can model the cross-section in the Y-Z plane and sweep it along X, or vice versa.\n\n    # Method: Extrude a cross-section along the X-axis.\n    # The cross-section in the Y-Z plane is complex due to the rounded ends.\n\n    # Let's model the central rectangular part (the 'I' body) first.\n    # Estimate dimensions:\n    # Height (Z): ~10 units\n    # Width (Y): ~10 units\n    # Length (X): The central part seems to be about 60% of the total length.\n\n    # Let's simplify by creating a large block and subtracting material.\n\n    # 1. Create a base block encompassing the entire shape.\n    # Estimate overall dimensions: L_total=150, H=30, W=30 (arbitrary scaling for structure)\n    # Since we don't have explicit dimensions, we rely on relative proportions.\n\n    # Let's model the central rectangular body (the spine) first.\n    # Assume the spine is centered at (0, 0, 0).\n    spine_length = 100.0\n    spine_height = 20.0\n    spine_width = 20.0\n\n    # Create the main rectangular body along the X-axis\n    base_box = Box(point=(0, 0, 0), size=(spine_length, spine_width, spine_height))\n    part.add(base_box)\n\n    # 2. Model the rounded ends.\n    # The ends are circular in the top view (X-Y plane) and appear to have a constant cross-section in the Y-Z plane.\n    # The ends are perpendicular to the X-axis.\n\n    # We need to subtract material from the ends of the base_box to create the rounded caps.\n    # This suggests the shape is not a simple extrusion of a constant cross-section.\n\n    # Re-evaluating: The shape is best described as a central rectangular body connected to two semi-circular end caps.\n\n    # Let's define the cross-section perpendicular to the X-axis.\n    # The cross-section is a rectangle (for the middle) connected to two semi-circles (for the ends).\n\n    # A. Central Rectangular Section (Spine)\n    spine_length = 80.0\n    spine_height = 20.0\n    spine_width = 20.0\n    spine = Box(point=(-spine_length/2, -spine_width/2, -spine_height/2), size=(spine_length, spine_width, spine_height))\n    part.add(spine)\n\n    # B. End Caps (Cylindrical/Rounded)\n    # The ends are circular in the",
+              "prompt_id": "raw_v3_api_guardrails",
+              "prompt_path": "prompts/gemma4_total_view/raw_v3_api_guardrails.md"
+            }
+          ],
+          "aggregate": {
+            "total_cases": 3,
+            "successful_cases": 0,
+            "success_rate": 0.0,
+            "mean_score": 0.0,
+            "mean_visible_f1": 0.0,
+            "mean_hidden_f1": 0.0,
+            "mean_duration_seconds": 10.11995841221263,
+            "mean_tool_calls": 0.0
+          },
+          "round_name": "raw_refined"
+        }
+      ]
+    },
+    "tool": {
+      "mode": "tool",
+      "best_prompt_id": "tool_v1_candidates_first",
+      "best_prompt_path": "prompts/gemma4_total_view/tool_v1_candidates_first.md",
+      "candidates": [
+        {
+          "mode": "tool",
+          "prompt_id": "tool_v1_candidates_first",
+          "prompt_path": "prompts/gemma4_total_view/tool_v1_candidates_first.md",
+          "cases": [
+            {
+              "mode": "gemma4_with_tools",
+              "success": true,
+              "score": 0.3178984652588179,
+              "mean_visible_f1": 0.5029064178678002,
+              "mean_hidden_f1": 0.13289051264983553,
+              "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v1_candidates_first/00000053/tool_evaluations/visual_hull_hidden.py",
+              "step_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v1_candidates_first/00000053/tool_evaluations/visual_hull_hidden.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "visual_hull_hidden",
+              "hidden_feature_count": 0,
+              "used_verified_fallback": true,
+              "fallback_from_failed_final": true,
+              "case_id": "00000053",
+              "bucket": "axisymmetric",
+              "split": "calibration",
+              "duration_seconds": 14.232336150947958,
+              "tool_calls": 3,
+              "usage": {
+                "prompt_tokens": 6982,
+                "completion_tokens": 1620
+              },
+              "response_preview": "The candidate `visual_hull_hidden` scored higher (0.318) than `axisymmetric_hidden` (0.244). I will use the code from `visual_hull_hidden` as the best available deterministic reconstruction.\n\nSince the score is relatively low and the visual inspection suggests a complex object (a ring with a slot and a side feature), I will proceed with the code from the best candidate.<channel|>```python\nfrom build123d import *\n\ndef build123d(build_part):\n    # The candidate program uses visual_hull_hidden strategy.\n    # We reconstruct the part based on the best candidate's logic.\n    \n    # Based on the visual evidence and the best candidate's approach,\n    # the object is a ring with a central slot and a side feature.\n    \n    # 1. Outer Ring (Approximation from the views)\n    # The outer diameter seems to be around 90mm (from top view)\n    # The thickness seems to be around 20mm (from front/right view).\n    \n    # Let's define the main body as a thick ring.\n    outer_radius = 45.3\n    inner_radius = 35.3\n    thickness = 20.0\n    \n    # Create the main ring body\n    ring = part.ring(outer_radius, inner_radius, thickness)\n    \n    # 2. Central Slot (Visible in Front View)\n    # The slot appears to be centered and has a depth.\n    slot_width = 10.0\n    slot_height = 10.0\n    slot_depth = 15.0\n    \n    # Cut the slot into the ring\n    slot = part.box(slot_width, 2 * inner_radius + 2 * slot_width, slot_depth)\n    ring = ring.cut(slot)\n    \n    # 3. Side Feature (Visible in Top View)\n    # This feature is on the left side (assuming X-axis is left/right).\n    # It looks like a rectangular cutout or attachment point.\n    side_rect_width = 15.0\n    side_rect_height = 15.0\n    side_rect_depth = 15.0\n    \n    # Position it on the left side (negative X direction)\n    side_feature = part.box(-outer_radius + 10, side_rect_width, side_rect_height)\n    \n    # Since the top view shows a cutout/feature on the left, we might need to subtract it,\n    # or add a solid block if it's an attachment. Given the context of a ring,\n    # it's likely a feature on the main body.\n    \n    # Let's refine the side feature based on the top view:\n    # The top view shows a rectangular cutout on the left side of the main circle.\n    # Let's assume the main body is centered at (0, 0).\n    \n    # Re-evaluating the structure: It's a ring, and the side feature is a cutout.\n    \n    # Start with a solid block representing the overall bounding box (approximating the material)\n    # Max X: 45.3, Min X: -45.3\n    # Max Y: 45.3, Min Y: -45.3\n    # Max Z: 11.5, Min Z: 0\n    \n    # Let's stick to the ring and cut the features.\n    \n    # Re-creating the ring with the slot cut:\n    ring = part.ring(outer_radius, inner_radius, thickness)\n    \n    # Cut the slot (centered on Z-axis, extending through the thickness)\n    slot_cut = part.box(slot_width, 2 * inner_radius + 2 * slot_width, slot_depth)\n    ring = ring.cut(slot_cut)\n    \n    # Cut the side feature (assuming it's a cutout on the left side, centered vertically)\n    side_cut_x = -outer_radius + 10\n    side_cut_y = -15.0\n    side_cut_z = -15.0\n    side_cut = part.box(side_cut_x, 15.0, 30.0) # Adjusting dimensions based on visual estimation\n    \n    # A simpler approach: Use the bounding box and subtract the empty space.\n    \n    # Let's use the structure implied by the best candidate: a solid object with cutouts.\n    \n    # 1. Outer shape (approximated by the largest dimensions)\n    outer_box = part.box(90, 90, 20)\n    \n    # 2. Inner void (The ring shape)\n    inner_void = part.ring(45.3, 35.3, 20)\n    \n    # 3. Slot cutout (Front view)\n    slot_cut = part.box(10, 70, 15)\n    \n    # 4. Side cutout (Top view)\n    side_cut = part.box(-30, 30, 30) # Rough estimate for the left cutout\n    \n    # Combine the cuts (This is highly speculative without knowing the exact CAD intent)\n    \n    # Given the high uncertainty, I will use the structure from the best candidate's logic:\n    # A main body (ring) with a slot cut.\n    \n    # Reverting t",
+              "prompt_id": "tool_v1_candidates_first",
+              "prompt_path": "prompts/gemma4_total_view/tool_v1_candidates_first.md"
+            },
+            {
+              "mode": "gemma4_with_tools",
+              "success": true,
+              "score": 0.30476157211077093,
+              "mean_visible_f1": 0.4976880848360199,
+              "mean_hidden_f1": 0.11183505938552195,
+              "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v1_candidates_first/00000049/tool_evaluations/visual_hull_hidden.py",
+              "step_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v1_candidates_first/00000049/tool_evaluations/visual_hull_hidden.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "visual_hull_hidden",
+              "hidden_feature_count": 3,
+              "used_verified_fallback": true,
+              "fallback_from_failed_final": true,
+              "case_id": "00000049",
+              "bucket": "prismatic_hidden",
+              "split": "calibration",
+              "duration_seconds": 9.196176710072905,
+              "tool_calls": 4,
+              "usage": {
+                "prompt_tokens": 7001,
+                "completion_tokens": 322
+              },
+              "response_preview": "",
+              "prompt_id": "tool_v1_candidates_first",
+              "prompt_path": "prompts/gemma4_total_view/tool_v1_candidates_first.md"
+            },
+            {
+              "mode": "gemma4_with_tools",
+              "success": true,
+              "score": 0.4430132917599002,
+              "mean_visible_f1": 0.8249097768579957,
+              "mean_hidden_f1": 0.06111680666180472,
+              "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v1_candidates_first/00000068/tool_evaluations/visual_hull_hidden.py",
+              "step_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v1_candidates_first/00000068/tool_evaluations/visual_hull_hidden.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "visual_hull_hidden",
+              "hidden_feature_count": 0,
+              "used_verified_fallback": true,
+              "fallback_from_failed_final": true,
+              "case_id": "00000068",
+              "bucket": "prismatic",
+              "split": "calibration",
+              "duration_seconds": 21.63541128206998,
+              "tool_calls": 4,
+              "usage": {
+                "prompt_tokens": 8558,
+                "completion_tokens": 2890
+              },
+              "response_preview": "",
+              "prompt_id": "tool_v1_candidates_first",
+              "prompt_path": "prompts/gemma4_total_view/tool_v1_candidates_first.md"
+            }
+          ],
+          "aggregate": {
+            "total_cases": 3,
+            "successful_cases": 3,
+            "success_rate": 1.0,
+            "mean_score": 0.355224443043163,
+            "mean_visible_f1": 0.6085014265206053,
+            "mean_hidden_f1": 0.10194745956572072,
+            "mean_duration_seconds": 15.021308047696948,
+            "mean_tool_calls": 3.6666666666666665
+          },
+          "round_name": "tool_baseline"
+        },
+        {
+          "mode": "tool",
+          "prompt_id": "tool_v2_verify_before_edit",
+          "prompt_path": "prompts/gemma4_total_view/tool_v2_verify_before_edit.md",
+          "cases": [
+            {
+              "mode": "gemma4_with_tools",
+              "success": true,
+              "score": 0.3178984652588179,
+              "mean_visible_f1": 0.5029064178678002,
+              "mean_hidden_f1": 0.13289051264983553,
+              "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v2_verify_before_edit/00000053/tool_evaluations/visual_hull_hidden.py",
+              "step_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v2_verify_before_edit/00000053/tool_evaluations/visual_hull_hidden.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "visual_hull_hidden",
+              "hidden_feature_count": 0,
+              "used_verified_fallback": true,
+              "fallback_from_failed_final": true,
+              "case_id": "00000053",
+              "bucket": "axisymmetric",
+              "split": "calibration",
+              "duration_seconds": 11.250077689997852,
+              "tool_calls": 3,
+              "usage": {
+                "prompt_tokens": 6590,
+                "completion_tokens": 1375
+              },
+              "response_preview": "The candidate `visual_hull_hidden` scored higher (0.318) than `axisymmetric_hidden` (0.244). I will proceed with `visual_hull_hidden` as the best verified candidate.\n\n```python\nimport build123d as b123d\nfrom build123d.sketch import Sketch\nfrom build123d.sketch.sketch import SketchBuilder\nfrom build123d.sketch.sketch_utils import sketch_utils\n\ndef build_part():\n    # Create a sketch for the outer profile (front view)\n    sketch = Sketch()\n    # The outer profile is roughly a rectangle with rounded corners,\n    # but based on the views, it's a ring shape.\n    # Let's approximate the outer boundary from the front view.\n    # The front view suggests a shape with an outer rectangle and an inner cutout.\n    \n    # Outer rectangle dimensions (approximated from the views)\n    outer_width = 90.0\n    outer_height = 60.0\n    \n    # Inner cutout dimensions (approximated from the views)\n    inner_width = 50.0\n    inner_height = 40.0\n    \n    # Create the outer sketch (a rectangle)\n    outer_sketch = SketchBuilder(sketch)\n    outer_sketch.add_rectangle(b123d.Point3D(0, 0, 0), b123d.Point3D(outer_width, 0, 0), b123d.Point3D(0, outer_height, 0))\n    \n    # Create the inner sketch (a rectangle)\n    inner_sketch = SketchBuilder(sketch)\n    # Center the inner cutout relative to the outer sketch's center (assuming origin is bottom-left for simplicity)\n    # The views suggest the center is around (0, 0) for the cross-section.\n    # Let's assume the origin is at the center of the part for the sketch.\n    \n    # Re-evaluating based on the visual: The part is a hollow rectangular prism with rounded ends.\n    # The front view (X-Z) shows a rectangular cross-section with rounded ends.\n    # The top view (X-Y) shows a rectangular cross-section with rounded ends.\n    # The right view (Y-Z) shows a rectangular cross-section with rounded ends.\n    \n    # Let's model the cross-section in the X-Z plane (Front View)\n    # Outer dimensions: ~90 (X) by ~60 (Z)\n    # Inner cutout: ~50 (X) by ~40 (Z)\n    \n    # Since the tool used \"visual_hull_hidden\", it likely interpreted the object as a shell or a combination of features.\n    # I will try to construct the shell shape directly.\n    \n    # 1. Outer Box (approximated)\n    outer_box = b123d.Box(b123d.Point3D(-outer_width/2, -outer_height/2, 0), b123d.Point3D(outer_width/2, outer_height/2, 0))\n    \n    # 2. Inner Cutout Box (approximated)\n    inner_box = b123d.Box(b123d.Point3D(-inner_width/2, -inner_height/2, 0), b123d.Point3D(inner_width/2, inner_height/2, 0))\n    \n    # The shape is a hollow rectangular prism with rounded ends.\n    # This suggests a sweep or a combination of extrusion and subtraction.\n    \n    # Let's use the concept of a \"ring\" or \"tube\" shape.\n    \n    # Define the cross-section (in the X-Z plane, assuming Y is the extrusion direction)\n    # The cross-section is a rectangle with rounded ends.\n    \n    # For simplicity and to match the \"visual_hull_hidden\" approach, I will model the main body as a subtraction.\n    \n    # Outer profile (approximated as a large rectangle)\n    outer_profile = b123d.Box(b123d.Point3D(-45, -30, 0), b123d.Point3D(45, 30, 0))\n    \n    # Inner profile (approximated as a smaller rectangle)\n    inner_profile = b123d.Box(b123d.Point3D(-25, -20, 0), b123d.Point3D(25, 20, 0))\n    \n    # The length of the part (Y-axis) is not explicitly given, but the views suggest a length.\n    # Let's assume the length is 90 units based on the X-axis extent in the front view.\n    length = 90.0\n    \n    # Extrude the outer profile along Y\n    outer_body = outer_profile.extrude(b123d.Vector3D(0, length, 0))\n    \n    # Extrude the inner profile along Y\n    inner_body = inner_profile.extrude(b123d.Vector3D(0, length, 0))\n    \n    # Subtract the inner body from the outer body\n    final_part = outer_body - inner_body\n    \n    # Note: This simple extrusion/subtraction might not capture the rounded ends perfectly, \n    # but it's a robust attempt based on the orthographic views suggesting a hollow",
+              "prompt_id": "tool_v2_verify_before_edit",
+              "prompt_path": "prompts/gemma4_total_view/tool_v2_verify_before_edit.md"
+            },
+            {
+              "mode": "gemma4_with_tools",
+              "success": true,
+              "score": 0.30476157211077093,
+              "mean_visible_f1": 0.4976880848360199,
+              "mean_hidden_f1": 0.11183505938552195,
+              "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v2_verify_before_edit/00000049/tool_evaluations/visual_hull_hidden.py",
+              "step_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v2_verify_before_edit/00000049/tool_evaluations/visual_hull_hidden.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "visual_hull_hidden",
+              "hidden_feature_count": 3,
+              "used_verified_fallback": true,
+              "fallback_from_failed_final": true,
+              "case_id": "00000049",
+              "bucket": "prismatic_hidden",
+              "split": "calibration",
+              "duration_seconds": 13.635004523675889,
+              "tool_calls": 3,
+              "usage": {
+                "prompt_tokens": 6615,
+                "completion_tokens": 1415
+              },
+              "response_preview": "The candidate `visual_hull_hidden` scored higher (0.3048) than `visual_hull_base` (0.2966). The higher score suggests that accounting for hidden features is more appropriate for this part, which appears to be a threaded bolt or screw. I will proceed with `visual_hull_hidden` as the best candidate.\n\n```python\nimport build123d as build123d\nfrom build123d.core import *\n\ndef build_part():\n    # The candidate program uses visual_hull_hidden, which is designed to handle\n    # complex geometry by intersecting silhouettes and carving out hidden features.\n    # Since I cannot see the internal logic of the candidate program, I will assume\n    # that the best approach is to use the logic that scored highest, which was\n    # visual_hull_hidden. I will request the code for inspection/use if necessary,\n    # but for now, I will trust the evaluation result and assume the candidate\n    # program is correct.\n\n    # In a real scenario, I would call get_candidate_program(\"visual_hull_hidden\")\n    # and then evaluate the retrieved code. Since I cannot do that, I will\n    # assume the best practice is to use the logic that scored highest.\n    # For the final output, I must provide executable code. Given the constraints,\n    # and that the evaluation was successful, I will assume the candidate's logic\n    # is sound and use a placeholder structure that represents the intended\n    # operation if I were to retrieve and run the code.\n\n    # Since I cannot retrieve the code, I must rely on the evaluation.\n    # I will assume the best code is the one from the highest scoring candidate.\n    # If I had to write code from scratch based on the views (Front: X-Z, Right: Y-Z, Top: X-Y),\n    # it would involve creating a solid body from the intersection of the three profiles,\n    # and then subtracting the internal features (like the threads).\n\n    # Given the high score for visual_hull_hidden, I will assume the logic is correct\n    # and use a simplified representation of the final object based on the visual\n    # evidence (a bolt/threaded rod with a head).\n\n    # Since I cannot reproduce the complex logic, and the prompt asks me to return\n    # the best *verified* code, and the verification was done via evaluation,\n    # I will state that the best candidate is the one to use.\n    # However, the final output MUST be a runnable code block.\n\n    # I will use a generic structure that represents a bolt, as this is the object.\n    # This is a fallback because I cannot retrieve the code for the best candidate.\n    # A bolt has a head, a shank, and threads.\n\n    # Let's assume the candidate program successfully generated the correct geometry.\n    # I will use a placeholder that represents the successful execution of the best candidate.\n    # If I were forced to write code, I would model a simple bolt:\n    \n    # Head dimensions (approximated from views)\n    head_diameter = 13.8\n    head_height = 5.0\n    \n    # Shank dimensions (approximated)\n    shank_diameter = 10.0\n    shank_length = 40.0\n    \n    # Create the main body (cylinder)\n    body = build123d.cylinder(radius=shank_diameter/2, height=shank_length)\n    \n    # Create the head (cylinder)\n    head = build123d.cylinder(radius=head_diameter/2, height=head_height)\n    \n    # Combine them (this is a simplification, ignoring threads)\n    # The actual object is more complex due to the head shape and threads.\n    \n    # Given the context, I must trust the evaluation and assume the candidate code\n    # is the correct implementation. I will use a comment to reflect this.\n    \n    # *** Placeholder: The actual code should be retrieved from 'visual_hull_hidden' ***\n    # Since I cannot retrieve the code, I cannot provide the final executable code\n    # that matches the high-scoring candidate. I will output a minimal, correct\n    # structure that *would* be the output if the candidate code was available.\n    \n    # For the purpose of satisfying the output format, I will use a simple\n    # cylinder that represents the gene",
+              "prompt_id": "tool_v2_verify_before_edit",
+              "prompt_path": "prompts/gemma4_total_view/tool_v2_verify_before_edit.md"
+            },
+            {
+              "mode": "gemma4_with_tools",
+              "success": true,
+              "score": 0.4430132917599002,
+              "mean_visible_f1": 0.8249097768579957,
+              "mean_hidden_f1": 0.06111680666180472,
+              "code_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v2_verify_before_edit/00000068/tool_evaluations/visual_hull_hidden.py",
+              "step_path": "experiments/gemma4_total_view_runtime/calibration_round_1/tool/tool_v2_verify_before_edit/00000068/tool_evaluations/visual_hull_hidden.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "visual_hull_hidden",
+              "hidden_feature_count": 0,
+              "used_verified_fallback": true,
+              "fallback_from_failed_final": true,
+              "case_id": "00000068",
+              "bucket": "prismatic",
+              "split": "calibration",
+              "duration_seconds": 13.025137699209154,
+              "tool_calls": 2,
+              "usage": {
+                "prompt_tokens": 4332,
+                "completion_tokens": 2080
+              },
+              "response_preview": "The candidate `visual_hull_hidden` scored 0.443, which is not ideal, especially given the low score on hidden features (0.061).\n\nThe object appears to be a capital 'I' shape with two circular holes at the ends of the vertical stem.\n\nI will try to generate the code manually based on the orthographic views to create a more accurate model.\n\nFrom the views:\n1.  **Top View (X-Y):** A rectangle with two circles cut out of the ends of the horizontal bar.\n2.  **Front View (X-Z):** A rectangle with two circles cut out of the ends of the vertical stem.\n3.  **Right View (Y-Z):** A rectangle with two circles cut out of the ends of the horizontal bar.\n\nLet's assume the overall dimensions are:\n*   Height (Z): The vertical stem seems to define the height.\n*   Width (X): The horizontal bar seems to define the width.\n*   Depth (Y): The depth is defined by the right view.\n\nI will use `build123d` to construct this shape. I'll start by creating a main block and then subtracting the holes.\n\nLet's estimate dimensions based on the provided images (assuming a standard unit scale):\n*   The overall shape looks like a cross-section of an 'I' beam.\n*   Let's define the main body as a rectangular prism.\n*   The holes are circles.\n\nI will write the code to model this structure.<channel|>",
+              "prompt_id": "tool_v2_verify_before_edit",
+              "prompt_path": "prompts/gemma4_total_view/tool_v2_verify_before_edit.md"
+            }
+          ],
+          "aggregate": {
+            "total_cases": 3,
+            "successful_cases": 3,
+            "success_rate": 1.0,
+            "mean_score": 0.355224443043163,
+            "mean_visible_f1": 0.6085014265206053,
+            "mean_hidden_f1": 0.10194745956572072,
+            "mean_duration_seconds": 12.636739970960965,
+            "mean_tool_calls": 2.6666666666666665
+          },
+          "round_name": "tool_baseline"
+        },
+        {
+          "mode": "tool",
+          "prompt_id": "tool_v3_score_driven",
+          "prompt_path": "prompts/gemma4_total_view/tool_v3_score_driven.md",
+          "cases": [
+            {
+              "mode": "gemma4_with_tools",
+              "success": false,
+              "score": 0.0,
+              "mean_visible_f1": 0.0,
+              "mean_hidden_f1": 0.0,
+              "code_path": null,
+              "step_path": null,
+              "error_category": "no_code",
+              "stderr": "",
+              "case_id": "00000053",
+              "bucket": "axisymmetric",
+              "split": "calibration",
+              "duration_seconds": 0.5845588641241193,
+              "tool_calls": 0,
+              "usage": {
+                "prompt_tokens": 1244,
+                "completion_tokens": 35
+              },
+              "response_preview": "```json\n[\n  {\n    \"tool_name\": \"list_candidate_programs\",\n    \"params\": {}\n  }\n]\n```",
+              "prompt_id": "tool_v3_score_driven",
+              "prompt_path": "prompts/gemma4_total_view/tool_v3_score_driven.md"
+            },
+            {
+              "mode": "gemma4_with_tools",
+              "success": true,
+              "score": 0.30476157211077093,
+              "mean_visible_f1": 0.4976880848360199,
+              "mean_hidden_f1": 0.11183505938552195,
+              "code_path": "experiments/gemma4_total_view_runtime/calibration_round_2/tool/tool_v3_score_driven/00000049/tool_evaluations/visual_hull_hidden.py",
+              "step_path": "experiments/gemma4_total_view_runtime/calibration_round_2/tool/tool_v3_score_driven/00000049/tool_evaluations/visual_hull_hidden.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "visual_hull_hidden",
+              "hidden_feature_count": 3,
+              "used_verified_fallback": true,
+              "fallback_from_failed_final": true,
+              "case_id": "00000049",
+              "bucket": "prismatic_hidden",
+              "split": "calibration",
+              "duration_seconds": 12.475186493247747,
+              "tool_calls": 4,
+              "usage": {
+                "prompt_tokens": 6559,
+                "completion_tokens": 1193
+              },
+              "response_preview": "",
+              "prompt_id": "tool_v3_score_driven",
+              "prompt_path": "prompts/gemma4_total_view/tool_v3_score_driven.md"
+            },
+            {
+              "mode": "gemma4_with_tools",
+              "success": false,
+              "score": 0.0,
+              "mean_visible_f1": 0.0,
+              "mean_hidden_f1": 0.0,
+              "code_path": null,
+              "step_path": null,
+              "error_category": "no_code",
+              "stderr": "",
+              "case_id": "00000068",
+              "bucket": "prismatic",
+              "split": "calibration",
+              "duration_seconds": 0.5686783958226442,
+              "tool_calls": 0,
+              "usage": {
+                "prompt_tokens": 1244,
+                "completion_tokens": 35
+              },
+              "response_preview": "```json\n[\n  {\n    \"tool_name\": \"list_candidate_programs\",\n    \"params\": {}\n  }\n]\n```",
+              "prompt_id": "tool_v3_score_driven",
+              "prompt_path": "prompts/gemma4_total_view/tool_v3_score_driven.md"
+            }
+          ],
+          "aggregate": {
+            "total_cases": 3,
+            "successful_cases": 1,
+            "success_rate": 0.3333333333333333,
+            "mean_score": 0.1015871907035903,
+            "mean_visible_f1": 0.1658960282786733,
+            "mean_hidden_f1": 0.037278353128507316,
+            "mean_duration_seconds": 4.542807917731504,
+            "mean_tool_calls": 1.3333333333333333
+          },
+          "round_name": "tool_refined"
+        }
+      ]
+    }
+  },
+  "evaluation": {
+    "gemma4_raw": {
+      "mode": "raw",
+      "prompt_id": "raw_v1_direct",
+      "prompt_path": "prompts/gemma4_total_view/raw_v1_direct.md",
+      "cases": [
+        {
+          "mode": "gemma4_raw",
+          "success": false,
+          "score": 0.0,
+          "mean_visible_f1": 0.0,
+          "mean_hidden_f1": 0.0,
+          "code_path": "experiments/gemma4_total_view_runtime/evaluation/raw/raw_v1_direct/00000008/generated.py",
+          "step_path": null,
+          "error_category": "runtime_error",
+          "stderr": "Traceback (most recent call last):\n  File \"/tmp/tmpu0l0wc0r.py\", line 76, in <module>\n    part = box(outer_x, outer_y, outer_z)\n           ^^^\nNameError: name 'box' is not defined. Did you mean: 'Box'?\n",
+          "case_id": "00000008",
+          "bucket": "axisymmetric",
+          "split": "evaluation",
+          "duration_seconds": 7.379195705987513,
+          "usage": {
+            "prompt_tokens": 1055,
+            "completion_tokens": 1382
+          },
+          "response_preview": "```python\nfrom build123d import *\n\n# Analyze the views:\n# Front View (X-Z): A rectangular shape with a central rectangular cutout.\n# Right View (Y-Z): A rectangular shape with a central rectangular cutout.\n# Top View (X-Y): A large outer rectangle with a central rectangular cutout.\n\n# Dimensions inference (assuming standard units):\n# From Top View (X-Y):\n# Outer dimensions: Let's assume the overall width (X) and depth (Y) are defined by the outer lines.\n# The outer shape is rectangular.\n# The inner cutout in the top view suggests a central void.\n\n# From Front View (X-Z):\n# Height (Z): The total height seems consistent.\n# Width (X): The outer width is defined. The inner cutout width is visible.\n\n# From Right View (Y-Z):\n# Height (Z): Consistent with the front view.\n# Depth (Y): The outer depth is defined. The inner cutout depth is visible.\n\n# Reconciling the shape:\n# The object appears to be a hollow rectangular frame or a deep rectangular box with internal features.\n\n# Let's define the outer bounding box based on the top view, assuming it's centered around the origin.\n# Top view suggests a large rectangle. Let's estimate dimensions based on the visible proportions.\n# Let the outer dimensions be L_x (X) and L_y (Y).\n# The cutout in the top view suggests a central void.\n\n# Let's model the outer shell first.\n# Based on the top view, it's a rectangular prism with a cutout.\n# Let's assume the overall dimensions are roughly 100x100 for scaling purposes, and the cutout is centered.\n\n# The object looks like a deep, rectangular tray or frame.\n\n# 1. Outer Body (A large rectangular box)\n# Let's estimate the outer dimensions from the top view.\nouter_x = 100\nouter_y = 100\nouter_z = 30 # Estimated height from front/right views\n\n# 2. Internal Cutout (The void seen in all views)\n# The cutout appears to be centered.\ncutout_x = 60\ncutout_y = 60\ncutout_z_bottom = 10 # The bottom of the cutout seems to be raised relative to the base, or the void is deep.\n\n# Re-examining the views:\n# The object has a uniform thickness around the edges (the frame).\n# The top view shows a rectangular void.\n# The front/right views show the depth/width of the void.\n\n# Let's model it as a solid block, and subtract the void.\n\n# Outer dimensions (approximated from the largest extent):\n# X: ~100\n# Y: ~100\n# Z: ~30\n\n# Inner void dimensions (approximated):\n# X_void: ~60\n# Y_void: ~60\n# Z_void: The void seems to go almost all the way through, but the bottom surface might be slightly raised or the void might be defined by the inner edges.\n\n# Let's use a subtraction approach:\n# Start with a solid block (Outer dimensions).\npart = box(outer_x, outer_y, outer_z)\n\n# Subtract the void. The void seems to be a rectangular channel running through the center.\n# The void dimensions are constrained by the inner lines in the top view, and the cutout dimensions in the front/right views.\n\n# Void dimensions:\nvoid_x = 60\nvoid_y = 60\n# The void depth (Z) seems to be the full height of the object, or slightly less if there's a base.\n# Given the front/right views, the void goes from the top surface down to some depth.\n# Let's assume the void goes through the entire height of the object, leaving a solid base thickness.\n\n# If we assume the object has a base thickness (e.g., 5 units) and the void is cut into the top section:\n# Let's simplify: It's a box with a rectangular hole through it.\n\n# Let's define the void box:\nvoid_box = box(void_x, void_y, outer_z)\n\n# We need to ensure the void is centered and doesn't exceed the outer bounds.\n# If the outer box is centered at (0,0,0) and has dimensions (100, 100, 30):\n# The void should be centered at (0,0) in the XY plane.\n\n# Subtracting the void from the outer box:\npart = part - void_box\n\n# This simple subtraction might create issues if the void box extends beyond the outer box.\n# We must use intersection or careful subtraction to maintain the outer shell.\n\n# Alternative: Create the solid frame structure directly.\n# 1. Outer box: (100, 100, 30)\n# 2. Inner",
+          "prompt_id": "raw_v1_direct",
+          "prompt_path": "prompts/gemma4_total_view/raw_v1_direct.md"
+        },
+        {
+          "mode": "gemma4_raw",
+          "success": false,
+          "score": 0.0,
+          "mean_visible_f1": 0.0,
+          "mean_hidden_f1": 0.0,
+          "code_path": "experiments/gemma4_total_view_runtime/evaluation/raw/raw_v1_direct/00000031/generated.py",
+          "step_path": null,
+          "error_category": "syntax_error",
+          "stderr": "  File \"/tmp/tmpys_q7wbr.py\", line 10\n    ```python\n    ^\nSyntaxError: invalid syntax\n",
+          "case_id": "00000031",
+          "bucket": "axisymmetric",
+          "split": "evaluation",
+          "duration_seconds": 10.822176923044026,
+          "usage": {
+            "prompt_tokens": 1055,
+            "completion_tokens": 2048
+          },
+          "response_preview": "```python\nfrom build123d import *\n\n# Dimensions inference:\n# From Front/Right views (X-Z, Y-Z):\n# Overall width (X) = 100\n# Overall depth (Y) = 100\n# Overall height (Z) = 100\n\n# From Top view (X-Y):\n# Overall width (X) = 100\n# Overall depth (Y) = 100\n# The top view shows a central circular cutout, and the outer boundary is circular/square-like, but the side views suggest a square cross-section for the main body.\n# Let's assume the main body is a square prism of 100x100x100.\n\n# Features from Front/Right views (assuming they define the main body):\n# 1. Top section: A rectangular block on top.\n#    - The top view suggests the overall shape is circular, but the side views are rectangular. We prioritize the rectangular interpretation from the side views for the main body structure.\n#    - Let's analyze the horizontal lines (Z-heights):\n#      - Top edge: Z=100\n#      - First internal line (bottom of top block): Z = 70 (estimated from the gap)\n#      - Second internal line (bottom of main body): Z = 30 (estimated from the gap)\n#      - Bottom edge: Z = 0\n\n# 2. Bottom features (Slots/Cutouts):\n#    - Front view shows three vertical slots/cutouts near the bottom.\n#    - The slots appear to be cut into the bottom face.\n#    - The slots are separated by vertical walls.\n#    - The bottom section seems to have a base width of 100.\n#    - The slots are cut into the bottom face (Z=0 to Z=30 area).\n\n# Reconciling the Top View (Circular):\n# The top view is clearly circular, suggesting the object is a ring or has a circular profile.\n# If we assume the side views (Front/Right) are correct (100x100 cross-section), the top view must be interpreted as the projection of the object onto the X-Y plane.\n# The top view shows a large outer circle and a smaller inner circle. This suggests the object is a hollow cylinder or ring structure.\n\n# Given the conflict (Square sides vs. Circular top), we must choose the most defining feature. The top view is the most distinct feature (a ring). Let's model it as a ring structure, and see how the side views fit.\n\n# If it's a ring (Hollow Cylinder):\n# Outer Diameter (D_out) = 100 (from top view extent)\n# Inner Diameter (D_in) = 60 (estimated from top view gap)\n# Height (H) = 100 (from side view extent)\n\n# Let's re-examine the side views assuming a cylindrical body of height 100.\n# The side views show internal horizontal cuts, suggesting steps or internal components, which contradicts a simple hollow cylinder.\n\n# Alternative interpretation: The object is a rectangular prism (100x100 base) with internal features, and the top view is misleading or represents a specific cross-section detail. We will prioritize the rectangular structure suggested by the side views, as they define the main bounding box and internal steps.\n\n# Modeling based on Rectangular Prism (100x100 base):\n\n# 1. Main Body: 100 x 100 x 100\npart = make_box(100, 100, 100)\n\n# 2. Top Section (Upper Block):\n# The top view suggests a central void, but the side views show a distinct upper block.\n# Let's define the upper block dimensions based on the side views.\n# Height of upper block: ~20 (from Z=70 to Z=100)\n# Width/Depth of upper block: 100 x 100 (assuming it spans the full width/depth)\n# We will cut out the void suggested by the top view if we treat the side views as defining the outer shell.\n\n# Let's model the steps/voids shown in the side views first.\n# The side views show three distinct horizontal levels/steps.\n# Level 1 (Top): Z=100 to Z=70 (Height 30)\n# Level 2 (Middle): Z=70 to Z=30 (Height 40)\n# Level 3 (Bottom): Z=30 to Z=0 (Height 30)\n\n# This suggests a stepped structure, not a simple box.\n\n# Let's use subtraction to create the steps:\n# Start with the full box (100x100x100)\n# Cut out the void in the middle section (if the red lines indicate material removal)\n\n# Given the ambiguity, we will construct the object by combining the visible solid parts:\n\n# A. Top Block (Z=70 to Z=100): 100 x 100 x 30\npart = union()(\n    make_box(100, 100, 30, translate(",
+          "prompt_id": "raw_v1_direct",
+          "prompt_path": "prompts/gemma4_total_view/raw_v1_direct.md"
+        },
+        {
+          "mode": "gemma4_raw",
+          "success": false,
+          "score": 0.0,
+          "mean_visible_f1": 0.0,
+          "mean_hidden_f1": 0.0,
+          "code_path": "experiments/gemma4_total_view_runtime/evaluation/raw/raw_v1_direct/00000024/generated.py",
+          "step_path": null,
+          "error_category": "syntax_error",
+          "stderr": "  File \"/tmp/tmpffa8vgey.py\", line 10\n    ```python\n    ^\nSyntaxError: invalid syntax\n",
+          "case_id": "00000024",
+          "bucket": "prismatic_hidden",
+          "split": "evaluation",
+          "duration_seconds": 10.828404070343822,
+          "usage": {
+            "prompt_tokens": 1055,
+            "completion_tokens": 2048
+          },
+          "response_preview": "```python\nfrom build123d import *\n\n# Analyze the views:\n# Front View (X-Z): Shows a curved profile. The overall shape is an arc.\n# Right View (Y-Z): Shows a curved profile, matching the front view.\n# Top View (X-Y): Shows a rectangular cross-section with internal features.\n\n# Dimensions inference:\n# The overall shape is a curved channel or bracket.\n# Let's establish a coordinate system based on the views.\n# Assume the center of the curve is at (0, 0) for simplicity, though the views suggest an offset.\n\n# From the Top View (X-Y):\n# The overall width (X-dimension) seems to be around 100 units (based on typical CAD scale inference, though no scale is given, relative proportions are key).\n# The height (Y-dimension) is also substantial.\n# The internal features suggest a rectangular cross-section with some cutouts.\n\n# From the Front/Right Views (Curvature):\n# The object is curved in the plane perpendicular to the axis connecting the centers of the front and right views.\n# Let's model the main body as a curved extrusion or sweep.\n\n# Reconciling the cross-section (Top View):\n# The top view suggests a main body with a constant cross-section along the curve.\n# The outer dimensions in the top view suggest a width (X) and depth (Y).\n# The internal lines suggest a central void or internal structure.\n\n# Let's assume the object is a curved plate/bracket.\n# The curvature is consistent across the front and right views.\n\n# Strategy: Use a sweep or lofting approach, or define the profile and sweep it along a path.\n\n# 1. Define the profile (Cross-section, based on Top View):\n# The top view shows a shape that is roughly rectangular with internal cuts.\n# Let's estimate the dimensions from the top view.\n# Outer dimensions: Let's assume the overall bounding box is X_max to X_min and Y_max to Y_min.\n# The internal lines suggest a central void or reinforcement structure.\n\n# 2. Define the path (Centerline, based on Front/Right Views):\n# The path is a quarter circle or similar arc.\n\n# Given the complexity and the need for a single solid, we will model the outer shell first, and then cut the internal features.\n\n# Let's approximate the outer shape using a large curved box/sweep.\n# The curvature suggests a radius R. If the object spans from X=0 to X=W and Y=0 to Y=D, and the curve is centered at (Cx, Cy).\n\n# Based on the visual representation, the object looks like a bracket with a constant cross-section that follows a quarter-circle path.\n\n# Let's define the cross-section (Profile) based on the Top View:\n# It appears to be a solid shape with internal rectangular voids/features.\n# We will create a basic rectangular profile matching the outer bounds and then subtract the internal voids.\n\n# Since the views are highly suggestive of a constant cross-section along a curved path, a sweep is appropriate.\n\n# Let's define the profile polygon (P) from the top view (X-Y plane):\n# Assuming the origin (0,0) is at the bottom-left corner of the bounding box shown in the top view.\n# Outer vertices (approximated): (0, 0), (W, 0), (W, H), (0, H)\n# Internal features: There are two visible internal rectangular cutouts/lines.\n\n# Due to the ambiguity of absolute dimensions, we will use relative dimensions and focus on the geometry.\n# Let's define the profile polygon P based on the top view:\n# Outer rectangle: (0, 0) to (100, 50) (arbitrary scale)\n# Internal features suggest a central void or two internal ribs.\n\n# Let's simplify and model the outer shell first, assuming a constant cross-section.\n# The path is an arc. Let's assume the arc spans from (X_start, Y_start) to (X_end, Y_end) in the X-Y plane, and the Z-dimension is the thickness.\n\n# Given the front/right views, the thickness (Z) is constant.\n# Let's assume the thickness is T.\n# The path in the X-Y plane is the centerline of the object.\n\n# Let's use a simple extrusion/sweep approach along a path defined by the center of the object's cross-section.\n\n# 1. Define the cross-section (Profile P) in the X-Y plane (Top View):\n# ",
+          "prompt_id": "raw_v1_direct",
+          "prompt_path": "prompts/gemma4_total_view/raw_v1_direct.md"
+        },
+        {
+          "mode": "gemma4_raw",
+          "success": false,
+          "score": 0.0,
+          "mean_visible_f1": 0.0,
+          "mean_hidden_f1": 0.0,
+          "code_path": "experiments/gemma4_total_view_runtime/evaluation/raw/raw_v1_direct/00000000/generated.py",
+          "step_path": null,
+          "error_category": "syntax_error",
+          "stderr": "  File \"/tmp/tmp3ne7rtz9.py\", line 10\n    ```python\n    ^\nSyntaxError: invalid syntax\n",
+          "case_id": "00000000",
+          "bucket": "prismatic_hidden",
+          "split": "evaluation",
+          "duration_seconds": 10.79253650503233,
+          "usage": {
+            "prompt_tokens": 1055,
+            "completion_tokens": 2048
+          },
+          "response_preview": "```python\nfrom build123d import *\n\n# The object appears to be a stylized vase or pitcher shape.\n# Let's establish the overall bounding box and main body shape first.\n\n# From the front view (X-Z):\n# Max width (X) seems to be around 100 units (based on the top view's circle diameter).\n# Max height (Z) seems to be around 150 units.\n# The base is a trapezoid/triangle.\n\n# From the right view (Y-Z):\n# Max depth (Y) seems to be around 100 units.\n# The shape is symmetrical in Y, matching the front view's profile.\n\n# From the top view (X-Y):\n# The overall shape is roughly circular/oval, with a diameter of about 100 units.\n\n# --- Base Construction ---\n# The base is a trapezoid/triangle shape. Let's approximate it as a simple base block.\nbase_width = 100\nbase_depth = 100\nbase_height = 30\npart = box(base_width, base_depth, base_height)\n\n# --- Main Body Construction ---\n# The main body is complex. It narrows towards the top and has a distinct neck/spout area.\n# We can model the main body as a lofted or swept shape, but given the constraints,\n# we'll use a series of scaled/translated boxes or a general subtraction/addition approach.\n\n# Let's define the overall outer profile first, ignoring the internal features for now.\n# The overall shape is widest at the top of the base, then curves inward.\n\n# A simplified approach: Use a large cylinder/box and cut/add features.\n\n# 1. Main Body Volume (Approximation)\n# The body seems to taper from the base (100x100) to a narrower neck.\n# Let's use a lofted shape or a combination of boxes/ellipsoids.\n\n# Given the smooth curves, a combination of scaled boxes or a single loft might be best.\n# Since we are restricted to basic primitives, we'll use a combination of scaled boxes/ellipsoids.\n\n# Let's define the main body profile using a central axis (Z-axis).\n# The body seems to be roughly 100 units wide/deep at the base, tapering to maybe 50 units at the top of the main body section.\n\n# We will model the main body as a combination of shapes stacked vertically.\n\n# Base section (already done, 30 high)\n\n# Mid-section (Tapering up from Z=30 to Z=100)\n# Let's approximate the cross-section at Z=100 as a circle of diameter ~70.\n# We'll use a scaled box/cylinder for the main bulk.\n\n# Let's redefine the part to start from a larger volume and carve out the internal structure.\n\n# Re-initializing part to model the outer shell first.\n# The overall height is around 150.\n\n# Outer shell approximation:\n# Start with a large box encompassing the whole object.\npart = box(100, 100, 150)\n\n# Cut the bottom base (assuming the base is solid and defined by the bottom view)\npart = part.cut(box(100, 100, 30)) # This is wrong, we want to keep the base.\n\n# Let's build up from the base.\n# Base: 100x100x30\npart = box(100, 100, 30)\n\n# Body section 1 (Z=30 to Z=100)\n# This section is wider than the neck but narrower than the base.\n# Let's use a slightly tapered box/cylinder approximation.\nbody_height_1 = 70\nbody_width_1 = 80\nbody_depth_1 = 80\npart = part.union(box(body_width_1, body_depth_1, body_height_1).translate((0, 0, 30)))\n\n# Body section 2 (Neck/Upper body, Z=100 to Z=150)\n# This section is narrower.\nneck_height = 50\nneck_width = 50\nneck_depth = 50\npart = part.union(box(neck_width, neck_depth, neck_height).translate((0, 0, 100)))\n\n# --- Internal Features (The Red Lines) ---\n# These features are internal voids or attached elements. They look like handles or internal supports.\n# They are visible in the front and right views.\n\n# 1. Left/Right side features (Visible in Front/Right views)\n# These appear to be two distinct, curved, vertical elements attached to the side.\n# They are roughly centered vertically in the main body section (Z=50 to Z=120).\n\n# Feature 1 (Left side, visible in front view): A small, curved element.\n# Let's model this as a subtraction/void if it's internal, or an addition if it's a handle.\n# Given the context of a vase, these look like handles or internal supports. We will model them as additions.\n\n# Handle 1 (Left side",
+          "prompt_id": "raw_v1_direct",
+          "prompt_path": "prompts/gemma4_total_view/raw_v1_direct.md"
+        },
+        {
+          "mode": "gemma4_raw",
+          "success": false,
+          "score": 0.0,
+          "mean_visible_f1": 0.0,
+          "mean_hidden_f1": 0.0,
+          "code_path": "experiments/gemma4_total_view_runtime/evaluation/raw/raw_v1_direct/00000061/generated.py",
+          "step_path": null,
+          "error_category": "runtime_error",
+          "stderr": "Traceback (most recent call last):\n  File \"/tmp/tmpunyya7dj.py\", line 61, in <module>\n    part = make_box(size=[100, 100, 100])\n           ^^^^^^^^\nNameError: name 'make_box' is not defined\n",
+          "case_id": "00000061",
+          "bucket": "prismatic",
+          "split": "evaluation",
+          "duration_seconds": 8.63492602109909,
+          "usage": {
+            "prompt_tokens": 1055,
+            "completion_tokens": 1627
+          },
+          "response_preview": "```python\nfrom build123d import *\n\n# Analyze the views:\n# Front View (X-Z): A rectangle with a smaller rectangle cut out from the left side.\n# Right View (Y-Z): A rectangle with a smaller rectangle cut out from the right side.\n# Top View (X-Y): A rectangle with a smaller rectangle cut out from the top side.\n\n# Let's establish a coordinate system and dimensions based on the views.\n# Assume the overall bounding box is defined by the largest dimensions.\n\n# From the views, the object appears to be a rectangular block with three notches/cuts.\n\n# 1. Overall dimensions (Approximation based on visual scaling):\n# Let the overall length (X-axis, Top/Front) be L_x.\n# Let the overall width (Y-axis, Top/Right) be L_y.\n# Let the overall height (Z-axis, Front/Right) be L_z.\n\n# 2. Front View (X-Z):\n# Overall width (X): Appears to be the full length.\n# Overall height (Z): Appears to be the full height.\n# Cutout: A section is removed from the left side (negative X direction, or a smaller X dimension).\n# Let's assume the overall dimensions are 100x100x100 for simplicity, and use relative coordinates.\n\n# Re-evaluating the views: They all look like simple rectangles with a smaller rectangle removed from one edge.\n\n# Front View (X-Z):\n# Overall X range: [0, W_x]\n# Overall Z range: [0, H_z]\n# Cutout: A section is missing from the left side. Let's say the cutout is from X=[0, x1] and Z=[z_min, z_max].\n# The remaining solid seems to span X=[x1, W_x] and Z=[0, H_z].\n# The cutout seems to be a vertical slot on the left.\n\n# Right View (Y-Z):\n# Overall Y range: [0, W_y]\n# Overall Z range: [0, H_z]\n# Cutout: A section is missing from the right side. This suggests a vertical slot on the right.\n\n# Top View (X-Y):\n# Overall X range: [0, W_x]\n# Overall Y range: [0, W_y]\n# Cutout: A section is missing from the top side. This suggests a horizontal slot on the top.\n\n# Since the views are all identical in structure (a large rectangle with a smaller rectangle removed from one side),\n# this suggests a central block with three orthogonal slots removed from its faces.\n\n# Let's define the overall dimensions based on the visible extent.\n# Assume the overall dimensions are 100 units in X, Y, and Z.\n\n# Based on the visual representation, the object is a large cuboid with three intersecting slots.\n\n# Let's model the main block first (100x100x100).\npart = make_box(size=[100, 100, 100])\n\n# 1. Slot from Front View (Left side cutout, affecting X dimension):\n# The cutout seems to be a slot of width ~20, height ~100, running along the Z-axis.\n# If the slot is on the left (low X), it removes material from X=[0, 20].\n# The slot depth in Y is 100.\n# The slot height in Z is 100.\n# We subtract a box: [0, 20] in X, [0, 100] in Y, [0, 100] in Z.\n# However, the view suggests the slot is only partially through the Z dimension, or the remaining part is smaller.\n\n# Let's assume the visible solid is the intersection of three larger blocks, or a subtraction from a main block.\n\n# Re-examining the views: They look like a large rectangle with a smaller rectangle removed from the *edge* shown.\n\n# Front View (X-Z): Slot on the left edge (low X).\n# Let's assume the overall dimensions are 100x100x100.\n# The slot removes material from X=[0, 20] (width of slot).\n# The slot spans the full height Z=[0, 100].\n# The slot spans the full depth Y=[0, 100].\n# Subtraction 1 (Front view slot): Box at X=[0, 20], Y=[0, 100], Z=[0, 100]\n\n# Right View (Y-Z): Slot on the right edge (high Y).\n# The slot removes material from Y=[80, 100] (width of slot).\n# The slot spans the full height Z=[0, 100].\n# The slot spans the full depth X=[0, 100].\n# Subtraction 2 (Right view slot): Box at X=[0, 100], Y=[80, 100], Z=[0, 100]\n\n# Top View (X-Y): Slot on the top edge (high Z).\n# The slot removes material from Z=[80, 100] (height of slot).\n# The slot spans the full width X=[0, 100].\n# The slot spans the full depth Y=[0, 100].\n# Subtraction 3 (Top view slot): Box at X=[0, 100], Y=[0, 100], Z=[80, 100]\n\n# This interpretation crea",
+          "prompt_id": "raw_v1_direct",
+          "prompt_path": "prompts/gemma4_total_view/raw_v1_direct.md"
+        },
+        {
+          "mode": "gemma4_raw",
+          "success": false,
+          "score": 0.0,
+          "mean_visible_f1": 0.0,
+          "mean_hidden_f1": 0.0,
+          "code_path": "experiments/gemma4_total_view_runtime/evaluation/raw/raw_v1_direct/00000006/generated.py",
+          "step_path": null,
+          "error_category": "runtime_error",
+          "stderr": "Traceback (most recent call last):\n  File \"/tmp/tmp_3i12lz0.py\", line 70, in <module>\n    base = build_hexagonal_prism(radius=1.0, height=1.0) # Placeholder dimensions, actual dimensions are inferred from the image scale.\n           ^^^^^^^^^^^^^^^^^^^^^\nNameError: name 'build_hexagonal_prism' is not defined\n",
+          "case_id": "00000006",
+          "bucket": "prismatic",
+          "split": "evaluation",
+          "duration_seconds": 10.706030812114477,
+          "usage": {
+            "prompt_tokens": 1055,
+            "completion_tokens": 2038
+          },
+          "response_preview": "```python\nfrom build123d import *\n\n# Analyze the views:\n# Front View (X-Z): Shows a rectangular shape with three distinct arched cutouts.\n# Right View (Y-Z): Shows a rectangular shape with three distinct arched cutouts, suggesting symmetry in the Y-direction.\n# Top View (X-Y): Shows a hexagonal outer profile and a circular inner void.\n\n# Dimensions inference:\n# 1. Overall shape: The top view suggests the object has a hexagonal outer boundary and a circular inner void.\n# 2. Depth/Height (Z-axis): The front and right views suggest a consistent height for the main body.\n# 3. Width/Length (X/Y axes): The front and right views suggest the overall width and height are defined by the rectangular bounding box, but the top view suggests the overall shape is hexagonal.\n\n# Reconciling the views:\n# The top view (X-Y) is the most defining feature for the overall footprint (hexagon) and the central void (circle).\n# The front/right views (X-Z, Y-Z) show the cross-section along the axes. They appear to be rectangular in the bounding box, but the internal features are arches.\n\n# Let's assume the object is a solid block with a hexagonal outer profile, and the cross-section (as seen from the front/right) is defined by the arches.\n\n# From the top view, we define the outer boundary (Hexagon) and the inner void (Circle).\n# Let's estimate the dimensions based on the top view. Assume the overall size is normalized.\n# The top view suggests a hexagonal prism shape with a circular hole.\n\n# From the front/right views, the cross-section seems to be a rectangle with three semi-circular cutouts.\n# If we assume the object is symmetrical and the front/right views define the cross-section perpendicular to the viewing axis (e.g., along the Y-axis for the front view), we can model the cross-section.\n\n# Let's model the cross-section first (the shape seen in the front/right views).\n# The cross-section is a rectangle with three semi-circular voids.\n# Let the overall width be W and height be H.\n# The three arches suggest three semi-circles. If they are identical, they take up a width of 3 * (diameter) and a height of (diameter).\n# The bounding box in the front view seems to be wider than the top view suggests for the central void, but the top view is more definitive for the overall shape.\n\n# Given the conflict (Hexagonal top vs. Rectangular cross-section in front/right), we prioritize the most complex feature: the hexagonal outer shell and the circular inner void from the top view, and then apply the cross-section profile from the front/right views.\n\n# Let's assume the object is a prism whose cross-section is defined by the front/right views, and this cross-section is extruded along the Z-axis (or Y-axis, depending on orientation).\n# If we take the front view (X-Z) as the cross-section, and extrude it along the Y-axis, the top view should be rectangular, which contradicts the hexagonal top view.\n\n# Alternative interpretation: The object is a hexagonal prism, and the front/right views are misleading or represent a specific cut/feature.\n# Let's stick to the hexagonal prism with a circular hole, as this is the most consistent feature across the top view.\n\n# If we must incorporate the arches: The arches suggest a cross-section that is not uniform.\n# Let's assume the object is a rectangular block (based on the bounding box of the front/right views) with three semi-circular voids, and then modify the top view to reflect this.\n\n# Given the strong hexagonal top view, we will model a hexagonal prism with a central circular void.\n# We will ignore the specific arch details from the front/right views as they contradict the top view's overall shape, unless the arches are meant to define the *height* of the object, which is unlikely.\n\n# Modeling the Hexagonal Prism with a central hole:\n# We will use the top view to define the base shape (Hexagon) and the hole (Circle).\n# We need a third dimension (height/depth). Let's assume a depth based on the visible dimensions, perhaps matchi",
+          "prompt_id": "raw_v1_direct",
+          "prompt_path": "prompts/gemma4_total_view/raw_v1_direct.md"
+        }
+      ],
+      "aggregate": {
+        "total_cases": 6,
+        "successful_cases": 0,
+        "success_rate": 0.0,
+        "mean_score": 0.0,
+        "mean_visible_f1": 0.0,
+        "mean_hidden_f1": 0.0,
+        "mean_duration_seconds": 9.86054500627021,
+        "mean_tool_calls": 0.0
+      }
+    },
+    "gemma4_with_tools": {
+      "mode": "tool",
+      "prompt_id": "tool_v1_candidates_first",
+      "prompt_path": "prompts/gemma4_total_view/tool_v1_candidates_first.md",
+      "cases": [
+        {
+          "mode": "gemma4_with_tools",
+          "success": true,
+          "score": 0.4282991276209689,
+          "mean_visible_f1": 0.5574981324626891,
+          "mean_hidden_f1": 0.29910012277924874,
+          "code_path": "experiments/gemma4_total_view_runtime/evaluation/tool/tool_v1_candidates_first/00000008/tool_evaluations/axisymmetric_hidden.py",
+          "step_path": "experiments/gemma4_total_view_runtime/evaluation/tool/tool_v1_candidates_first/00000008/tool_evaluations/axisymmetric_hidden.step",
+          "error_category": "success",
+          "stderr": "",
+          "source": "axisymmetric_hidden",
+          "hidden_feature_count": 4,
+          "used_verified_fallback": true,
+          "fallback_from_failed_final": true,
+          "case_id": "00000008",
+          "bucket": "axisymmetric",
+          "split": "evaluation",
+          "duration_seconds": 8.219783885870129,
+          "tool_calls": 4,
+          "usage": {
+            "prompt_tokens": 7704,
+            "completion_tokens": 246
+          },
+          "response_preview": "",
+          "prompt_id": "tool_v1_candidates_first",
+          "prompt_path": "prompts/gemma4_total_view/tool_v1_candidates_first.md"
+        },
+        {
+          "mode": "gemma4_with_tools",
+          "success": true,
+          "score": 0.275325469332188,
+          "mean_visible_f1": 0.43196159675731954,
+          "mean_hidden_f1": 0.11868934190705639,
+          "code_path": "experiments/gemma4_total_view_runtime/evaluation/tool/tool_v1_candidates_first/00000031/tool_evaluations/axisymmetric_hidden.py",
+          "step_path": "experiments/gemma4_total_view_runtime/evaluation/tool/tool_v1_candidates_first/00000031/tool_evaluations/axisymmetric_hidden.step",
+          "error_category": "success",
+          "stderr": "",
+          "source": "axisymmetric_hidden",
+          "hidden_feature_count": 3,
+          "used_verified_fallback": true,
+          "fallback_from_failed_final": true,
+          "case_id": "00000031",
+          "bucket": "axisymmetric",
+          "split": "evaluation",
+          "duration_seconds": 11.024513004347682,
+          "tool_calls": 3,
+          "usage": {
+            "prompt_tokens": 8707,
+            "completion_tokens": 1374
+          },
+          "response_preview": "```python\nfrom build123d import *\n\n# Deterministic axisymmetric reconstruction from orthographic silhouettes.\nsize_x = 43.735674\nsize_y = 43.735674\nsize_z = 49.140622\n\nprofile_pts = [\n    (0.000000, 0.517270),\n    (21.867837, 0.517270),\n    (21.867837, 4.138158),\n    (21.535499, 4.655427),\n    (21.535499, 16.035361),\n    (21.867650, 16.552630),\n    (21.835028, 48.623352),\n    (21.734902, 49.140622),\n    (0.000000, 49.140622),\n]\ndef map_bbox_value(value, source_max, bb_min, bb_size):\n    return bb_min + (value / source_max) * bb_size if source_max else bb_min\n\nhidden_cylinders = [\n    {'center_x': 21.867837, 'center_y': 21.867837, 'radius': 20.907786, 'z_min': 0.963542, 'z_max': 48.177080},\n    {'center_x': 21.867837, 'center_y': 21.867837, 'radius': 20.566491, 'z_min': 0.963542, 'z_max': 48.177080},\n    {'center_x': 21.867837, 'center_y': 21.867837, 'radius': 17.423155, 'z_min': 18.450037, 'z_max': 42.931131},\n]\n\nwith BuildLine(Plane.XZ) as profile_line:\n    Polyline(*profile_pts, close=True)\nprofile_face = make_face(profile_line.line)\npart = Pos(size_x / 2.0, size_y / 2.0, 0.0) * revolve(\n    profile_face,\n    axis=Axis.Z,\n)\n\n# Conservative hidden-feature carving from corroborated red-line circles.\n_bb = part.bounding_box()\n_bbox_size_x = _bb.max.X - _bb.min.X\n_bbox_size_y = _bb.max.Y - _bb.min.Y\n_bbox_size_z = _bb.max.Z - _bb.min.Z\n_xy_scale = ((_bbox_size_x / size_x) + (_bbox_size_y / size_y)) / 2.0\nfor _cut in hidden_cylinders:\n    _center_x = map_bbox_value(_cut['center_x'], size_x, _bb.min.X, _bbox_size_x)\n    _center_y = map_bbox_value(_cut['center_y'], size_y, _bb.min.Y, _bbox_size_y)\n    _z_min = map_bbox_value(_cut['z_min'], size_z, _bb.min.Z, _bbox_size_z)\n    _z_max = map_bbox_value(_cut['z_max'], size_z, _bb.min.Z, _bbox_size_z)\n    _radius = _cut['radius'] * _xy_scale\n    if _z_max - _z_min <= 0 or _radius <= 0:\n        continue\n    _cutter = Pos(_center_x, _center_y, _z_min) * Cylinder(\n        radius=_radius,\n        height=_z_max - _z_min,\n        align=(Align.CENTER, Align.CENTER, Align.MIN),\n    )\n    part = part - _cutter\n\nexport(part, \"output.step\")\n```",
+          "prompt_id": "tool_v1_candidates_first",
+          "prompt_path": "prompts/gemma4_total_view/tool_v1_candidates_first.md"
+        },
+        {
+          "mode": "gemma4_with_tools",
+          "success": true,
+          "score": 0.4076269986616799,
+          "mean_visible_f1": 0.7146930075911607,
+          "mean_hidden_f1": 0.10056098973219908,
+          "code_path": "experiments/gemma4_total_view_runtime/evaluation/tool/tool_v1_candidates_first/00000024/tool_evaluations/visual_hull_hidden.py",
+          "step_path": "experiments/gemma4_total_view_runtime/evaluation/tool/tool_v1_candidates_first/00000024/tool_evaluations/visual_hull_hidden.step",
+          "error_category": "success",
+          "stderr": "",
+          "source": "visual_hull_hidden",
+          "hidden_feature_count": 1,
+          "used_verified_fallback": true,
+          "fallback_from_failed_final": true,
+          "case_id": "00000024",
+          "bucket": "prismatic_hidden",
+          "split": "evaluation",
+          "duration_seconds": 17.542439660057425,
+          "tool_calls": 4,
+          "usage": {
+            "prompt_tokens": 6883,
+            "completion_tokens": 2108
+          },
+          "response_preview": "",
+          "prompt_id": "tool_v1_candidates_first",
+          "prompt_path": "prompts/gemma4_total_view/tool_v1_candidates_first.md"
+        },
+        {
+          "mode": "gemma4_with_tools",
+          "success": true,
+          "score": 0.2518012503072057,
+          "mean_visible_f1": 0.4254111094865149,
+          "mean_hidden_f1": 0.0781913911278965,
+          "code_path": "experiments/gemma4_total_view_runtime/evaluation/tool/tool_v1_candidates_first/00000000/tool_evaluations/visual_hull_base.py",
+          "step_path": "experiments/gemma4_total_view_runtime/evaluation/tool/tool_v1_candidates_first/00000000/tool_evaluations/visual_hull_base.step",
+          "error_category": "success",
+          "stderr": "",
+          "source": "visual_hull_base",
+          "hidden_feature_count": 0,
+          "used_verified_fallback": true,
+          "fallback_from_failed_final": true,
+          "case_id": "00000000",
+          "bucket": "prismatic_hidden",
+          "split": "evaluation",
+          "duration_seconds": 12.638515024911612,
+          "tool_calls": 4,
+          "usage": {
+            "prompt_tokens": 10089,
+            "completion_tokens": 1351
+          },
+          "response_preview": "",
+          "prompt_id": "tool_v1_candidates_first",
+          "prompt_path": "prompts/gemma4_total_view/tool_v1_candidates_first.md"
+        },
+        {
+          "mode": "gemma4_with_tools",
+          "success": true,
+          "score": 0.5098715469608583,
+          "mean_visible_f1": 0.9999349085465079,
+          "mean_hidden_f1": 0.019808185375208887,
+          "code_path": "experiments/gemma4_total_view_runtime/evaluation/tool/tool_v1_candidates_first/00000061/generated.py",
+          "step_path": "experiments/gemma4_total_view_runtime/evaluation/tool/tool_v1_candidates_first/00000061/generated.step",
+          "error_category": "success",
+          "stderr": "",
+          "case_id": "00000061",
+          "bucket": "prismatic",
+          "split": "evaluation",
+          "duration_seconds": 8.310057791881263,
+          "tool_calls": 3,
+          "usage": {
+            "prompt_tokens": 7509,
+            "completion_tokens": 919
+          },
+          "response_preview": "The candidate program `visual_hull_hidden` achieved a score of 0.50987, which is the best available score from the deterministic candidates. The low `mean_hidden_f1` (0.0198) suggests it failed to capture the hidden features, which is expected given the visual nature of the reconstruction and the complexity of the object (which appears to be a simple rectangular block with a cutout/feature on one end, based on the orthographic views).\n\nSince this is the best deterministic candidate and the object is a simple block, I will use this code as the final answer, as it represents the best attempt to reconstruct the object from the provided views using the available tools.\n\n```python\nfrom build123d import *\n\n# Deterministic visual-hull reconstruction from orthographic silhouettes.\nsize_x = 49.090820\nsize_y = 49.090820\nsize_z = 2.589844\n\nfront_pts = [\n    (49.090820, 0.000000),\n    (0.099711, 0.000000),\n    (0.000000, 2.490234),\n    (49.090820, 2.589844),\n]\n\ntop_pts = [\n    (48.991312, 0.000000),\n    (4.942251, 0.000000),\n    (4.511048, 1.956999),\n    (3.648642, 3.350117),\n    (2.089677, 4.444709),\n    (0.000000, 4.942251),\n    (0.099508, 49.090820),\n    (49.090820, 48.991312),\n]\n\nright_pts = [\n    (49.090820, 0.000000),\n    (0.099711, 0.000000),\n    (0.000000, 2.490234),\n    (49.090820, 2.589844),\n]\n\nhidden_cylinders = []\n\ndef prism_from_profile(points, plane, amount):\n    with BuildSketch(plane) as sketch:\n        Polygon(*points)\n    return extrude(sketch.sketch.face(), amount=amount)\n\ndef map_bbox_value(value, source_max, bb_min, bb_size):\n    return bb_min + (value / source_max) * bb_size if source_max else bb_min\n\nfront = Pos(size_x / 2.0, size_y, size_z / 2.0) * prism_from_profile(\n    front_pts, Plane.XZ, amount=size_y)\ntop = Pos(size_x / 2.0, size_y / 2.0, 0.0) * prism_from_profile(\n    top_pts, Plane.XY, amount=size_z)\nright = Pos(0.0, size_y / 2.0, size_z / 2.0) * prism_from_profile(\n    right_pts, Plane.YZ, amount=size_x)\n\npart = (front & top) & right\n```",
+          "prompt_id": "tool_v1_candidates_first",
+          "prompt_path": "prompts/gemma4_total_view/tool_v1_candidates_first.md"
+        },
+        {
+          "mode": "gemma4_with_tools",
+          "success": true,
+          "score": 0.3976408755279183,
+          "mean_visible_f1": 0.7933201182850302,
+          "mean_hidden_f1": 0.0019616327708062886,
+          "code_path": "experiments/gemma4_total_view_runtime/evaluation/tool/tool_v1_candidates_first/00000006/generated.py",
+          "step_path": "experiments/gemma4_total_view_runtime/evaluation/tool/tool_v1_candidates_first/00000006/generated.step",
+          "error_category": "success",
+          "stderr": "",
+          "case_id": "00000006",
+          "bucket": "prismatic",
+          "split": "evaluation",
+          "duration_seconds": 8.160446128807962,
+          "tool_calls": 3,
+          "usage": {
+            "prompt_tokens": 7578,
+            "completion_tokens": 880
+          },
+          "response_preview": "The candidate program `visual_hull_hidden` achieved a score of 0.3976, which is the best available score from the deterministic candidates. The low score for hidden features suggests it might be missing some internal details, but given the constraints and the available tools, this is the best starting point. I will use this code as the final answer.\n\n```python\nfrom build123d import *\n\n# Deterministic visual-hull reconstruction from orthographic silhouettes.\nsize_x = 42.563937\nsize_y = 49.139510\nsize_z = 14.317062\n\nfront_pts = [\n    (42.563937, 0.000000),\n    (0.086924, 0.000000),\n    (0.000000, 14.230117),\n    (42.563937, 14.317062),\n]\n\ntop_pts = [\n    (21.248819, 0.000000),\n    (0.000000, 12.318080),\n    (0.000000, 24.669362),\n    (0.000000, 36.821430),\n    (21.248819, 49.139510),\n    (42.563937, 36.821430),\n    (42.563937, 12.318080),\n]\n\nright_pts = [\n    (45.786070, 0.000000),\n    (3.353440, 0.000000),\n    (0.000000, 3.413559),\n    (0.000000, 14.217638),\n    (49.039903, 14.317062),\n    (49.139510, 3.413559),\n]\n\nhidden_cylinders = []\n\ndef prism_from_profile(points, plane, amount):\n    with BuildSketch(plane) as sketch:\n        Polygon(*points)\n    return extrude(sketch.sketch.face(), amount=amount)\n\ndef map_bbox_value(value, source_max, bb_min, bb_size):\n    return bb_min + (value / source_max) * bb_size if source_max else bb_min\n\nfront = Pos(size_x / 2.0, size_y, size_z / 2.0) * prism_from_profile(\n    front_pts, Plane.XZ, amount=size_y)\ntop = Pos(size_x / 2.0, size_y / 2.0, 0.0) * prism_from_profile(\n    top_pts, Plane.XY, amount=size_z)\nright = Pos(0.0, size_y / 2.0, size_z / 2.0) * prism_from_profile(\n    right_pts, Plane.YZ, amount=size_x)\n\npart = (front & top) & right\n```",
+          "prompt_id": "tool_v1_candidates_first",
+          "prompt_path": "prompts/gemma4_total_view/tool_v1_candidates_first.md"
+        }
+      ],
+      "aggregate": {
+        "total_cases": 6,
+        "successful_cases": 6,
+        "success_rate": 1.0,
+        "mean_score": 0.37842754473513657,
+        "mean_visible_f1": 0.6538031455215371,
+        "mean_hidden_f1": 0.10305194394873597,
+        "mean_duration_seconds": 10.982625915979346,
+        "mean_tool_calls": 3.5
+      }
+    },
+    "tools_only": {
+      "mode": "tools_only",
+      "prompt_id": null,
+      "prompt_path": null,
+      "cases": [
+        {
+          "case_id": "00000008",
+          "mode": "tools_only",
+          "success": true,
+          "score": 0.4282991276209689,
+          "mean_visible_f1": 0.5574981324626891,
+          "mean_hidden_f1": 0.29910012277924874,
+          "selected_candidate": "axisymmetric_hidden",
+          "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000008/axisymmetric_hidden.step",
+          "hidden_feature_count": 4,
+          "bucket": "axisymmetric",
+          "total_polylines": 157,
+          "candidates": [
+            {
+              "mode": "tools_only",
+              "success": true,
+              "score": 0.4178493169971668,
+              "mean_visible_f1": 0.49647977098503954,
+              "mean_hidden_f1": 0.33921886300929405,
+              "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000008/visual_hull_hidden.py",
+              "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000008/visual_hull_hidden.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "visual_hull_hidden",
+              "hidden_feature_count": 4
+            },
+            {
+              "mode": "tools_only",
+              "success": true,
+              "score": 0.30886420352006455,
+              "mean_visible_f1": 0.5125719206683007,
+              "mean_hidden_f1": 0.10515648637182838,
+              "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000008/visual_hull_base.py",
+              "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000008/visual_hull_base.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "visual_hull_base",
+              "hidden_feature_count": 0
+            },
+            {
+              "mode": "tools_only",
+              "success": true,
+              "score": 0.4282991276209689,
+              "mean_visible_f1": 0.5574981324626891,
+              "mean_hidden_f1": 0.29910012277924874,
+              "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000008/axisymmetric_hidden.py",
+              "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000008/axisymmetric_hidden.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "axisymmetric_hidden",
+              "hidden_feature_count": 4
+            },
+            {
+              "mode": "tools_only",
+              "success": true,
+              "score": 0.30905227003713076,
+              "mean_visible_f1": 0.5913852730440737,
+              "mean_hidden_f1": 0.026719267030187847,
+              "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000008/axisymmetric_base.py",
+              "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000008/axisymmetric_base.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "axisymmetric_base",
+              "hidden_feature_count": 0
+            }
+          ]
+        },
+        {
+          "case_id": "00000031",
+          "mode": "tools_only",
+          "success": true,
+          "score": 0.2814112236032598,
+          "mean_visible_f1": 0.45917054895467063,
+          "mean_hidden_f1": 0.10365189825184906,
+          "selected_candidate": "visual_hull_hidden",
+          "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000031/visual_hull_hidden.step",
+          "hidden_feature_count": 3,
+          "bucket": "axisymmetric",
+          "total_polylines": 222,
+          "candidates": [
+            {
+              "mode": "tools_only",
+              "success": true,
+              "score": 0.2814112236032598,
+              "mean_visible_f1": 0.45917054895467063,
+              "mean_hidden_f1": 0.10365189825184906,
+              "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000031/visual_hull_hidden.py",
+              "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000031/visual_hull_hidden.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "visual_hull_hidden",
+              "hidden_feature_count": 3
+            },
+            {
+              "mode": "tools_only",
+              "success": true,
+              "score": 0.28000561918465744,
+              "mean_visible_f1": 0.45917054895467063,
+              "mean_hidden_f1": 0.10084068941464418,
+              "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000031/visual_hull_base.py",
+              "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000031/visual_hull_base.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "visual_hull_base",
+              "hidden_feature_count": 0
+            },
+            {
+              "mode": "tools_only",
+              "success": true,
+              "score": 0.275325469332188,
+              "mean_visible_f1": 0.43196159675731954,
+              "mean_hidden_f1": 0.11868934190705639,
+              "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000031/axisymmetric_hidden.py",
+              "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000031/axisymmetric_hidden.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "axisymmetric_hidden",
+              "hidden_feature_count": 3
+            },
+            {
+              "mode": "tools_only",
+              "success": true,
+              "score": 0.27750244782149497,
+              "mean_visible_f1": 0.43196159675731954,
+              "mean_hidden_f1": 0.1230432988856704,
+              "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000031/axisymmetric_base.py",
+              "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000031/axisymmetric_base.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "axisymmetric_base",
+              "hidden_feature_count": 0
+            }
+          ]
+        },
+        {
+          "case_id": "00000024",
+          "mode": "tools_only",
+          "success": true,
+          "score": 0.4076269986616799,
+          "mean_visible_f1": 0.7146930075911607,
+          "mean_hidden_f1": 0.10056098973219908,
+          "selected_candidate": "visual_hull_hidden",
+          "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000024/visual_hull_hidden.step",
+          "hidden_feature_count": 1,
+          "bucket": "prismatic_hidden",
+          "total_polylines": 246,
+          "candidates": [
+            {
+              "mode": "tools_only",
+              "success": true,
+              "score": 0.4076269986616799,
+              "mean_visible_f1": 0.7146930075911607,
+              "mean_hidden_f1": 0.10056098973219908,
+              "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000024/visual_hull_hidden.py",
+              "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000024/visual_hull_hidden.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "visual_hull_hidden",
+              "hidden_feature_count": 1
+            },
+            {
+              "mode": "tools_only",
+              "success": true,
+              "score": 0.4031694541896236,
+              "mean_visible_f1": 0.7146930075911607,
+              "mean_hidden_f1": 0.09164590078808639,
+              "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000024/visual_hull_base.py",
+              "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000024/visual_hull_base.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "visual_hull_base",
+              "hidden_feature_count": 0
+            }
+          ]
+        },
+        {
+          "case_id": "00000000",
+          "mode": "tools_only",
+          "success": true,
+          "score": 0.2518012503072057,
+          "mean_visible_f1": 0.4254111094865149,
+          "mean_hidden_f1": 0.0781913911278965,
+          "selected_candidate": "visual_hull_base",
+          "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000000/visual_hull_base.step",
+          "hidden_feature_count": 0,
+          "bucket": "prismatic_hidden",
+          "total_polylines": 201,
+          "candidates": [
+            {
+              "mode": "tools_only",
+              "success": true,
+              "score": 0.23989654652078016,
+              "mean_visible_f1": 0.39993692760925253,
+              "mean_hidden_f1": 0.07985616543230771,
+              "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000000/visual_hull_hidden.py",
+              "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000000/visual_hull_hidden.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "visual_hull_hidden",
+              "hidden_feature_count": 1
+            },
+            {
+              "mode": "tools_only",
+              "success": true,
+              "score": 0.2518012503072057,
+              "mean_visible_f1": 0.4254111094865149,
+              "mean_hidden_f1": 0.0781913911278965,
+              "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000000/visual_hull_base.py",
+              "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000000/visual_hull_base.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "visual_hull_base",
+              "hidden_feature_count": 0
+            }
+          ]
+        },
+        {
+          "case_id": "00000061",
+          "mode": "tools_only",
+          "success": true,
+          "score": 0.5098715469608583,
+          "mean_visible_f1": 0.9999349085465079,
+          "mean_hidden_f1": 0.019808185375208887,
+          "selected_candidate": "visual_hull_hidden",
+          "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000061/visual_hull_hidden.step",
+          "hidden_feature_count": 0,
+          "bucket": "prismatic",
+          "total_polylines": 32,
+          "candidates": [
+            {
+              "mode": "tools_only",
+              "success": true,
+              "score": 0.5098715469608583,
+              "mean_visible_f1": 0.9999349085465079,
+              "mean_hidden_f1": 0.019808185375208887,
+              "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000061/visual_hull_hidden.py",
+              "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000061/visual_hull_hidden.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "visual_hull_hidden",
+              "hidden_feature_count": 0
+            }
+          ]
+        },
+        {
+          "case_id": "00000006",
+          "mode": "tools_only",
+          "success": true,
+          "score": 0.3976408755279183,
+          "mean_visible_f1": 0.7933201182850302,
+          "mean_hidden_f1": 0.0019616327708062886,
+          "selected_candidate": "visual_hull_hidden",
+          "selected_step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000006/visual_hull_hidden.step",
+          "hidden_feature_count": 0,
+          "bucket": "prismatic",
+          "total_polylines": 104,
+          "candidates": [
+            {
+              "mode": "tools_only",
+              "success": true,
+              "score": 0.3976408755279183,
+              "mean_visible_f1": 0.7933201182850302,
+              "mean_hidden_f1": 0.0019616327708062886,
+              "code_path": "experiments/gemma4_total_view_runtime/selection_pool/00000006/visual_hull_hidden.py",
+              "step_path": "experiments/gemma4_total_view_runtime/selection_pool/00000006/visual_hull_hidden.step",
+              "error_category": "success",
+              "stderr": "",
+              "source": "visual_hull_hidden",
+              "hidden_feature_count": 0
+            }
+          ]
+        }
+      ],
+      "aggregate": {
+        "total_cases": 6,
+        "successful_cases": 6,
+        "success_rate": 1.0,
+        "mean_score": 0.3794418371136485,
+        "mean_visible_f1": 0.6583379708877622,
+        "mean_hidden_f1": 0.10054570333953476,
+        "mean_duration_seconds": 0.0,
+        "mean_tool_calls": 0.0
+      }
+    }
+  }
+}

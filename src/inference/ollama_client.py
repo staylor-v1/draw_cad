@@ -37,6 +37,38 @@ def _format_messages(messages: list[ChatMessage]) -> list[dict]:
     return formatted
 
 
+def _build_payload(
+    *,
+    model: str,
+    messages: list[dict[str, Any]],
+    temperature: float,
+    max_tokens: int,
+    **kwargs: Any,
+) -> dict[str, Any]:
+    """Build an Ollama chat payload with pass-through support for advanced options."""
+    options = {
+        "temperature": temperature,
+        "num_predict": max_tokens,
+    }
+    extra_options = kwargs.pop("options", None)
+    if isinstance(extra_options, dict):
+        options.update(extra_options)
+
+    payload: dict[str, Any] = {
+        "model": model,
+        "messages": messages,
+        "stream": False,
+        "options": options,
+    }
+
+    for key in ("format", "keep_alive", "raw", "template", "tools", "think"):
+        if key in kwargs:
+            payload[key] = kwargs.pop(key)
+
+    payload.update(kwargs)
+    return payload
+
+
 class OllamaLLMClient(BaseLLMClient):
     """Ollama-based text LLM client."""
 
@@ -49,15 +81,13 @@ class OllamaLLMClient(BaseLLMClient):
         **kwargs: Any,
     ) -> LLMResponse:
         formatted = _format_messages(messages)
-        payload = {
-            "model": model,
-            "messages": formatted,
-            "stream": False,
-            "options": {
-                "temperature": temperature,
-                "num_predict": max_tokens,
-            },
-        }
+        payload = _build_payload(
+            model=model,
+            messages=formatted,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            **kwargs,
+        )
         logger.info("ollama_chat_request", model=model, num_messages=len(messages))
         try:
             with httpx.Client(timeout=self.timeout) as client:
@@ -102,21 +132,19 @@ class OllamaVisionClient(BaseVisionClient):
         max_tokens: int = 4096,
         **kwargs: Any,
     ) -> LLMResponse:
-        payload = {
-            "model": model,
-            "messages": [
+        payload = _build_payload(
+            model=model,
+            messages=[
                 {
                     "role": "user",
                     "content": prompt,
                     "images": [image_base64],
                 }
             ],
-            "stream": False,
-            "options": {
-                "temperature": temperature,
-                "num_predict": max_tokens,
-            },
-        }
+            temperature=temperature,
+            max_tokens=max_tokens,
+            **kwargs,
+        )
         logger.info("ollama_vision_request", model=model)
         try:
             with httpx.Client(timeout=self.timeout) as client:

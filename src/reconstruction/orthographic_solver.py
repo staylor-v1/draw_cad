@@ -52,6 +52,28 @@ class HorizontalSupportSegment:
 
 
 @dataclass(frozen=True)
+class ClosedProfile:
+    """A closed visible profile extracted directly from SVG linework."""
+
+    suffix: str
+    points: list[tuple[float, float]]
+    area: float
+    bbox: tuple[float, float, float, float]
+
+
+@dataclass(frozen=True)
+class PreparedOrthographicData:
+    """Shared deterministic analysis of one orthographic triplet."""
+
+    case_id: str
+    contours: dict[str, OrthographicContour]
+    consensus_extents: dict[str, float]
+    axisymmetric_profile: list[tuple[float, float]] | None
+    hidden_cylinders: list[CylindricalCut]
+    profile_sets: dict[str, dict[str, list[ClosedProfile]]]
+
+
+@dataclass(frozen=True)
 class OrthographicReconstructionResult:
     """Generated build123d program and supporting metadata."""
 
@@ -68,6 +90,17 @@ class ReconstructionCandidate:
 
     name: str
     result: OrthographicReconstructionResult
+
+
+@dataclass(frozen=True)
+class TechniquePlan:
+    """One candidate-generation plan selected from orthographic cues."""
+
+    name: str
+    base_strategy: str
+    hidden_feature_enabled: bool
+    profile_extrusion_suffix: str | None = None
+    profile_source: str | None = None
 
 
 class OrthographicTripletReconstructor:
@@ -99,15 +132,64 @@ class OrthographicTripletReconstructor:
         triplet: OrthographicTriplet,
     ) -> OrthographicReconstructionResult:
         """Generate build123d code for the best available deterministic solid."""
+        analysis = self._analyze_triplet(triplet)
+        if analysis.axisymmetric_profile is not None:
+            plan = TechniquePlan(
+                name="axisymmetric_hidden" if analysis.hidden_cylinders else "axisymmetric_base",
+                base_strategy="axisymmetric",
+                hidden_feature_enabled=bool(analysis.hidden_cylinders),
+            )
+        else:
+            plan = TechniquePlan(
+                name="visual_hull_hidden" if analysis.hidden_cylinders else "visual_hull_base",
+                base_strategy="visual_hull",
+                hidden_feature_enabled=bool(analysis.hidden_cylinders),
+            )
+        return self._generate_from_plan(analysis, plan)
+
+    def generate_candidate_programs(
+        self,
+        triplet: OrthographicTriplet,
+    ) -> list[ReconstructionCandidate]:
+        """Generate a small set of deterministic candidate programs."""
+        analysis = self._analyze_triplet(triplet)
+        plans = self._plan_candidates(analysis)
+
+        candidates: list[ReconstructionCandidate] = []
+        seen_signatures: set[tuple[str, tuple[tuple[str, float], ...], int]] = set()
+        last_error: Exception | None = None
+        for plan in plans:
+            try:
+                result = self._generate_from_plan(analysis, plan)
+            except Exception as exc:  # pragma: no cover - only reached for malformed candidates
+                last_error = exc
+                continue
+            signature = (
+                result.code,
+                tuple(sorted(result.consensus_extents.items())),
+                len(result.hidden_cylinders),
+            )
+            if signature in seen_signatures:
+                continue
+            seen_signatures.add(signature)
+            candidates.append(ReconstructionCandidate(name=plan.name, result=result))
+        if not candidates and last_error is not None:
+            raise last_error
+        return candidates
+
+    def _analyze_triplet(self, triplet: OrthographicTriplet) -> PreparedOrthographicData:
         front_suffix, right_suffix, top_suffix = self.view_suffixes
-        front = self._extract_outer_contour(triplet.views[front_suffix])
-        right = self._extract_outer_contour(triplet.views[right_suffix])
-        top = self._extract_outer_contour(triplet.views[top_suffix])
+        front_view = triplet.views[front_suffix]
+        right_view = triplet.views[right_suffix]
+        top_view = triplet.views[top_suffix]
+
+        front = self._extract_outer_contour(front_view)
+        right = self._extract_outer_contour(right_view)
+        top = self._extract_outer_contour(top_view)
 
         x_extent = (front.extents[0] + top.extents[0]) / 2.0
         y_extent = (top.extents[1] + right.extents[0]) / 2.0
         z_extent = (front.extents[1] + right.extents[1]) / 2.0
-
         consensus = {
             "x": float(x_extent),
             "y": float(y_extent),
@@ -121,78 +203,173 @@ class OrthographicTripletReconstructor:
             consensus_extents=consensus,
         )
         if axisymmetric_profile is not None:
-            diameter = float(np.mean([
-                front.extents[0],
-                right.extents[0],
-                top.extents[0],
-                top.extents[1],
-            ]))
+            diameter = float(
+                np.mean(
+                    [
+                        front.extents[0],
+                        right.extents[0],
+                        top.extents[0],
+                        top.extents[1],
+                    ]
+                )
+            )
             consensus["x"] = diameter
             consensus["y"] = diameter
 
         hidden_cylinders = self._infer_hidden_cylinders(triplet, consensus)
+        profile_sets = {
+            "raster": {
+                front_suffix: self._extract_closed_profiles(front_view, include_vector_loops=False),
+                right_suffix: self._extract_closed_profiles(right_view, include_vector_loops=False),
+                top_suffix: self._extract_closed_profiles(top_view, include_vector_loops=False),
+            },
+            "hybrid": {
+                front_suffix: self._extract_closed_profiles(front_view, include_vector_loops=True),
+                right_suffix: self._extract_closed_profiles(right_view, include_vector_loops=True),
+                top_suffix: self._extract_closed_profiles(top_view, include_vector_loops=True),
+            },
+        }
 
-        if axisymmetric_profile is not None:
-            code = self._build_revolve_code(
-                profile_points=axisymmetric_profile,
-                consensus_extents=consensus,
-                hidden_cylinders=hidden_cylinders,
-            )
-        else:
-            code = self._build_code(
-                front_points=self._scale_points(front.points, front.extents, (consensus["x"], consensus["z"])),
-                top_points=self._scale_points(top.points, top.extents, (consensus["x"], consensus["y"])),
-                right_points=self._scale_points(right.points, right.extents, (consensus["y"], consensus["z"])),
-                consensus_extents=consensus,
-                hidden_cylinders=hidden_cylinders,
-            )
-        return OrthographicReconstructionResult(
+        return PreparedOrthographicData(
             case_id=triplet.case_id,
-            code=code,
             contours={
                 front_suffix: front,
                 right_suffix: right,
                 top_suffix: top,
             },
             consensus_extents=consensus,
+            axisymmetric_profile=axisymmetric_profile,
             hidden_cylinders=hidden_cylinders,
+            profile_sets=profile_sets,
         )
 
-    def generate_candidate_programs(
-        self,
-        triplet: OrthographicTriplet,
-    ) -> list[ReconstructionCandidate]:
-        """Generate a small set of deterministic candidate programs."""
-        variants = [
-            ("visual_hull_hidden", False, True),
-            ("visual_hull_base", False, False),
-            ("axisymmetric_hidden", True, True),
-            ("axisymmetric_base", True, False),
-        ]
+    def _plan_candidates(self, analysis: PreparedOrthographicData) -> list[TechniquePlan]:
+        plans: list[TechniquePlan] = []
 
-        candidates: list[ReconstructionCandidate] = []
-        seen_signatures: set[tuple[str, tuple[tuple[str, float], ...], int]] = set()
-        for name, axisymmetric_enabled, hidden_feature_enabled in variants:
-            config = self.config.model_copy(
-                update={
-                    "axisymmetric_enabled": axisymmetric_enabled,
-                    "hidden_feature_enabled": hidden_feature_enabled,
-                }
+        for profile_source, suffix in self._profile_extrusion_variants(analysis):
+            plans.append(
+                TechniquePlan(
+                    name=f"profile_extrude_{suffix}_{profile_source}",
+                    base_strategy="profile_extrude",
+                    hidden_feature_enabled=bool(analysis.hidden_cylinders),
+                    profile_extrusion_suffix=suffix,
+                    profile_source=profile_source,
+                )
             )
-            result = OrthographicTripletReconstructor(
-                config=config,
-                view_suffixes=self.view_suffixes,
-            ).generate_program(triplet)
-            signature = (
-                result.code,
-                tuple(sorted(result.consensus_extents.items())),
-                len(result.hidden_cylinders),
+
+        if analysis.axisymmetric_profile is not None:
+            plans.extend(
+                [
+                    TechniquePlan(
+                        name="axisymmetric_hidden",
+                        base_strategy="axisymmetric",
+                        hidden_feature_enabled=True,
+                    ),
+                    TechniquePlan(
+                        name="axisymmetric_base",
+                        base_strategy="axisymmetric",
+                        hidden_feature_enabled=False,
+                    ),
+                ]
             )
-            if signature in seen_signatures:
-                continue
-            seen_signatures.add(signature)
-            candidates.append(ReconstructionCandidate(name=name, result=result))
-        return candidates
+
+        plans.extend(
+            [
+                TechniquePlan(
+                    name="visual_hull_hidden",
+                    base_strategy="visual_hull",
+                    hidden_feature_enabled=True,
+                ),
+                TechniquePlan(
+                    name="visual_hull_base",
+                    base_strategy="visual_hull",
+                    hidden_feature_enabled=False,
+                ),
+            ]
+        )
+        return plans
+
+    def _profile_extrusion_variants(
+        self,
+        analysis: PreparedOrthographicData,
+    ) -> list[tuple[str, str]]:
+        eligible: list[tuple[str, str, float]] = []
+        for profile_source, profile_map in analysis.profile_sets.items():
+            for suffix, profiles in profile_map.items():
+                if len(profiles) < 2:
+                    continue
+                outer = profiles[0]
+                inners = [
+                    profile
+                    for profile in profiles[1:]
+                    if is_bbox_inside(profile.bbox, outer.bbox)
+                ]
+                if not inners:
+                    continue
+                eligible.append(
+                    (profile_source, suffix, sum(profile.area for profile in inners))
+                )
+        eligible.sort(key=lambda item: item[2], reverse=True)
+        return [(profile_source, suffix) for profile_source, suffix, _ in eligible]
+
+    def _generate_from_plan(
+        self,
+        analysis: PreparedOrthographicData,
+        plan: TechniquePlan,
+    ) -> OrthographicReconstructionResult:
+        hidden_cylinders = (
+            analysis.hidden_cylinders if plan.hidden_feature_enabled else []
+        )
+
+        if plan.base_strategy == "axisymmetric":
+            if analysis.axisymmetric_profile is None:
+                raise ValueError("Axisymmetric plan requested without a valid axisymmetric profile.")
+            code = self._build_revolve_code(
+                profile_points=analysis.axisymmetric_profile,
+                consensus_extents=analysis.consensus_extents,
+                hidden_cylinders=hidden_cylinders,
+            )
+        elif plan.base_strategy == "profile_extrude":
+            if plan.profile_extrusion_suffix is None or plan.profile_source is None:
+                raise ValueError("Profile-extrusion plan requested without a source view.")
+            code = self._build_profile_extrusion_code(
+                suffix=plan.profile_extrusion_suffix,
+                contours=analysis.profile_sets[plan.profile_source][plan.profile_extrusion_suffix],
+                consensus_extents=analysis.consensus_extents,
+                hidden_cylinders=hidden_cylinders,
+            )
+        else:
+            front_suffix, right_suffix, top_suffix = self.view_suffixes
+            front = analysis.contours[front_suffix]
+            right = analysis.contours[right_suffix]
+            top = analysis.contours[top_suffix]
+            code = self._build_code(
+                front_points=self._scale_points(
+                    front.points,
+                    front.extents,
+                    (analysis.consensus_extents["x"], analysis.consensus_extents["z"]),
+                ),
+                top_points=self._scale_points(
+                    top.points,
+                    top.extents,
+                    (analysis.consensus_extents["x"], analysis.consensus_extents["y"]),
+                ),
+                right_points=self._scale_points(
+                    right.points,
+                    right.extents,
+                    (analysis.consensus_extents["y"], analysis.consensus_extents["z"]),
+                ),
+                consensus_extents=analysis.consensus_extents,
+                hidden_cylinders=hidden_cylinders,
+            )
+
+        return OrthographicReconstructionResult(
+            case_id=analysis.case_id,
+            code=code,
+            contours=analysis.contours,
+            consensus_extents=analysis.consensus_extents,
+            hidden_cylinders=hidden_cylinders,
+        )
 
     def _extract_outer_contour(self, view: SvgOrthographicView) -> OrthographicContour:
         visible_polylines = [
@@ -273,6 +450,151 @@ class OrthographicTripletReconstructor:
             points=normalized,
             extents=extents,
         )
+
+    def _extract_closed_profiles(
+        self,
+        view: SvgOrthographicView,
+        include_vector_loops: bool = True,
+    ) -> list[ClosedProfile]:
+        visible_polylines = [
+            polyline
+            for polyline in view.polylines
+            if polyline.stroke in self.visible_stroke_colors
+        ]
+        if not visible_polylines:
+            return []
+
+        raw_profiles: list[list[tuple[float, float]]] = []
+        if include_vector_loops:
+            raw_profiles.extend(self._extract_vector_closed_profile_points(visible_polylines))
+
+        min_x, min_y, width, height = view.view_box
+        scale = self.config.raster_max_dimension_px / max(width, height)
+        max_stroke_pixels = max(polyline.stroke_width * scale for polyline in visible_polylines)
+        pad = (
+            self.config.raster_padding_px
+            + int(np.ceil(max_stroke_pixels))
+            + self.config.dilation_iterations
+            + 2
+        )
+
+        raster_width = int(round(width * scale)) + pad * 2
+        raster_height = int(round(height * scale)) + pad * 2
+        image = Image.new("L", (raster_width, raster_height), 0)
+        draw = ImageDraw.Draw(image)
+        for polyline in visible_polylines:
+            pixel_points = [
+                (
+                    pad + (x - min_x) * scale,
+                    pad + (min_y + height - y) * scale,
+                )
+                for x, y in polyline.points
+            ]
+            draw.line(pixel_points, fill=255, width=1, joint="curve")
+
+        mask = np.array(image, dtype=bool)
+        if self.config.dilation_iterations > 0:
+            mask = ndimage.binary_dilation(mask, iterations=self.config.dilation_iterations)
+        labels, count = ndimage.label(mask)
+        if count == 0:
+            return []
+
+        filled_components: list[tuple[np.ndarray, float]] = []
+        for label_index in range(1, count + 1):
+            component = labels == label_index
+            component_filled = ndimage.binary_fill_holes(component)
+            filled_components.append((component_filled, float(np.count_nonzero(component_filled))))
+
+        largest_component_size = max(size for _, size in filled_components)
+        min_component_size = max(
+            16.0,
+            largest_component_size * self.config.profile_component_area_ratio,
+        )
+
+        for component, component_size in filled_components:
+            if component_size < min_component_size:
+                continue
+            contours = measure.find_contours(component.astype(float), 0.5)
+            if not contours:
+                continue
+            contour = max(contours, key=self._contour_area_rows_cols)
+            contour = measure.approximate_polygon(
+                contour,
+                tolerance=self.config.contour_simplify_tolerance_px,
+            )
+            points = [
+                (
+                    float(min_x + (col - pad) / scale),
+                    float(min_y + height - (row - pad) / scale),
+                )
+                for row, col in contour
+            ]
+            if len(points) > 1 and points[0] == points[-1]:
+                points = points[:-1]
+            raw_profiles.append(points)
+
+        if not raw_profiles:
+            return []
+
+        origin_x = min(x for points in raw_profiles for x, _ in points)
+        origin_y = min(y for points in raw_profiles for _, y in points)
+
+        profiles: list[ClosedProfile] = []
+        seen_signatures: set[tuple[tuple[float, float], ...]] = set()
+        for points in raw_profiles:
+            normalized = [
+                (round(x - origin_x, 6), round(y - origin_y, 6))
+                for x, y in points
+            ]
+            signature = tuple(normalized)
+            if len(normalized) < 3 or signature in seen_signatures:
+                continue
+            seen_signatures.add(signature)
+            area = polygon_area(normalized)
+            xs = [x for x, _ in normalized]
+            ys = [y for _, y in normalized]
+            profiles.append(
+                ClosedProfile(
+                    suffix=view.suffix,
+                    points=normalized,
+                    area=area,
+                    bbox=(min(xs), min(ys), max(xs), max(ys)),
+                )
+            )
+
+        profiles = dedupe_closed_profiles(profiles)
+        profiles.sort(key=lambda profile: profile.area, reverse=True)
+        if not profiles:
+            return []
+        outer = profiles[0]
+        return [outer, *[profile for profile in profiles[1:] if is_bbox_inside(profile.bbox, outer.bbox)]]
+
+    @staticmethod
+    def _extract_vector_closed_profile_points(
+        visible_polylines: list[SvgPolyline],
+    ) -> list[list[tuple[float, float]]]:
+        profiles: list[list[tuple[float, float]]] = []
+        open_polylines: list[list[tuple[float, float]]] = []
+        for polyline in visible_polylines:
+            if len(polyline.points) < 4:
+                open_polylines.append(list(polyline.points))
+                continue
+            if math.dist(polyline.points[0], polyline.points[-1]) <= 1e-3:
+                points = list(polyline.points[:-1])
+                if polygon_area(points) > 1e-3:
+                    profiles.append(points)
+                continue
+            open_polylines.append(list(polyline.points))
+
+        profiles.extend(stitch_open_polylines_into_loops(open_polylines))
+        deduped: list[list[tuple[float, float]]] = []
+        for points in profiles:
+            if polygon_area(points) <= 1e-3:
+                continue
+            if any(polyline_loops_match(points, existing) for existing in deduped):
+                continue
+            deduped.append(points)
+        return deduped
 
     def _infer_axisymmetric_profile(
         self,
@@ -606,6 +928,109 @@ class OrthographicTripletReconstructor:
             for x, y in polyline.points
         ]
 
+    @classmethod
+    def _build_profile_extrusion_code(
+        cls,
+        suffix: str,
+        contours: list[ClosedProfile],
+        consensus_extents: dict[str, float],
+        hidden_cylinders: list[CylindricalCut],
+    ) -> str:
+        if len(contours) < 2:
+            raise ValueError(f"Profile extrusion requires a nested profile for suffix {suffix}.")
+
+        outer = contours[0]
+        inners = [
+            contour
+            for contour in contours[1:]
+            if is_bbox_inside(contour.bbox, outer.bbox)
+        ]
+        if not inners:
+            raise ValueError(f"Profile extrusion requires an inner cut profile for suffix {suffix}.")
+
+        target_extents = profile_target_extents(suffix, consensus_extents)
+        outer_points = cls._scale_points(
+            outer.points,
+            (outer.bbox[2] - outer.bbox[0], outer.bbox[3] - outer.bbox[1]),
+            target_extents,
+        )
+        inner_profiles = [
+            cls._scale_points(
+                contour.points,
+                (outer.bbox[2] - outer.bbox[0], outer.bbox[3] - outer.bbox[1]),
+                target_extents,
+            )
+            for contour in inners
+        ]
+
+        outer_points_text = format_points("outer_pts", outer_points)
+        inner_profiles_text = format_profile_sets("inner_profile_sets", inner_profiles)
+        hidden_cylinders_text = format_hidden_cylinders(hidden_cylinders)
+        plane_name, amount_name, pose_expr = profile_prism_pose(suffix)
+        amount_value = consensus_extents[amount_name]
+
+        lines = [
+            "from build123d import *",
+            "",
+            f"# Deterministic profile-extrusion reconstruction from the {suffix} view.",
+            f"size_x = {consensus_extents['x']:.6f}",
+            f"size_y = {consensus_extents['y']:.6f}",
+            f"size_z = {consensus_extents['z']:.6f}",
+            "",
+            outer_points_text,
+            "",
+            inner_profiles_text,
+            "",
+            hidden_cylinders_text,
+            "",
+            "def prism_from_profile(points, plane, amount):",
+            "    with BuildSketch(plane) as sketch:",
+            "        Polygon(*points)",
+            "    return extrude(sketch.sketch.face(), amount=amount)",
+            "",
+            "def map_bbox_value(value, source_max, bb_min, bb_size):",
+            "    return bb_min + (value / source_max) * bb_size if source_max else bb_min",
+            "",
+            f"outer = {pose_expr} * prism_from_profile(",
+            f"    outer_pts, {plane_name}, amount={amount_value:.6f}",
+            ")",
+            "part = outer",
+            "for _points in inner_profile_sets:",
+            f"    _inner = {pose_expr} * prism_from_profile(",
+            f"        _points, {plane_name}, amount={amount_value:.6f}",
+            "    )",
+            "    part = part - _inner",
+        ]
+
+        if hidden_cylinders:
+            lines.extend(
+                [
+                    "",
+                    "# Conservative hidden-feature carving from corroborated red-line circles.",
+                    "_bb = part.bounding_box()",
+                    "_bbox_size_x = _bb.max.X - _bb.min.X",
+                    "_bbox_size_y = _bb.max.Y - _bb.min.Y",
+                    "_bbox_size_z = _bb.max.Z - _bb.min.Z",
+                    "_xy_scale = ((_bbox_size_x / size_x) + (_bbox_size_y / size_y)) / 2.0",
+                    "for _cut in hidden_cylinders:",
+                    "    _center_x = map_bbox_value(_cut['center_x'], size_x, _bb.min.X, _bbox_size_x)",
+                    "    _center_y = map_bbox_value(_cut['center_y'], size_y, _bb.min.Y, _bbox_size_y)",
+                    "    _z_min = map_bbox_value(_cut['z_min'], size_z, _bb.min.Z, _bbox_size_z)",
+                    "    _z_max = map_bbox_value(_cut['z_max'], size_z, _bb.min.Z, _bbox_size_z)",
+                    "    _radius = _cut['radius'] * _xy_scale",
+                    "    if _z_max - _z_min <= 0 or _radius <= 0:",
+                    "        continue",
+                    "    _cutter = Pos(_center_x, _center_y, _z_min) * Cylinder(",
+                    "        radius=_radius,",
+                    "        height=_z_max - _z_min,",
+                    "        align=(Align.CENTER, Align.CENTER, Align.MIN),",
+                    "    )",
+                    "    part = part - _cutter",
+                ]
+            )
+
+        return "\n".join(lines)
+
     @staticmethod
     def _build_code(
         front_points: list[tuple[float, float]],
@@ -756,6 +1181,18 @@ def format_points(name: str, points: list[tuple[float, float]]) -> str:
     return "\n".join(lines)
 
 
+def format_profile_sets(name: str, profiles: list[list[tuple[float, float]]]) -> str:
+    """Render nested point lists for profile-extrusion candidates."""
+    lines = [f"{name} = ["]
+    for profile in profiles:
+        lines.append("    [")
+        for x, y in profile:
+            lines.append(f"        ({x:.6f}, {y:.6f}),")
+        lines.append("    ],")
+    lines.append("]")
+    return "\n".join(lines)
+
+
 def format_hidden_cylinders(hidden_cylinders: list[CylindricalCut]) -> str:
     """Render hidden cylinder metadata into generated Python code."""
     lines = ["hidden_cylinders = ["]
@@ -849,6 +1286,163 @@ def polyline_is_axis_aligned(points: list[tuple[float, float]]) -> bool:
         or abs(points[index + 1][1] - points[index][1]) < 1e-6
         for index in range(len(points) - 1)
     )
+
+
+def profile_target_extents(
+    suffix: str,
+    consensus_extents: dict[str, float],
+) -> tuple[float, float]:
+    """Return the target 2D extents for a suffix-aligned profile."""
+    if suffix == "f":
+        return consensus_extents["x"], consensus_extents["z"]
+    if suffix == "r":
+        return consensus_extents["y"], consensus_extents["z"]
+    if suffix == "t":
+        return consensus_extents["x"], consensus_extents["y"]
+    raise ValueError(f"Unsupported orthographic suffix: {suffix}")
+
+
+def profile_prism_pose(suffix: str) -> tuple[str, str, str]:
+    """Return plane, extrusion axis name, and placement expression for a profile view."""
+    if suffix == "f":
+        return "Plane.XZ", "y", "Pos(size_x / 2.0, size_y, size_z / 2.0)"
+    if suffix == "r":
+        return "Plane.YZ", "x", "Pos(0.0, size_y / 2.0, size_z / 2.0)"
+    if suffix == "t":
+        return "Plane.XY", "z", "Pos(size_x / 2.0, size_y / 2.0, 0.0)"
+    raise ValueError(f"Unsupported orthographic suffix: {suffix}")
+
+
+def is_bbox_inside(
+    inner_bbox: tuple[float, float, float, float],
+    outer_bbox: tuple[float, float, float, float],
+    tolerance: float = 1e-3,
+) -> bool:
+    """Return True when one bbox is fully contained in another."""
+    return (
+        inner_bbox[0] >= outer_bbox[0] - tolerance
+        and inner_bbox[1] >= outer_bbox[1] - tolerance
+        and inner_bbox[2] <= outer_bbox[2] + tolerance
+        and inner_bbox[3] <= outer_bbox[3] + tolerance
+    )
+
+
+def dedupe_closed_profiles(profiles: list[ClosedProfile]) -> list[ClosedProfile]:
+    """Remove duplicate profiles coming from vector and raster extraction."""
+    deduped: list[ClosedProfile] = []
+    for profile in sorted(
+        profiles,
+        key=lambda item: (len(item.points), item.area),
+        reverse=True,
+    ):
+        if any(closed_profiles_match(profile, existing) for existing in deduped):
+            continue
+        deduped.append(profile)
+    return deduped
+
+
+def closed_profiles_match(
+    first: ClosedProfile,
+    second: ClosedProfile,
+) -> bool:
+    """Return True when two closed profiles describe the same enclosed loop."""
+    bbox_tol = max(
+        2.5,
+        0.05 * max(
+            first.bbox[2] - first.bbox[0],
+            first.bbox[3] - first.bbox[1],
+            second.bbox[2] - second.bbox[0],
+            second.bbox[3] - second.bbox[1],
+        ),
+    )
+    area_max = max(first.area, second.area, 1e-6)
+    return (
+        abs(first.bbox[0] - second.bbox[0]) <= bbox_tol
+        and abs(first.bbox[1] - second.bbox[1]) <= bbox_tol
+        and abs(first.bbox[2] - second.bbox[2]) <= bbox_tol
+        and abs(first.bbox[3] - second.bbox[3]) <= bbox_tol
+        and abs(first.area - second.area) / area_max <= 0.2
+    )
+
+
+def stitch_open_polylines_into_loops(
+    polylines: list[list[tuple[float, float]]],
+    tolerance: float = 1e-3,
+) -> list[list[tuple[float, float]]]:
+    """Greedily stitch endpoint-connected visible polylines into closed loops."""
+    if not polylines:
+        return []
+
+    endpoint_index: dict[tuple[int, int], list[tuple[int, bool]]] = {}
+    for polyline_index, points in enumerate(polylines):
+        if len(points) < 2:
+            continue
+        for is_start, point in ((True, points[0]), (False, points[-1])):
+            endpoint_index.setdefault(snap_point(point, tolerance), []).append(
+                (polyline_index, is_start)
+            )
+
+    visited: set[int] = set()
+    loops: list[list[tuple[float, float]]] = []
+    for polyline_index, points in enumerate(polylines):
+        if polyline_index in visited or len(points) < 2:
+            continue
+        visited.add(polyline_index)
+        path = list(points)
+        while math.dist(path[0], path[-1]) > tolerance:
+            key = snap_point(path[-1], tolerance)
+            candidates = endpoint_index.get(key, [])
+            next_polyline_index = None
+            next_points: list[tuple[float, float]] | None = None
+            for candidate_index, candidate_is_start in candidates:
+                if candidate_index in visited or candidate_index == polyline_index:
+                    continue
+                candidate_points = polylines[candidate_index]
+                start_point = candidate_points[0]
+                end_point = candidate_points[-1]
+                if math.dist(path[-1], start_point) <= tolerance:
+                    next_polyline_index = candidate_index
+                    next_points = candidate_points[1:]
+                    break
+                if math.dist(path[-1], end_point) <= tolerance:
+                    next_polyline_index = candidate_index
+                    next_points = list(reversed(candidate_points[:-1]))
+                    break
+            if next_polyline_index is None or next_points is None:
+                break
+            visited.add(next_polyline_index)
+            path.extend(next_points)
+
+        if len(path) < 4 or math.dist(path[0], path[-1]) > tolerance:
+            continue
+        loops.append(path[:-1])
+    return loops
+
+
+def snap_point(point: tuple[float, float], tolerance: float) -> tuple[int, int]:
+    """Quantize a point for endpoint matching."""
+    return (
+        int(round(point[0] / tolerance)),
+        int(round(point[1] / tolerance)),
+    )
+
+
+def polyline_loops_match(
+    first: list[tuple[float, float]],
+    second: list[tuple[float, float]],
+) -> bool:
+    """Return True when two stitched/vector loops describe the same geometry."""
+    xs_first = [x for x, _ in first]
+    ys_first = [y for _, y in first]
+    xs_second = [x for x, _ in second]
+    ys_second = [y for _, y in second]
+    bbox_first = (min(xs_first), min(ys_first), max(xs_first), max(ys_first))
+    bbox_second = (min(xs_second), min(ys_second), max(xs_second), max(ys_second))
+    area_first = polygon_area(first)
+    area_second = polygon_area(second)
+    first_profile = ClosedProfile("tmp", first, area_first, bbox_first)
+    second_profile = ClosedProfile("tmp", second, area_second, bbox_second)
+    return closed_profiles_match(first_profile, second_profile)
 
 
 def cluster_values(values: list[float], tolerance: float) -> list[list[float]]:

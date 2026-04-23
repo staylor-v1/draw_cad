@@ -25,6 +25,9 @@ def extract_code(text: str) -> str:
         code = match.group(1).strip()
         if "from build123d" in code or "import build123d" in code:
             return code
+    stripped = text.strip()
+    if "from build123d" in stripped or "import build123d" in stripped:
+        return stripped
     return ""
 
 

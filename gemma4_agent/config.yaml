@@ -1,0 +1,12 @@
+agent:
+  model: "gemma4:26b"
+  base_url: "http://localhost:11434"
+  temperature: 0.0
+  max_tokens: 4096
+  max_tool_rounds: 6
+  execution_timeout: 60
+  config_path: "config/total_view_data.yaml"
+  system_prompt_path: "gemma4_agent/prompts/system.md"
+  agent_profile_path: "gemma4_agent/prompts/agent.md"
+  output_dir: "experiments/gemma4_agent"
+  view_suffixes: ["f", "r", "t"]

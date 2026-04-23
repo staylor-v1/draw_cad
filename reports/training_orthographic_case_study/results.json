@@ -1,0 +1,550 @@
+{
+  "config_path": "config/total_view_data.yaml",
+  "cases": [
+    {
+      "case_id": "119452_114cbeb4_0000",
+      "drawing_path": "training_data/drawings_svg/119452_114cbeb4_0000.svg",
+      "reference_step_path": "training_data/shapes_step/119452_114cbeb4_0000.step",
+      "candidate_records": [
+        {
+          "name": "profile_extrude_f_raster",
+          "code_path": "reports/training_orthographic_case_study/code/119452_114cbeb4_0000__profile_extrude_f_raster.py",
+          "step_path": "reports/training_orthographic_case_study/steps/119452_114cbeb4_0000__profile_extrude_f_raster.step",
+          "success": true,
+          "stderr": "",
+          "bounding_box_iou": 7.300804991626806e-05,
+          "volume_ratio": 0.00014329936728180845,
+          "face_count_ratio": 0.7,
+          "reprojection_score": 0.5583998467669159,
+          "visible_line_f1": 0.7972595182886746,
+          "hidden_line_f1": 0.31954017524515704,
+          "bbox_scale_ratio": 18.953001897822826,
+          "consensus_extents": {
+            "x": 482.8125,
+            "y": 962.8125,
+            "z": 482.8125
+          },
+          "hidden_feature_count": 0,
+          "views": {
+            "f": {
+              "score": 0.3756945586580199,
+              "visible_f1": 0.7513891173160397,
+              "hidden_f1": 0.0
+            },
+            "r": {
+              "score": 0.6397885431339777,
+              "visible_f1": 0.8000964835106613,
+              "hidden_f1": 0.47948060275729404
+            },
+            "t": {
+              "score": 0.65971643850875,
+              "visible_f1": 0.8402929540393227,
+              "hidden_f1": 0.4791399229781771
+            }
+          }
+        },
+        {
+          "name": "profile_extrude_f_hybrid",
+          "code_path": "reports/training_orthographic_case_study/code/119452_114cbeb4_0000__profile_extrude_f_hybrid.py",
+          "step_path": "reports/training_orthographic_case_study/steps/119452_114cbeb4_0000__profile_extrude_f_hybrid.step",
+          "success": true,
+          "stderr": "",
+          "bounding_box_iou": 7.300804991626306e-05,
+          "volume_ratio": 0.00014702177834216226,
+          "face_count_ratio": 0.1891891891891892,
+          "reprojection_score": 0.5201317659556077,
+          "visible_line_f1": 0.7202763890911243,
+          "hidden_line_f1": 0.31998714282009105,
+          "bbox_scale_ratio": 18.953001897822826,
+          "consensus_extents": {
+            "x": 482.8125,
+            "y": 962.8125,
+            "z": 482.8125
+          },
+          "hidden_feature_count": 0,
+          "views": {
+            "f": {
+              "score": 0.2830878554319686,
+              "visible_f1": 0.5661757108639373,
+              "hidden_f1": 0.0
+            },
+            "r": {
+              "score": 0.6219938692796663,
+              "visible_f1": 0.7638980021600055,
+              "hidden_f1": 0.480089736399327
+            },
+            "t": {
+              "score": 0.6553135731551882,
+              "visible_f1": 0.8307554542494302,
+              "hidden_f1": 0.4798716920609462
+            }
+          }
+        },
+        {
+          "name": "visual_hull_hidden",
+          "code_path": "reports/training_orthographic_case_study/code/119452_114cbeb4_0000__visual_hull_hidden.py",
+          "step_path": "reports/training_orthographic_case_study/steps/119452_114cbeb4_0000__visual_hull_hidden.step",
+          "success": true,
+          "stderr": "",
+          "bounding_box_iou": 7.297190622104782e-05,
+          "volume_ratio": 3.3113844558743944e-05,
+          "face_count_ratio": 0.8235294117647058,
+          "reprojection_score": 0.3826524027411256,
+          "visible_line_f1": 0.6230931813117192,
+          "hidden_line_f1": 0.1422116241705321,
+          "bbox_scale_ratio": 18.952747598218522,
+          "consensus_extents": {
+            "x": 482.8125,
+            "y": 962.8125,
+            "z": 482.8125
+          },
+          "hidden_feature_count": 0,
+          "views": {
+            "f": {
+              "score": 0.35507410800744044,
+              "visible_f1": 0.506943521572638,
+              "hidden_f1": 0.2032046944422429
+            },
+            "r": {
+              "score": 0.3836353259718544,
+              "visible_f1": 0.7672706519437088,
+              "hidden_f1": 0.0
+            },
+            "t": {
+              "score": 0.409247774244082,
+              "visible_f1": 0.5950653704188106,
+              "hidden_f1": 0.22343017806935334
+            }
+          }
+        }
+      ],
+      "legacy_best": {
+        "name": "visual_hull_hidden",
+        "code_path": "reports/training_orthographic_case_study/code/119452_114cbeb4_0000__visual_hull_hidden.py",
+        "step_path": "reports/training_orthographic_case_study/steps/119452_114cbeb4_0000__visual_hull_hidden.step",
+        "success": true,
+        "stderr": "",
+        "bounding_box_iou": 7.297190622104782e-05,
+        "volume_ratio": 3.3113844558743944e-05,
+        "face_count_ratio": 0.8235294117647058,
+        "reprojection_score": 0.3826524027411256,
+        "visible_line_f1": 0.6230931813117192,
+        "hidden_line_f1": 0.1422116241705321,
+        "bbox_scale_ratio": 18.952747598218522,
+        "consensus_extents": {
+          "x": 482.8125,
+          "y": 962.8125,
+          "z": 482.8125
+        },
+        "hidden_feature_count": 0,
+        "views": {
+          "f": {
+            "score": 0.35507410800744044,
+            "visible_f1": 0.506943521572638,
+            "hidden_f1": 0.2032046944422429
+          },
+          "r": {
+            "score": 0.3836353259718544,
+            "visible_f1": 0.7672706519437088,
+            "hidden_f1": 0.0
+          },
+          "t": {
+            "score": 0.409247774244082,
+            "visible_f1": 0.5950653704188106,
+            "hidden_f1": 0.22343017806935334
+          }
+        }
+      },
+      "enhanced_best": {
+        "name": "profile_extrude_f_raster",
+        "code_path": "reports/training_orthographic_case_study/code/119452_114cbeb4_0000__profile_extrude_f_raster.py",
+        "step_path": "reports/training_orthographic_case_study/steps/119452_114cbeb4_0000__profile_extrude_f_raster.step",
+        "success": true,
+        "stderr": "",
+        "bounding_box_iou": 7.300804991626806e-05,
+        "volume_ratio": 0.00014329936728180845,
+        "face_count_ratio": 0.7,
+        "reprojection_score": 0.5583998467669159,
+        "visible_line_f1": 0.7972595182886746,
+        "hidden_line_f1": 0.31954017524515704,
+        "bbox_scale_ratio": 18.953001897822826,
+        "consensus_extents": {
+          "x": 482.8125,
+          "y": 962.8125,
+          "z": 482.8125
+        },
+        "hidden_feature_count": 0,
+        "views": {
+          "f": {
+            "score": 0.3756945586580199,
+            "visible_f1": 0.7513891173160397,
+            "hidden_f1": 0.0
+          },
+          "r": {
+            "score": 0.6397885431339777,
+            "visible_f1": 0.8000964835106613,
+            "hidden_f1": 0.47948060275729404
+          },
+          "t": {
+            "score": 0.65971643850875,
+            "visible_f1": 0.8402929540393227,
+            "hidden_f1": 0.4791399229781771
+          }
+        }
+      }
+    },
+    {
+      "case_id": "51509_fd5fcb9c_0001",
+      "drawing_path": "training_data/drawings_svg/51509_fd5fcb9c_0001.svg",
+      "reference_step_path": "training_data/shapes_step/51509_fd5fcb9c_0001.step",
+      "candidate_records": [
+        {
+          "name": "profile_extrude_f_hybrid",
+          "code_path": "reports/training_orthographic_case_study/code/51509_fd5fcb9c_0001__profile_extrude_f_hybrid.py",
+          "step_path": "reports/training_orthographic_case_study/steps/51509_fd5fcb9c_0001__profile_extrude_f_hybrid.step",
+          "success": true,
+          "stderr": "",
+          "bounding_box_iou": 0.00011102844824703486,
+          "volume_ratio": 0.00043154597696644706,
+          "face_count_ratio": 0.6,
+          "reprojection_score": 0.34171898312693166,
+          "visible_line_f1": 0.6804434139327511,
+          "hidden_line_f1": 0.002994552321112263,
+          "bbox_scale_ratio": 10.026417657931733,
+          "consensus_extents": {
+            "x": 993.2169351425168,
+            "y": 950.271468887329,
+            "z": 54.223890625000024
+          },
+          "hidden_feature_count": 0,
+          "views": {
+            "f": {
+              "score": 0.4772813184360659,
+              "visible_f1": 0.9545626368721318,
+              "hidden_f1": 0.0
+            },
+            "r": {
+              "score": 0.49950641658440276,
+              "visible_f1": 0.9990128331688055,
+              "hidden_f1": 0.0
+            },
+            "t": {
+              "score": 0.0483692143603264,
+              "visible_f1": 0.08775477175731601,
+              "hidden_f1": 0.008983656963336788
+            }
+          }
+        },
+        {
+          "name": "visual_hull_hidden",
+          "code_path": "reports/training_orthographic_case_study/code/51509_fd5fcb9c_0001__visual_hull_hidden.py",
+          "step_path": "reports/training_orthographic_case_study/steps/51509_fd5fcb9c_0001__visual_hull_hidden.step",
+          "success": true,
+          "stderr": "",
+          "bounding_box_iou": 0.00011161759651948311,
+          "volume_ratio": 0.0009380361198981593,
+          "face_count_ratio": 0.07894736842105263,
+          "reprojection_score": 0.473580899250502,
+          "visible_line_f1": 0.8881505323605524,
+          "hidden_line_f1": 0.05901126614045173,
+          "bbox_scale_ratio": 10.026417657933694,
+          "consensus_extents": {
+            "x": 993.2169351425168,
+            "y": 950.271468887329,
+            "z": 54.223890625000024
+          },
+          "hidden_feature_count": 0,
+          "views": {
+            "f": {
+              "score": 0.4838746367674524,
+              "visible_f1": 0.8695515835685168,
+              "hidden_f1": 0.098197689966388
+            },
+            "r": {
+              "score": 0.4707906032470914,
+              "visible_f1": 0.8627450980392156,
+              "hidden_f1": 0.07883610845496718
+            },
+            "t": {
+              "score": 0.46607745773696235,
+              "visible_f1": 0.9321549154739247,
+              "hidden_f1": 0.0
+            }
+          }
+        }
+      ],
+      "legacy_best": {
+        "name": "visual_hull_hidden",
+        "code_path": "reports/training_orthographic_case_study/code/51509_fd5fcb9c_0001__visual_hull_hidden.py",
+        "step_path": "reports/training_orthographic_case_study/steps/51509_fd5fcb9c_0001__visual_hull_hidden.step",
+        "success": true,
+        "stderr": "",
+        "bounding_box_iou": 0.00011161759651948311,
+        "volume_ratio": 0.0009380361198981593,
+        "face_count_ratio": 0.07894736842105263,
+        "reprojection_score": 0.473580899250502,
+        "visible_line_f1": 0.8881505323605524,
+        "hidden_line_f1": 0.05901126614045173,
+        "bbox_scale_ratio": 10.026417657933694,
+        "consensus_extents": {
+          "x": 993.2169351425168,
+          "y": 950.271468887329,
+          "z": 54.223890625000024
+        },
+        "hidden_feature_count": 0,
+        "views": {
+          "f": {
+            "score": 0.4838746367674524,
+            "visible_f1": 0.8695515835685168,
+            "hidden_f1": 0.098197689966388
+          },
+          "r": {
+            "score": 0.4707906032470914,
+            "visible_f1": 0.8627450980392156,
+            "hidden_f1": 0.07883610845496718
+          },
+          "t": {
+            "score": 0.46607745773696235,
+            "visible_f1": 0.9321549154739247,
+            "hidden_f1": 0.0
+          }
+        }
+      },
+      "enhanced_best": {
+        "name": "visual_hull_hidden",
+        "code_path": "reports/training_orthographic_case_study/code/51509_fd5fcb9c_0001__visual_hull_hidden.py",
+        "step_path": "reports/training_orthographic_case_study/steps/51509_fd5fcb9c_0001__visual_hull_hidden.step",
+        "success": true,
+        "stderr": "",
+        "bounding_box_iou": 0.00011161759651948311,
+        "volume_ratio": 0.0009380361198981593,
+        "face_count_ratio": 0.07894736842105263,
+        "reprojection_score": 0.473580899250502,
+        "visible_line_f1": 0.8881505323605524,
+        "hidden_line_f1": 0.05901126614045173,
+        "bbox_scale_ratio": 10.026417657933694,
+        "consensus_extents": {
+          "x": 993.2169351425168,
+          "y": 950.271468887329,
+          "z": 54.223890625000024
+        },
+        "hidden_feature_count": 0,
+        "views": {
+          "f": {
+            "score": 0.4838746367674524,
+            "visible_f1": 0.8695515835685168,
+            "hidden_f1": 0.098197689966388
+          },
+          "r": {
+            "score": 0.4707906032470914,
+            "visible_f1": 0.8627450980392156,
+            "hidden_f1": 0.07883610845496718
+          },
+          "t": {
+            "score": 0.46607745773696235,
+            "visible_f1": 0.9321549154739247,
+            "hidden_f1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "case_id": "26764_ab35159a_0002",
+      "drawing_path": "training_data/drawings_svg/26764_ab35159a_0002.svg",
+      "reference_step_path": "training_data/shapes_step/26764_ab35159a_0002.step",
+      "candidate_records": [
+        {
+          "name": "profile_extrude_t_raster",
+          "code_path": "reports/training_orthographic_case_study/code/26764_ab35159a_0002__profile_extrude_t_raster.py",
+          "step_path": "reports/training_orthographic_case_study/steps/26764_ab35159a_0002__profile_extrude_t_raster.step",
+          "success": true,
+          "stderr": "",
+          "bounding_box_iou": 0.0,
+          "volume_ratio": 0.00016485839817707046,
+          "face_count_ratio": 0.53125,
+          "reprojection_score": 0.4063691286578899,
+          "visible_line_f1": 0.7406788279404575,
+          "hidden_line_f1": 0.07205942937532218,
+          "bbox_scale_ratio": 17.084292623198774,
+          "consensus_extents": {
+            "x": 871.2989267578123,
+            "y": 767.8812809244789,
+            "z": 20.155385416666718
+          },
+          "hidden_feature_count": 0,
+          "views": {
+            "f": {
+              "score": 0.5485470155960878,
+              "visible_f1": 0.9817094158075601,
+              "hidden_f1": 0.11538461538461538
+            },
+            "r": {
+              "score": 0.4253014423550798,
+              "visible_f1": 0.7498092119688083,
+              "hidden_f1": 0.10079367274135119
+            },
+            "t": {
+              "score": 0.2452589280225021,
+              "visible_f1": 0.4905178560450042,
+              "hidden_f1": 0.0
+            }
+          }
+        },
+        {
+          "name": "profile_extrude_t_hybrid",
+          "code_path": "reports/training_orthographic_case_study/code/26764_ab35159a_0002__profile_extrude_t_hybrid.py",
+          "step_path": "reports/training_orthographic_case_study/steps/26764_ab35159a_0002__profile_extrude_t_hybrid.step",
+          "success": true,
+          "stderr": "",
+          "bounding_box_iou": 0.0,
+          "volume_ratio": 0.00016486012711519754,
+          "face_count_ratio": 0.085,
+          "reprojection_score": 0.42884792261222854,
+          "visible_line_f1": 0.7548314684380633,
+          "hidden_line_f1": 0.10286437678639376,
+          "bbox_scale_ratio": 17.084292603590754,
+          "consensus_extents": {
+            "x": 871.2989267578123,
+            "y": 767.8812809244789,
+            "z": 20.155385416666718
+          },
+          "hidden_feature_count": 0,
+          "views": {
+            "f": {
+              "score": 0.47602715808685114,
+              "visible_f1": 0.7456817178824432,
+              "hidden_f1": 0.20637259829125912
+            },
+            "r": {
+              "score": 0.5162572732473217,
+              "visible_f1": 0.9302940144267213,
+              "hidden_f1": 0.10222053206792216
+            },
+            "t": {
+              "score": 0.2942593365025126,
+              "visible_f1": 0.5885186730050253,
+              "hidden_f1": 0.0
+            }
+          }
+        },
+        {
+          "name": "visual_hull_hidden",
+          "code_path": "reports/training_orthographic_case_study/code/26764_ab35159a_0002__visual_hull_hidden.py",
+          "step_path": "reports/training_orthographic_case_study/steps/26764_ab35159a_0002__visual_hull_hidden.step",
+          "success": true,
+          "stderr": "",
+          "bounding_box_iou": 0.0,
+          "volume_ratio": 9.17675260545883e-05,
+          "face_count_ratio": 0.85,
+          "reprojection_score": 0.44610543355748034,
+          "visible_line_f1": 0.878962347253955,
+          "hidden_line_f1": 0.013248519861005751,
+          "bbox_scale_ratio": 17.08429262320075,
+          "consensus_extents": {
+            "x": 871.2989267578123,
+            "y": 767.8812809244789,
+            "z": 20.155385416666718
+          },
+          "hidden_feature_count": 0,
+          "views": {
+            "f": {
+              "score": 0.49895718497056885,
+              "visible_f1": 0.9799052732746629,
+              "hidden_f1": 0.018009096666474753
+            },
+            "r": {
+              "score": 0.49817194678827653,
+              "visible_f1": 0.9746074306600105,
+              "hidden_f1": 0.0217364629165425
+            },
+            "t": {
+              "score": 0.34118716891359563,
+              "visible_f1": 0.6823743378271913,
+              "hidden_f1": 0.0
+            }
+          }
+        }
+      ],
+      "legacy_best": {
+        "name": "visual_hull_hidden",
+        "code_path": "reports/training_orthographic_case_study/code/26764_ab35159a_0002__visual_hull_hidden.py",
+        "step_path": "reports/training_orthographic_case_study/steps/26764_ab35159a_0002__visual_hull_hidden.step",
+        "success": true,
+        "stderr": "",
+        "bounding_box_iou": 0.0,
+        "volume_ratio": 9.17675260545883e-05,
+        "face_count_ratio": 0.85,
+        "reprojection_score": 0.44610543355748034,
+        "visible_line_f1": 0.878962347253955,
+        "hidden_line_f1": 0.013248519861005751,
+        "bbox_scale_ratio": 17.08429262320075,
+        "consensus_extents": {
+          "x": 871.2989267578123,
+          "y": 767.8812809244789,
+          "z": 20.155385416666718
+        },
+        "hidden_feature_count": 0,
+        "views": {
+          "f": {
+            "score": 0.49895718497056885,
+            "visible_f1": 0.9799052732746629,
+            "hidden_f1": 0.018009096666474753
+          },
+          "r": {
+            "score": 0.49817194678827653,
+            "visible_f1": 0.9746074306600105,
+            "hidden_f1": 0.0217364629165425
+          },
+          "t": {
+            "score": 0.34118716891359563,
+            "visible_f1": 0.6823743378271913,
+            "hidden_f1": 0.0
+          }
+        }
+      },
+      "enhanced_best": {
+        "name": "visual_hull_hidden",
+        "code_path": "reports/training_orthographic_case_study/code/26764_ab35159a_0002__visual_hull_hidden.py",
+        "step_path": "reports/training_orthographic_case_study/steps/26764_ab35159a_0002__visual_hull_hidden.step",
+        "success": true,
+        "stderr": "",
+        "bounding_box_iou": 0.0,
+        "volume_ratio": 9.17675260545883e-05,
+        "face_count_ratio": 0.85,
+        "reprojection_score": 0.44610543355748034,
+        "visible_line_f1": 0.878962347253955,
+        "hidden_line_f1": 0.013248519861005751,
+        "bbox_scale_ratio": 17.08429262320075,
+        "consensus_extents": {
+          "x": 871.2989267578123,
+          "y": 767.8812809244789,
+          "z": 20.155385416666718
+        },
+        "hidden_feature_count": 0,
+        "views": {
+          "f": {
+            "score": 0.49895718497056885,
+            "visible_f1": 0.9799052732746629,
+            "hidden_f1": 0.018009096666474753
+          },
+          "r": {
+            "score": 0.49817194678827653,
+            "visible_f1": 0.9746074306600105,
+            "hidden_f1": 0.0217364629165425
+          },
+          "t": {
+            "score": 0.34118716891359563,
+            "visible_f1": 0.6823743378271913,
+            "hidden_f1": 0.0
+          }
+        }
+      }
+    }
+  ],
+  "summary": {
+    "cases": 3,
+    "enhanced_beats_or_matches_legacy": 3,
+    "mean_reprojection_delta": 0.058582481341930094,
+    "selected_case_improvement": 0.1757474440257903
+  }
+}

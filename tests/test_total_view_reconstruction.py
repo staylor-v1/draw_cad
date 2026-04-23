@@ -2,14 +2,17 @@
 from __future__ import annotations
 
 import math
+from io import BytesIO
 from pathlib import Path
 from zipfile import ZipFile
 
 import numpy as np
 import pytest
+from PIL import Image
 
 from src.reconstruction import (
     OrthographicTripletReconstructor,
+    TotalViewPngArchive,
     TotalViewArchive,
     evaluate_step_against_triplet,
 )
@@ -33,6 +36,22 @@ def _rect_svg(width: int, height: int) -> str:
   <polyline fill="none" points="0,0 {width},0 {width},{height} 0,{height} 0,0" stroke="black" stroke-linecap="round" stroke-width="0.35" />
 </svg>
 """
+
+
+def _write_png_zip(zip_path: Path) -> None:
+    with ZipFile(zip_path, "w") as zf:
+        zf.writestr("mock/", "")
+        zf.writestr("mock/part001_f.png", _solid_png_bytes((255, 255, 255)))
+        zf.writestr("mock/part001_r.png", _solid_png_bytes((200, 200, 200)))
+        zf.writestr("mock/part001_t.png", _solid_png_bytes((150, 150, 150)))
+        zf.writestr("mock/part002_f.png", _solid_png_bytes((100, 100, 100)))
+
+
+def _solid_png_bytes(color: tuple[int, int, int]) -> bytes:
+    image = Image.new("RGB", (8, 8), color)
+    buffer = BytesIO()
+    image.save(buffer, format="PNG")
+    return buffer.getvalue()
 
 
 def _write_hidden_feature_zip(zip_path: Path) -> None:
@@ -80,6 +99,19 @@ def test_total_view_archive_groups_complete_triplets(tmp_path: Path):
     assert archive.case_ids() == ["part001"]
     assert archive.available_views("part001") == ["f", "r", "t"]
     assert set(archive.case_ids(require_complete=False)) == {"part001", "part002"}
+
+
+def test_total_view_png_archive_groups_complete_triplets(tmp_path: Path):
+    zip_path = tmp_path / "mock_total_view_png.zip"
+    _write_png_zip(zip_path)
+
+    archive = TotalViewPngArchive(zip_path)
+
+    assert archive.case_ids() == ["part001"]
+    assert archive.available_views("part001") == ["f", "r", "t"]
+    triplet = archive.load_triplet("part001")
+    assert set(triplet.views) == {"f", "r", "t"}
+    assert triplet.views["f"].image_bytes.startswith(b"\x89PNG")
 
 
 def test_reconstructor_generates_intersection_program(tmp_path: Path):

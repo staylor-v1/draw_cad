@@ -78,6 +78,96 @@ The manifest inventories the reconstruction, reprojection, CAD execution, and da
 helper functions we added, including internal helpers. Stable entrypoints another AI
 agent can call directly are also exposed through `src.ai_toolbox.invoke_tool(...)`.
 
+## Gemma 4 Total_view_data Benchmark
+
+The repo now includes a dedicated Gemma 4 experiment runner that compares three modes
+on a selected slice of `Total_view_data`:
+
+- `gemma4_raw`: direct multimodal code generation from PNG orthographic views.
+- `gemma4_with_tools`: Gemma 4 with access to deterministic candidate-generation and
+  evaluation tools, plus a verified-candidate fallback.
+- `tools_only`: the deterministic toolbox baseline without Gemma in the loop.
+
+Run it with:
+
+```bash
+.venv/bin/python scripts/run_gemma4_total_view_experiment.py \
+  --config config/gemma4_total_view.yaml
+```
+
+The checked-in experiment artifacts live under `reports/gemma4_total_view/`, including:
+
+- `report.md`: human-readable summary.
+- `results.json`: machine-readable aggregates and per-case records.
+- `selected_cases.yaml`: the selected calibration and evaluation cases.
+- `selected_cases_contact_sheet.png`: the chosen orthographic triplets.
+
+## Gemma 4 Roundtrip Agent
+
+The `gemma4_agent/` subproject exposes a reusable local-Ollama Gemma 4 agent for
+closed-loop drawing/CAD/drawing reconstruction:
+
+```text
+drawing -> STEP part A -> generated drawing -> STEP part B
+```
+
+The two drawings may differ, but the two STEP parts are compared for geometric
+equivalence. The agent gets explicit tool schemas for drawing inspection,
+deterministic SVG reconstruction, build123d execution, STEP reprojection, and
+STEP-vs-STEP comparison.
+
+Run a roundtrip with:
+
+```bash
+.venv/bin/python -m gemma4_agent.cli roundtrip path/to/drawing.png \
+  --output-dir experiments/gemma4_agent/example
+```
+
+Print the Gemma-facing tool instructions and Ollama schemas with:
+
+```bash
+.venv/bin/python -m gemma4_agent.cli tools
+```
+
+To run the local GD&T raster drawing tuning set:
+
+```bash
+.venv/bin/python scripts/run_gemma4_gdt_roundtrips.py \
+  --input-dir training_data/gdt \
+  --output-dir experiments/gemma4_agent/gdt_roundtrips \
+  --model gemma4:26b
+```
+
+The batch runner stops at `--timeout-hours` (default: 8), writes
+`gdt_roundtrip_summary.json`, supports `--resume`, and accepts repeated
+`--include` glob patterns for targeted reruns.
+
+## Training SVG Orthographic Case Study
+
+The repo now also includes a closed-loop case-study runner for the local `training_data`
+SVG/STEP pairs that present standard front/right/top layouts in a single drawing.
+
+That path:
+
+- parses the single FreeCAD-style SVG into an orthographic triplet,
+- expands deterministic candidate generation with searched profile-extrusion plans for
+  nested closed profiles,
+- reprojects each candidate back into the source views, and
+- compares the legacy candidate families against the enhanced searched candidate set.
+
+Run it with:
+
+```bash
+.venv/bin/python scripts/run_training_orthographic_case_study.py \
+  --config config/total_view_data.yaml
+```
+
+The checked-in artifacts live under `reports/training_orthographic_case_study/`, including:
+
+- `report.md`: human-readable summary of the selected case and regression slice.
+- `results.json`: per-candidate metrics, including reprojection scores.
+- `overlays/`: source-vs-reprojection overlay images for each evaluated candidate.
+
 ## Structure
 
 -   `agent_loop.py`: Core logic for the agentic loop.

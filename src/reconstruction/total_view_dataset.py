@@ -41,6 +41,26 @@ class OrthographicTriplet:
     views: dict[str, SvgOrthographicView]
 
 
+@dataclass(frozen=True)
+class PngOrthographicView:
+    """One PNG orthographic view from the archive."""
+
+    case_id: str
+    suffix: str
+    archive_path: Path
+    member_name: str
+    image_bytes: bytes
+    mime_type: str = "image/png"
+
+
+@dataclass(frozen=True)
+class PngOrthographicTriplet:
+    """A grouped f/r/t PNG case from Total_view_data."""
+
+    case_id: str
+    views: dict[str, PngOrthographicView]
+
+
 class TotalViewArchive:
     """Read grouped orthographic views directly from the dataset zip file."""
 
@@ -109,6 +129,73 @@ class TotalViewArchive:
             for suffix in view_suffixes
         }
         return OrthographicTriplet(case_id=case_id, views=views)
+
+
+class TotalViewPngArchive:
+    """Read grouped PNG orthographic views directly from the dataset zip file."""
+
+    def __init__(self, png_zip_path: str | Path):
+        self.png_zip_path = Path(png_zip_path)
+        self._members_by_case = self._build_index()
+
+    def _build_index(self) -> dict[str, dict[str, str]]:
+        index: dict[str, dict[str, str]] = {}
+        with ZipFile(self.png_zip_path) as zf:
+            for member_name in zf.namelist():
+                if member_name.endswith("/"):
+                    continue
+                stem = Path(member_name).stem
+                if "_" not in stem:
+                    continue
+                case_id, suffix = stem.rsplit("_", 1)
+                index.setdefault(case_id, {})[suffix] = member_name
+        return index
+
+    def available_views(self, case_id: str) -> list[str]:
+        """Return sorted available suffixes for a case."""
+        return sorted(self._members_by_case.get(case_id, {}))
+
+    def case_ids(
+        self,
+        required_views: tuple[str, ...] = ("f", "r", "t"),
+        require_complete: bool = True,
+    ) -> list[str]:
+        """List case ids, optionally filtering to complete orthographic triplets."""
+        case_ids = sorted(self._members_by_case)
+        if not require_complete:
+            return case_ids
+
+        required = set(required_views)
+        return [
+            case_id
+            for case_id in case_ids
+            if required.issubset(self._members_by_case[case_id])
+        ]
+
+    def load_view(self, case_id: str, suffix: str) -> PngOrthographicView:
+        """Load one PNG view from the archive."""
+        member_name = self._members_by_case[case_id][suffix]
+        with ZipFile(self.png_zip_path) as zf:
+            image_bytes = zf.read(member_name)
+        return PngOrthographicView(
+            case_id=case_id,
+            suffix=suffix,
+            archive_path=self.png_zip_path,
+            member_name=member_name,
+            image_bytes=image_bytes,
+        )
+
+    def load_triplet(
+        self,
+        case_id: str,
+        view_suffixes: tuple[str, str, str] = ("f", "r", "t"),
+    ) -> PngOrthographicTriplet:
+        """Load the configured PNG triplet for a case."""
+        views = {
+            suffix: self.load_view(case_id, suffix)
+            for suffix in view_suffixes
+        }
+        return PngOrthographicTriplet(case_id=case_id, views=views)
 
 
 def parse_svg_view(svg_text: str) -> tuple[tuple[float, float, float, float], list[SvgPolyline]]:

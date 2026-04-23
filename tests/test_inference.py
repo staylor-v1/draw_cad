@@ -111,3 +111,38 @@ class TestOllamaClient:
 
         client = OllamaLLMClient(base_url="http://localhost:11434")
         assert client.health_check() is True
+
+    @patch("httpx.Client")
+    def test_chat_passes_advanced_kwargs(self, mock_client_cls):
+        mock_response = MagicMock()
+        mock_response.json.return_value = {
+            "message": {
+                "content": "ok",
+                "tool_calls": [],
+            },
+            "model": "gemma4:e4b",
+            "done_reason": "stop",
+        }
+        mock_response.status_code = 200
+
+        mock_client = MagicMock()
+        mock_client.__enter__ = MagicMock(return_value=mock_client)
+        mock_client.__exit__ = MagicMock(return_value=False)
+        mock_client.post.return_value = mock_response
+        mock_client_cls.return_value = mock_client
+
+        client = OllamaLLMClient(base_url="http://localhost:11434")
+        messages = [ChatMessage(role="user", content="Use a tool")]
+        client.chat(
+            messages,
+            model="gemma4:e4b",
+            think=False,
+            tools=[{"type": "function", "function": {"name": "noop"}}],
+            options={"seed": 7},
+        )
+
+        _, kwargs = mock_client.post.call_args
+        payload = kwargs["json"]
+        assert payload["think"] is False
+        assert payload["tools"][0]["function"]["name"] == "noop"
+        assert payload["options"]["seed"] == 7
