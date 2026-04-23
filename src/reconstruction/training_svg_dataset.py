@@ -23,6 +23,7 @@ _STYLE_SPLIT_RE = re.compile(r"\s*;\s*")
 _VIEW_SUFFIXES = ("f", "r", "t")
 _VISIBLE_STROKES = frozenset({"black", "#000000"})
 _CURVE_SAMPLES = 16
+_NAMED_VIEW_GROUPS = frozenset({"front", "right", "top", "f", "r", "t", "view_f", "view_r", "view_t"})
 
 
 @dataclass(frozen=True)
@@ -111,6 +112,10 @@ def _walk_svg(
 
     next_matrix = matrix
     next_group_id = group_id
+    explicit_group_id = _normalized_view_group_id(elem.attrib.get("id", ""))
+    if explicit_group_id is not None:
+        next_group_id = explicit_group_id
+
     transform = elem.attrib.get("transform")
     if transform:
         next_matrix = _compose_matrices(matrix, _parse_transform(transform))
@@ -212,7 +217,8 @@ def _select_primary_views(groups: dict[str, dict[str, object]]) -> list[dict[str
         bbox = group["bbox"]
         assert isinstance(bbox, list)
         min_x, min_y, max_x, max_y = bbox
-        if not math.isfinite(min_x) or int(group["stroke_count"]) < 2:
+        is_named_view = _view_suffix_from_group_id(group_id, _VIEW_SUFFIXES) is not None
+        if not math.isfinite(min_x) or (int(group["stroke_count"]) < 2 and not is_named_view):
             continue
         width = max_x - min_x
         height = max_y - min_y
@@ -240,6 +246,14 @@ def _assign_view_suffixes(
     groups: list[dict[str, object]],
     view_suffixes: tuple[str, str, str],
 ) -> dict[str, dict[str, object]]:
+    explicit_groups: dict[str, dict[str, object]] = {}
+    for group in groups:
+        suffix = _view_suffix_from_group_id(str(group["group_id"]), view_suffixes)
+        if suffix is not None:
+            explicit_groups[suffix] = group
+    if set(explicit_groups) == set(view_suffixes):
+        return {suffix: explicit_groups[suffix] for suffix in view_suffixes}
+
     front_suffix, right_suffix, top_suffix = view_suffixes
     ranked_by_y = sorted(groups, key=lambda item: float(item["center_y"]))
     top_group = ranked_by_y[0]
@@ -377,14 +391,14 @@ def _parse_transform(raw: str) -> tuple[float, float, float, float, float, float
     raw = raw.strip()
     matrix_match = _MATRIX_RE.fullmatch(raw)
     if matrix_match:
-        values = [float(value.strip()) for value in matrix_match.group(1).split(",")]
+        values = _parse_transform_values(matrix_match.group(1))
         if len(values) != 6:
             raise ValueError(f"Unexpected SVG matrix transform: {raw}")
         return tuple(values)  # type: ignore[return-value]
 
     translate_match = _TRANSLATE_RE.fullmatch(raw)
     if translate_match:
-        values = [float(value.strip()) for value in translate_match.group(1).split(",")]
+        values = _parse_transform_values(translate_match.group(1))
         if len(values) == 1:
             values.append(0.0)
         if len(values) != 2:
@@ -392,6 +406,10 @@ def _parse_transform(raw: str) -> tuple[float, float, float, float, float, float
         return (1.0, 0.0, 0.0, 1.0, values[0], values[1])
 
     raise ValueError(f"Unsupported SVG transform: {raw}")
+
+
+def _parse_transform_values(raw: str) -> list[float]:
+    return [float(value) for value in re.split(r"[,\s]+", raw.strip()) if value]
 
 
 def _compose_matrices(
@@ -419,6 +437,32 @@ def _apply_matrix(
     return (a * x + c * y + e, b * x + d * y + f)
 
 
+def _normalized_view_group_id(raw: str) -> str | None:
+    normalized = raw.strip().lower()
+    if normalized in _NAMED_VIEW_GROUPS:
+        return normalized
+    return None
+
+
+def _view_suffix_from_group_id(
+    group_id: str,
+    view_suffixes: tuple[str, str, str],
+) -> str | None:
+    front_suffix, right_suffix, top_suffix = view_suffixes
+    normalized = group_id.strip().lower()
+    mapping = {
+        "front": front_suffix,
+        "f": front_suffix,
+        "view_f": front_suffix,
+        "right": right_suffix,
+        "r": right_suffix,
+        "view_r": right_suffix,
+        "top": top_suffix,
+        "t": top_suffix,
+        "view_t": top_suffix,
+    }
+    return mapping.get(normalized)
+
+
 def _group_id_from_matrix(matrix: tuple[float, float, float, float, float, float]) -> str:
     return ",".join(f"{value:.6f}" for value in matrix)
-

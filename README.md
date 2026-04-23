@@ -102,6 +102,46 @@ The checked-in experiment artifacts live under `reports/gemma4_total_view/`, inc
 - `selected_cases.yaml`: the selected calibration and evaluation cases.
 - `selected_cases_contact_sheet.png`: the chosen orthographic triplets.
 
+## Gemma 4 Roundtrip Agent
+
+The `gemma4_agent/` subproject exposes a reusable local-Ollama Gemma 4 agent for
+closed-loop drawing/CAD/drawing reconstruction:
+
+```text
+drawing -> STEP part A -> generated drawing -> STEP part B
+```
+
+The two drawings may differ, but the two STEP parts are compared for geometric
+equivalence. The agent gets explicit tool schemas for drawing inspection,
+deterministic SVG reconstruction, build123d execution, STEP reprojection, and
+STEP-vs-STEP comparison.
+
+Run a roundtrip with:
+
+```bash
+.venv/bin/python -m gemma4_agent.cli roundtrip path/to/drawing.png \
+  --output-dir experiments/gemma4_agent/example
+```
+
+Print the Gemma-facing tool instructions and Ollama schemas with:
+
+```bash
+.venv/bin/python -m gemma4_agent.cli tools
+```
+
+To run the local GD&T raster drawing tuning set:
+
+```bash
+.venv/bin/python scripts/run_gemma4_gdt_roundtrips.py \
+  --input-dir training_data/gdt \
+  --output-dir experiments/gemma4_agent/gdt_roundtrips \
+  --model gemma4:26b
+```
+
+The batch runner stops at `--timeout-hours` (default: 8), writes
+`gdt_roundtrip_summary.json`, supports `--resume`, and accepts repeated
+`--include` glob patterns for targeted reruns.
+
 ## Training SVG Orthographic Case Study
 
 The repo now also includes a closed-loop case-study runner for the local `training_data`

@@ -30,10 +30,11 @@ all = ["drawing-to-cad[ocr,optimizer,dev]"]
 
 [project.scripts]
 drawing-to-cad = "main:main"
+gemma4-agent = "gemma4_agent.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["src*", "tools*"]
+include = ["src*", "tools*", "gemma4_agent*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
