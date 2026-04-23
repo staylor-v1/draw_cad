@@ -85,6 +85,7 @@ Run iterative prompt tuning on the local GD&T raster drawings:
 .venv/bin/python scripts/tune_gemma4_gdt_roundtrip.py \
   --input-dir training_data/gdt \
   --output-dir experiments/gemma4_agent/gdt_training_loop \
+  --target-source-fidelity-threshold 0.99 \
   --timeout-hours 8
 ```
 
@@ -98,3 +99,27 @@ The loop writes per-iteration profiles under
 `experiments/gemma4_agent/gdt_training_loop/profiles/` and feeds failed cases back into
 the next profile revision. Add `--promote-best-profile` to overwrite
 `gemma4_agent/prompts/agent.md` with the best profile from the run.
+
+By default, the loop starts with a lower source-fidelity curriculum threshold and
+ratchets toward the `0.99` target. Use `--source-fidelity-threshold 0.99` to force the
+final threshold from the first iteration.
+
+Optional local drawing-evidence extractors can be compared without changing the CAD
+agent:
+
+```bash
+.venv/bin/python scripts/run_gemma4_gdt_experiments.py \
+  --input-dir training_data/gdt \
+  --target-source-fidelity-threshold 0.99 \
+  --timeout-hours 8
+```
+
+Available extractor names are `heuristic`, `gemma4`, `florence2`, and `yolo_donut`.
+The Florence-2 and YOLO/Donut paths are local-only experiment hooks:
+
+```bash
+.venv/bin/python scripts/run_gemma4_gdt_experiments.py \
+  --florence2-model-path /models/florence2-engineering-drawings \
+  --yolo-obb-model-path /models/yolov11-obb-engineering.pt \
+  --donut-model-path /models/donut-engineering-parser
+```

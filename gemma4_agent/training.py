@@ -19,6 +19,9 @@ SOURCE_FIDELITY_KEYS = (
     "annotation_filtering",
 )
 
+DEFAULT_INITIAL_SOURCE_FIDELITY_THRESHOLD = 0.72
+DEFAULT_TARGET_SOURCE_FIDELITY_THRESHOLD = 0.99
+
 
 SOURCE_FIDELITY_SYSTEM_PROMPT = """You are an independent mechanical drawing fidelity judge.
 
@@ -176,6 +179,22 @@ def training_case_passed(
     }
 
 
+def threshold_for_iteration(
+    *,
+    iteration: int,
+    initial_threshold: float = DEFAULT_INITIAL_SOURCE_FIDELITY_THRESHOLD,
+    target_threshold: float = DEFAULT_TARGET_SOURCE_FIDELITY_THRESHOLD,
+    threshold_step: float = 0.05,
+) -> float:
+    """Return the curriculum threshold for an iteration, capped at the target."""
+    initial = _clamp_score(initial_threshold)
+    target = _clamp_score(target_threshold)
+    if target < initial:
+        return target
+    step = max(0.0, float(threshold_step))
+    return min(target, initial + max(0, iteration) * step)
+
+
 def build_profile_revision_prompt(
     *,
     current_profile: str,
@@ -195,6 +214,7 @@ def build_profile_revision_prompt(
                 "Preserve rules that are still correct.",
                 "Add concrete reconstruction tactics for the observed drawing failures.",
                 "Reject envelope-only or title-block-derived geometry.",
+                "Use drawing_evidence fields when present, but avoid copying annotation text into geometry.",
                 "Keep the profile directly usable as gemma4_agent/prompts/agent.md.",
             ],
         },
@@ -262,6 +282,18 @@ def _compact_record(record: dict[str, Any]) -> dict[str, Any]:
         "missing_features": source.get("missing_features", []),
         "spurious_geometry": source.get("spurious_geometry", []),
         "actionable_prompt_feedback": source.get("actionable_prompt_feedback", []),
+        "drawing_evidence": {
+            key: (record.get("drawing_evidence") or {}).get(key, [])
+            for key in (
+                "physical_features",
+                "dimensions",
+                "gd_t",
+                "annotation_regions",
+                "title_block_or_sheet_regions",
+                "reconstruction_hints",
+                "uncertainties",
+            )
+        },
         "roundtrip_metrics": (record.get("comparison") or {}).get("metrics", {}),
     }
 

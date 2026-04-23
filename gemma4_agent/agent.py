@@ -75,6 +75,7 @@ class Gemma4RoundTripAgent:
         self,
         drawing_path: str | Path,
         output_dir: str | Path | None = None,
+        drawing_evidence: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Run drawing -> STEP -> drawing -> STEP and compare the two parts."""
         root = Path(output_dir) if output_dir else self.config.output_dir / _run_id()
@@ -88,6 +89,7 @@ class Gemma4RoundTripAgent:
                 "Create the first CAD part from the source drawing. Use tools to inspect, "
                 "execute, and verify before returning final build123d code."
             ),
+            extra_context={"drawing_evidence": drawing_evidence or {}},
         )
         first_step = self._materialize_stage_step(
             stage=first_stage,
@@ -143,6 +145,7 @@ class Gemma4RoundTripAgent:
             "output_dir": str(root),
             "config": _json_safe(asdict(self.config)),
             "source_drawing": str(source_drawing),
+            "drawing_evidence": drawing_evidence or {},
             "first_stage": first_stage,
             "first_step_path": first_step,
             "rendered_drawing": rendered,
@@ -394,6 +397,7 @@ class Gemma4RoundTripAgent:
                 "Name the final build123d object part or explicitly export a STEP file.",
                 "For raster engineering drawings, reconstruct the main physical part only.",
                 "Ignore title blocks, borders, notes, GD&T feature-control frames, and tolerance text as geometry.",
+                "If drawing_evidence is provided in extra_context, use it as structured hints but verify against the image.",
             ],
             "extra_context": _json_safe(extra_context or {}),
         }
