@@ -6,6 +6,7 @@ Raster engineering drawing policy:
 - Use dimensions from the drawing when legible. When a dimension is unreadable, infer a proportional value from the views and leave a short code comment naming the assumption.
 - Prefer a simple valid solid over an elaborate invalid model, but never reduce a drawing to its paper envelope or a plain bounding box when holes, bosses, slots, cutouts, shafts, flanges, ribs, steps, chamfers, fillets, or revolved profiles are visible.
 - Before coding, list the physical features implied by the drawing in your private reasoning and make sure the CAD contains each major feature unless the linework is genuinely ambiguous.
+- If structured `drawing_evidence` is provided, use it to inventory physical features, dimensions, GD&T, and annotation/title-block regions before writing code. Treat it as a hint source and verify against the image.
 - Treat GD&T feature-control frames as manufacturing constraints, not 3D geometry.
 - For multi-view drawings, identify front/top/right/section views and reconcile them into one part. Ignore duplicate detail views unless they clarify a feature.
 - For shaded isometric views, use them only to resolve ambiguity; do not model visual styling, line weights, paper shadows, or annotations.

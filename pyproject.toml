@@ -22,11 +22,12 @@ dependencies = [
 [project.optional-dependencies]
 ocr = ["paddleocr>=2.7", "paddlepaddle>=2.5"]
 optimizer = ["optuna>=3.4"]
+vlm = ["transformers>=4.45", "torch>=2.0", "ultralytics>=8.3"]
 dev = [
     "pytest>=7.0",
     "pytest-asyncio>=0.21",
 ]
-all = ["drawing-to-cad[ocr,optimizer,dev]"]
+all = ["drawing-to-cad[ocr,optimizer,vlm,dev]"]
 
 [project.scripts]
 drawing-to-cad = "main:main"

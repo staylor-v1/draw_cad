@@ -17,10 +17,14 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from gemma4_agent.agent import Gemma4RoundTripAgent, Gemma4RoundTripConfig
+from gemma4_agent.extractors import ExtractorRuntime, build_extractors, run_extractors
 from gemma4_agent.training import (
+    DEFAULT_INITIAL_SOURCE_FIDELITY_THRESHOLD,
+    DEFAULT_TARGET_SOURCE_FIDELITY_THRESHOLD,
     judge_source_fidelity,
     propose_profile_revision,
     training_case_passed,
+    threshold_for_iteration,
 )
 
 
@@ -50,8 +54,43 @@ def main() -> None:
         default=[],
         help="Only run image names matching this shell-style pattern. May be repeated.",
     )
-    parser.add_argument("--source-fidelity-threshold", type=float, default=0.72)
+    parser.add_argument(
+        "--source-fidelity-threshold",
+        type=float,
+        help="Use one fixed source-fidelity threshold. Overrides curriculum settings.",
+    )
+    parser.add_argument(
+        "--initial-source-fidelity-threshold",
+        type=float,
+        default=DEFAULT_INITIAL_SOURCE_FIDELITY_THRESHOLD,
+        help="Curriculum starting threshold used before ratcheting toward the target.",
+    )
+    parser.add_argument(
+        "--target-source-fidelity-threshold",
+        type=float,
+        default=DEFAULT_TARGET_SOURCE_FIDELITY_THRESHOLD,
+        help="Final source-fidelity goal. Defaults to 0.99.",
+    )
+    parser.add_argument(
+        "--threshold-step",
+        type=float,
+        default=0.05,
+        help="Per-iteration source-fidelity threshold increase until the target is reached.",
+    )
     parser.add_argument("--feature-match-threshold", type=float)
+    parser.add_argument(
+        "--extractor",
+        action="append",
+        default=[],
+        help=(
+            "Drawing evidence extractor to run before CAD reconstruction. May be repeated. "
+            "Use none, heuristic, gemma4, florence2, or yolo_donut."
+        ),
+    )
+    parser.add_argument("--florence2-model-path", help="Local fine-tuned Florence-2 model directory")
+    parser.add_argument("--yolo-obb-model-path", help="Local YOLOv11-OBB model file")
+    parser.add_argument("--donut-model-path", help="Local fine-tuned Donut model directory")
+    parser.add_argument("--extractor-device", help="Optional torch device for local VLM extractors")
     parser.add_argument(
         "--skip-profile-revision",
         action="store_true",
@@ -63,6 +102,8 @@ def main() -> None:
         help="Overwrite --profile-path with the best profile produced by this run.",
     )
     args = parser.parse_args()
+    if not args.extractor:
+        args.extractor = ["gemma4"]
 
     config = Gemma4RoundTripConfig.from_yaml(args.config)
     overrides: dict[str, Any] = {}
@@ -72,6 +113,9 @@ def main() -> None:
         overrides["base_url"] = args.base_url
     if overrides:
         config = Gemma4RoundTripConfig(**{**config.__dict__, **overrides})
+    if args.source_fidelity_threshold is not None:
+        args.initial_source_fidelity_threshold = args.source_fidelity_threshold
+        args.target_source_fidelity_threshold = args.source_fidelity_threshold
 
     output_dir = Path(args.output_dir)
     profiles_dir = output_dir / "profiles"
@@ -89,6 +133,15 @@ def main() -> None:
     history: list[dict[str, Any]] = []
     best_profile_path = current_profile_path
     best_passed = -1
+    extractor_runtime = ExtractorRuntime(
+        model=config.model,
+        base_url=config.base_url,
+        florence2_model_path=Path(args.florence2_model_path) if args.florence2_model_path else None,
+        yolo_obb_model_path=Path(args.yolo_obb_model_path) if args.yolo_obb_model_path else None,
+        donut_model_path=Path(args.donut_model_path) if args.donut_model_path else None,
+        device=args.extractor_device,
+    )
+    extractors = build_extractors(args.extractor, extractor_runtime)
 
     for iteration in range(args.max_iterations):
         if time.monotonic() >= deadline:
@@ -113,16 +166,30 @@ def main() -> None:
             }
         )
         agent = Gemma4RoundTripAgent(active_config)
+        active_source_threshold = threshold_for_iteration(
+            iteration=iteration,
+            initial_threshold=args.initial_source_fidelity_threshold,
+            target_threshold=args.target_source_fidelity_threshold,
+            threshold_step=args.threshold_step,
+        )
         records = _run_iteration(
             agent=agent,
             config=active_config,
+            extractors=extractors,
             image_paths=image_paths,
             iteration_dir=iteration_dir,
             deadline=deadline,
-            source_fidelity_threshold=args.source_fidelity_threshold,
+            source_fidelity_threshold=active_source_threshold,
             feature_match_threshold=args.feature_match_threshold,
         )
-        aggregate = _aggregate(iteration, records, iteration_dir, active_profile_path)
+        aggregate = _aggregate(
+            iteration,
+            records,
+            iteration_dir,
+            active_profile_path,
+            active_source_threshold,
+            args.target_source_fidelity_threshold,
+        )
         history.append(aggregate)
         (iteration_dir / "iteration_summary.json").write_text(
             json.dumps(aggregate, indent=2),
@@ -135,25 +202,32 @@ def main() -> None:
         if passed > best_passed:
             best_passed = passed
             best_profile_path = active_profile_path
-        if aggregate["failed"] == 0 and aggregate["completed"] == len(image_paths):
+        if (
+            aggregate["failed"] == 0
+            and aggregate["completed"] == len(image_paths)
+            and active_source_threshold >= args.target_source_fidelity_threshold
+        ):
             break
-        if args.skip_profile_revision:
+        if args.skip_profile_revision and active_source_threshold >= args.target_source_fidelity_threshold:
             break
         if time.monotonic() >= deadline:
             break
 
         failed_records = [record for record in records if not record.get("success")]
         passed_records = [record for record in records if record.get("success")]
-        revised_profile = propose_profile_revision(
-            model=active_config.model,
-            base_url=active_config.base_url,
-            current_profile=active_profile_path.read_text(encoding="utf-8"),
-            failed_records=failed_records,
-            passed_records=passed_records,
-            temperature=0.2,
-        )
         current_profile_path = profiles_dir / f"iteration_{iteration + 1:03d}.md"
-        current_profile_path.write_text(revised_profile + "\n", encoding="utf-8")
+        if failed_records and not args.skip_profile_revision:
+            revised_profile = propose_profile_revision(
+                model=active_config.model,
+                base_url=active_config.base_url,
+                current_profile=active_profile_path.read_text(encoding="utf-8"),
+                failed_records=failed_records,
+                passed_records=passed_records,
+                temperature=0.2,
+            )
+            current_profile_path.write_text(revised_profile + "\n", encoding="utf-8")
+        else:
+            shutil.copyfile(active_profile_path, current_profile_path)
 
     _write_run_summary(output_dir, history, best_profile_path)
     if args.promote_best_profile and best_profile_path.exists():
@@ -164,6 +238,7 @@ def _run_iteration(
     *,
     agent: Gemma4RoundTripAgent,
     config: Gemma4RoundTripConfig,
+    extractors: list[Any],
     image_paths: list[Path],
     iteration_dir: Path,
     deadline: float,
@@ -187,7 +262,16 @@ def _run_iteration(
 
         started = time.monotonic()
         try:
-            summary = agent.run_roundtrip(image_path, output_dir=case_dir)
+            drawing_evidence = run_extractors(
+                extractors=extractors,
+                drawing_path=image_path,
+                output_dir=case_dir / "evidence",
+            )
+            summary = agent.run_roundtrip(
+                image_path,
+                output_dir=case_dir,
+                drawing_evidence=drawing_evidence,
+            )
             contact_sheet = summary.get("rendered_drawing", {}).get("contact_sheet_path")
             if not contact_sheet:
                 raise RuntimeError("Roundtrip did not produce a generated contact sheet")
@@ -205,6 +289,7 @@ def _run_iteration(
                 feature_match_threshold=feature_match_threshold,
             )
             summary["source_fidelity"] = source_fidelity
+            summary["drawing_evidence"] = drawing_evidence
             summary["success_criteria"] = criteria
             summary["success"] = bool(criteria["passed"])
             summary_path = case_dir / "roundtrip_summary.json"
@@ -256,6 +341,7 @@ def _record_from_summary(image_path: Path, summary: dict[str, Any]) -> dict[str,
         "second_step_path": summary.get("second_step_path"),
         "roundtrip_equivalent": bool(summary.get("roundtrip_equivalent")),
         "used_fallback": bool(summary.get("used_fallback")),
+        "drawing_evidence": summary.get("drawing_evidence", {}),
         "success_criteria": summary.get("success_criteria", {}),
         "source_fidelity": fidelity,
         "comparison": comparison,
@@ -267,6 +353,8 @@ def _aggregate(
     records: list[dict[str, Any]],
     iteration_dir: Path,
     profile_path: Path,
+    source_fidelity_threshold: float,
+    target_source_fidelity_threshold: float,
 ) -> dict[str, Any]:
     completed = [record for record in records if not record.get("skipped")]
     passed = [record for record in completed if record.get("success")]
@@ -274,6 +362,8 @@ def _aggregate(
         "iteration": iteration,
         "output_dir": str(iteration_dir),
         "profile_path": str(profile_path),
+        "source_fidelity_threshold": source_fidelity_threshold,
+        "target_source_fidelity_threshold": target_source_fidelity_threshold,
         "total": len(records),
         "completed": len(completed),
         "passed": len(passed),

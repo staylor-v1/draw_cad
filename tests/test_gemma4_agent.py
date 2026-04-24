@@ -5,10 +5,16 @@ from pathlib import Path
 
 import gemma4_agent.agent as agent_module
 from gemma4_agent.agent import Gemma4RoundTripAgent, _stage_used_fallback
+from gemma4_agent.extractors import (
+    HeuristicEvidenceExtractor,
+    merge_drawing_evidence,
+    run_extractors,
+)
 from PIL import Image
 from gemma4_agent.training import (
     extract_json_object,
     normalize_source_fidelity,
+    threshold_for_iteration,
     training_case_passed,
 )
 from gemma4_agent.toolbox import (
@@ -208,3 +214,87 @@ def test_normalize_source_fidelity_clamps_scores_and_lists():
     assert normalized["overall_score"] == 1.0
     assert normalized["feature_match"] == 0.0
     assert normalized["major_errors"] == ["plain bounding box"]
+
+
+def test_threshold_for_iteration_ramps_to_target():
+    assert threshold_for_iteration(iteration=0, initial_threshold=0.72, target_threshold=0.99) == 0.72
+    assert round(threshold_for_iteration(iteration=1, initial_threshold=0.72, target_threshold=0.99), 2) == 0.77
+    assert threshold_for_iteration(iteration=20, initial_threshold=0.72, target_threshold=0.99) == 0.99
+
+
+def test_merge_drawing_evidence_deduplicates_and_keeps_failures_visible():
+    merged = merge_drawing_evidence(
+        [
+            {
+                "backend": "gemma4",
+                "success": True,
+                "available": True,
+                "evidence": {
+                    "physical_features": ["through hole", "through hole"],
+                    "dimensions": ["10 mm"],
+                },
+            },
+            {
+                "backend": "florence2",
+                "success": False,
+                "available": False,
+                "error": "missing local model",
+                "evidence": {"physical_features": ["slot"]},
+            },
+        ]
+    )
+
+    assert merged["physical_features"] == ["through hole", "slot"]
+    assert merged["available_backend_names"] == ["gemma4"]
+    assert "missing local model" in merged["uncertainties"][0]
+
+
+def test_heuristic_extractor_writes_local_evidence(tmp_path: Path):
+    image_path = tmp_path / "drawing.png"
+    image = Image.new("RGB", (120, 80), "white")
+    image.save(image_path)
+
+    evidence = run_extractors(
+        extractors=[HeuristicEvidenceExtractor()],
+        drawing_path=image_path,
+        output_dir=tmp_path / "evidence",
+    )
+
+    assert evidence["available_backend_names"] == ["heuristic"]
+    assert (tmp_path / "evidence" / "drawing_evidence.json").exists()
+    assert any("source raster size" in item for item in evidence["reconstruction_hints"])
+
+
+def test_run_roundtrip_passes_drawing_evidence_to_first_stage(monkeypatch, tmp_path: Path):
+    agent = Gemma4RoundTripAgent()
+    captured_contexts = []
+
+    def fake_cad_from_drawing(*, drawing_path, output_dir, objective, extra_context=None):
+        captured_contexts.append(extra_context or {})
+        return {
+            "drawing_path": str(drawing_path),
+            "output_dir": str(output_dir),
+            "code": "",
+            "successful_tool_steps": [str(output_dir / "tool.step")],
+        }
+
+    monkeypatch.setattr(agent, "_cad_from_drawing", fake_cad_from_drawing)
+    monkeypatch.setattr(agent, "_materialize_stage_step", lambda stage, output_dir, fallback_name: stage["successful_tool_steps"][-1])
+    monkeypatch.setattr(agent_module, "render_step_to_drawing", lambda *args, **kwargs: {
+        "layout_svg_path": str(tmp_path / "layout.svg"),
+        "contact_sheet_path": str(tmp_path / "contact.png"),
+    })
+    monkeypatch.setattr(agent, "_select_best_matching_step", lambda reference_step, stage, default_step: default_step)
+    monkeypatch.setattr(agent_module, "compare_cad_parts", lambda first, second: {
+        "equivalent": True,
+        "metrics": {},
+    })
+
+    summary = agent.run_roundtrip(
+        tmp_path / "source.png",
+        output_dir=tmp_path / "run",
+        drawing_evidence={"physical_features": ["slot"]},
+    )
+
+    assert captured_contexts[0]["drawing_evidence"]["physical_features"] == ["slot"]
+    assert summary["drawing_evidence"]["physical_features"] == ["slot"]
