@@ -1,4 +1,4 @@
-.PHONY: install test lint run-pipeline run-benchmark run-optimizer clean
+.PHONY: install test lint run-dashboard run-titleblock-harness run-gdt-harness run-simple1-callout-agent run-pipeline run-benchmark run-optimizer clean
 
 install:
 	pip install -e ".[all]"
@@ -8,6 +8,18 @@ install-core:
 
 test:
 	pytest tests/ -v
+
+run-dashboard:
+	.venv/bin/python web_ui.py --port 12080
+
+run-titleblock-harness:
+	.venv/bin/python scripts/run_titleblock_harness.py --output-dir experiments/titleblock_harness
+
+run-gdt-harness:
+	.venv/bin/python scripts/run_gdt_harness.py --output-dir experiments/gdt_harness
+
+run-simple1-callout-agent:
+	.venv/bin/python scripts/run_gemma4_callout_agent.py training_data/gdt/simple1.webp
 
 run-pipeline:
 	python scripts/run_pipeline.py $(ARGS)

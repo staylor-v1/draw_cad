@@ -142,6 +142,10 @@ The batch runner stops at `--timeout-hours` (default: 8), writes
 `gdt_roundtrip_summary.json`, supports `--resume`, and accepts repeated
 `--include` glob patterns for targeted reruns.
 
+The curated GD&T raster cases in `training_data/gdt` are named for easy targeting:
+`connecting_rod.webp`, `flange1.png`, `flange2.png`, `flange3.webp`, `hub.webp`,
+`l_bracket.png`, `simple1.webp`, and `threaded_cap.jpg`.
+
 ## Training SVG Orthographic Case Study
 
 The repo now also includes a closed-loop case-study runner for the local `training_data`

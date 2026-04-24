@@ -93,6 +93,11 @@ Run iterative prompt tuning on the local GD&T raster drawings:
   --timeout-hours 8
 ```
 
+The current curated GD&T cases use readable filenames:
+`connecting_rod.webp`, `flange1.png`, `flange2.png`, `flange3.webp`, `hub.webp`,
+`l_bracket.png`, `simple1.webp`, and `threaded_cap.jpg`. Use `--include`, for
+example `--include 'flange*.png'`, for targeted reruns.
+
 Each case passes only when:
 
 - `pass_1.step` and `pass_2.step` are geometrically equivalent.
