@@ -14,6 +14,8 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 
+from src.segmentation.title_block import analyze_drawing_structure
+
 
 ROOT = Path(__file__).resolve().parent
 STATIC_DIR = ROOT / "web_dashboard" / "static"
@@ -94,7 +96,8 @@ class DashboardHandler(SimpleHTTPRequestHandler):
         filename = payload.get("filename") or "drawing"
         image_url = payload.get("imageUrl") or ""
         include_3d = _probably_has_3d_view(filename)
-        self._send_json(_mock_analysis(filename, image_url, include_3d))
+        structure = _analysis_structure_for_url(image_url)
+        self._send_json(_mock_analysis(filename, image_url, include_3d, structure))
 
     def _send_json(self, payload: dict, status: HTTPStatus = HTTPStatus.OK) -> None:
         body = json.dumps(payload, indent=2).encode("utf-8")
@@ -132,8 +135,50 @@ def _probably_has_3d_view(filename: str) -> bool:
     return any(token in lower for token in ("iso", "3d", "perspective", "assembly", "rod", "bracket"))
 
 
-def _mock_analysis(filename: str, image_url: str, include_3d: bool) -> dict:
+def _analysis_structure_for_url(image_url: str) -> dict:
+    route = unquote(urlparse(image_url).path)
+    if not route.startswith("/uploads/"):
+        return {}
+    local_path = _contained_path(UPLOAD_DIR, route.removeprefix("/uploads/"))
+    if not local_path.exists():
+        return {}
+    try:
+        return analyze_drawing_structure(local_path)
+    except Exception as exc:
+        return {
+            "titleBlock": {
+                "crop": {"x": 0.52, "y": 0.72, "w": 0.43, "h": 0.22},
+                "confidence": 0.05,
+                "candidate": {"notes": [f"title-block detector failed: {exc}"]},
+            }
+        }
+
+
+def _mock_analysis(filename: str, image_url: str, include_3d: bool, structure: dict | None = None) -> dict:
     """Return a stable fixture shaped like the future Gemma 4 analysis output."""
+
+    structure = structure or {}
+    title_block = structure.get(
+        "titleBlock",
+        {
+            "present": False,
+            "crop": {"x": 0.52, "y": 0.72, "w": 0.43, "h": 0.22},
+            "confidence": 0.12,
+            "candidate": {"notes": ["lower-right prior fallback"]},
+        },
+    )
+    border = structure.get(
+        "border",
+        {
+            "present": False,
+            "confidence": 0.35,
+            "masks": [],
+            "notes": [
+                "no sheet border detected",
+                "do not mask border/title-block regions unless another detector finds them",
+            ],
+        },
+    )
 
     projections = [
         {
@@ -169,13 +214,44 @@ def _mock_analysis(filename: str, image_url: str, include_3d: bool) -> dict:
             }
         )
 
+    detected_projections = structure.get("projections") or projections
+    detected_callouts = structure.get("callouts") or [
+        {"label": "Diameter callout", "value": "diameter 24.00", "confidence": 0.70},
+        {"label": "Linear dimension", "value": "72.00 +/- 0.10", "confidence": 0.73},
+        {"label": "Surface finish", "value": "Ra 1.6", "confidence": 0.52},
+    ]
+    detected_gdt = structure.get("gdt") or [
+        {
+            "id": "gdt-1",
+            "label": "Position tolerance",
+            "value": "POS | diameter 0.10 | A | B",
+            "confidence": 0.69,
+            "crop": {"x": 0.19, "y": 0.61, "w": 0.16, "h": 0.07},
+            "symbol": "position",
+            "kind": "feature_control_frame",
+        },
+        {
+            "id": "gdt-2",
+            "label": "Flatness tolerance",
+            "value": "FLAT | 0.05",
+            "confidence": 0.64,
+            "crop": {"x": 0.47, "y": 0.59, "w": 0.12, "h": 0.06},
+            "symbol": "flatness",
+            "kind": "feature_control_frame",
+        },
+    ]
+
     return {
         "filename": filename,
         "imageUrl": image_url,
         "model": "gemma4:placeholder",
         "status": "mock-analysis",
+        "border": border,
         "titleBlock": {
-            "crop": {"x": 0.60, "y": 0.70, "w": 0.34, "h": 0.22},
+            "present": title_block.get("present", False),
+            "crop": title_block["crop"],
+            "confidence": title_block.get("confidence", 0.12),
+            "candidate": title_block.get("candidate", {}),
             "fields": [
                 {"label": "Drawing number", "value": "DWG-UNREAD", "confidence": 0.41},
                 {"label": "Revision", "value": "A", "confidence": 0.58},
@@ -183,30 +259,9 @@ def _mock_analysis(filename: str, image_url: str, include_3d: bool) -> dict:
                 {"label": "Material", "value": "unknown", "confidence": 0.20},
             ],
         },
-        "gdt": [
-            {
-                "id": "gdt-1",
-                "label": "Position tolerance",
-                "value": "POS | diameter 0.10 | A | B",
-                "confidence": 0.69,
-                "crop": {"x": 0.19, "y": 0.61, "w": 0.16, "h": 0.07},
-                "symbol": "position",
-            },
-            {
-                "id": "gdt-2",
-                "label": "Flatness tolerance",
-                "value": "FLAT | 0.05",
-                "confidence": 0.64,
-                "crop": {"x": 0.47, "y": 0.59, "w": 0.12, "h": 0.06},
-                "symbol": "flatness",
-            },
-        ],
-        "projections": projections,
-        "callouts": [
-            {"label": "Diameter callout", "value": "diameter 24.00", "confidence": 0.70},
-            {"label": "Linear dimension", "value": "72.00 +/- 0.10", "confidence": 0.73},
-            {"label": "Surface finish", "value": "Ra 1.6", "confidence": 0.52},
-        ],
+        "gdt": detected_gdt,
+        "projections": detected_projections,
+        "callouts": detected_callouts,
         "cad": {
             "strategy": "orthographic profile extraction with GD&T annotation pass",
             "stepFile": None,

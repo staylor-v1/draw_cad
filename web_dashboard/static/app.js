@@ -165,12 +165,70 @@ function cropData(crop) {
   return `${Math.round(crop.x * 100)},${Math.round(crop.y * 100)},${Math.round(crop.w * 100)},${Math.round(crop.h * 100)}`;
 }
 
-function renderCrop(container, crop, feedback, proposed, confidence) {
+function renderCrop(container, crop, feedback, proposed, confidence, options = {}) {
   container.innerHTML = "";
   container.dataset.feedback = feedback;
   container.dataset.proposed = proposed;
   container.dataset.confidence = confidence;
   container.dataset.crop = cropData(crop);
+
+  const fit = options.fit || "cover";
+  if (fit === "contain") {
+    const canvas = document.createElement("canvas");
+    canvas.setAttribute("aria-label", proposed);
+    container.appendChild(canvas);
+    const image = new Image();
+    image.onload = () => {
+      const box = container.getBoundingClientRect();
+      const cropWidth = Math.max(1, image.naturalWidth * crop.w);
+      const cropHeight = Math.max(1, image.naturalHeight * crop.h);
+      const canvasWidth = Math.max(260, Math.round(box.width || container.clientWidth || 420));
+      const canvasHeight = Math.max(170, Math.round(box.height || container.clientHeight || 240));
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+      const context = canvas.getContext("2d");
+      context.fillStyle = "#fffefa";
+      context.fillRect(0, 0, canvasWidth, canvasHeight);
+      const scale = Math.min(canvasWidth / cropWidth, canvasHeight / cropHeight);
+      const drawWidth = cropWidth * scale;
+      const drawHeight = cropHeight * scale;
+      const dx = (canvasWidth - drawWidth) / 2;
+      const dy = (canvasHeight - drawHeight) / 2;
+      context.drawImage(
+        image,
+        crop.x * image.naturalWidth,
+        crop.y * image.naturalHeight,
+        cropWidth,
+        cropHeight,
+        dx,
+        dy,
+        drawWidth,
+        drawHeight
+      );
+      (options.masks || []).forEach((mask) => {
+        const ix0 = Math.max(crop.x, mask.x);
+        const iy0 = Math.max(crop.y, mask.y);
+        const ix1 = Math.min(crop.x + crop.w, mask.x + mask.w);
+        const iy1 = Math.min(crop.y + crop.h, mask.y + mask.h);
+        if (ix1 <= ix0 || iy1 <= iy0) return;
+        const mx = dx + ((ix0 - crop.x) * image.naturalWidth * scale);
+        const my = dy + ((iy0 - crop.y) * image.naturalHeight * scale);
+        const mw = (ix1 - ix0) * image.naturalWidth * scale;
+        const mh = (iy1 - iy0) * image.naturalHeight * scale;
+        context.fillStyle = "#fffefa";
+        context.fillRect(mx, my, mw, mh);
+        context.strokeStyle = "#c7462d";
+        context.setLineDash([5, 4]);
+        context.strokeRect(mx, my, mw, mh);
+        context.setLineDash([]);
+      });
+      context.strokeStyle = "#c7462d";
+      context.lineWidth = 2;
+      context.strokeRect(dx + 1, dy + 1, Math.max(1, drawWidth - 2), Math.max(1, drawHeight - 2));
+    };
+    image.src = state.upload.url;
+    return;
+  }
 
   const image = document.createElement("img");
   image.alt = proposed;
@@ -186,7 +244,48 @@ function renderCrop(container, crop, feedback, proposed, confidence) {
   container.appendChild(image);
 }
 
+function renderMask(container, masks, feedback, proposed, confidence) {
+  container.innerHTML = "";
+  container.dataset.feedback = feedback;
+  container.dataset.proposed = proposed;
+  container.dataset.confidence = confidence;
+  container.dataset.crop = masks.map(cropData).join(";");
+
+  const image = new Image();
+  image.onload = () => {
+    const ratio = image.naturalWidth / image.naturalHeight || 1;
+    const width = Math.min(980, Math.max(420, Math.round(container.clientWidth || 640)));
+    const height = Math.round(width / ratio);
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext("2d");
+    context.fillStyle = "#fffefa";
+    context.fillRect(0, 0, width, height);
+    context.strokeStyle = "#2e343b";
+    context.lineWidth = 2;
+
+    masks.forEach((mask) => {
+      const sx = mask.x * image.naturalWidth;
+      const sy = mask.y * image.naturalHeight;
+      const sw = mask.w * image.naturalWidth;
+      const sh = mask.h * image.naturalHeight;
+      const dx = mask.x * width;
+      const dy = mask.y * height;
+      const dw = mask.w * width;
+      const dh = mask.h * height;
+      context.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+      context.strokeRect(dx, dy, dw, dh);
+    });
+
+    container.appendChild(canvas);
+  };
+  image.src = state.upload.url;
+}
+
 function renderEmptyAnalysis() {
+  $("#borderMask").innerHTML = "";
+  $("#titleBlockCrop").innerHTML = "";
   ["titleFields", "gdtList", "projectionGrid", "calloutGrid", "view3dContent"].forEach((id) => {
     $(`#${id}`).innerHTML = `<div class="empty-analysis">No analysis result</div>`;
   });
@@ -204,9 +303,43 @@ function renderAnalysis() {
 }
 
 function renderTitleBlock() {
+  const border = state.analysis.border || {
+    confidence: "",
+    present: false,
+    masks: [
+      { x: 0, y: 0, w: 1, h: 0.055 },
+      { x: 0, y: 0.945, w: 1, h: 0.055 },
+      { x: 0, y: 0, w: 0.045, h: 1 },
+      { x: 0.955, y: 0, w: 0.045, h: 1 },
+    ],
+  };
   const block = state.analysis.titleBlock;
-  renderCrop($("#titleBlockCrop"), block.crop, "border-title-block", "title block crop", "");
-  $("#titleFields").innerHTML = block.fields
+  if (border.present === false || !border.masks?.length) {
+    $("#borderMask").innerHTML = `<button class="empty-analysis" data-feedback="border-mask" data-proposed="no border detected" data-confidence="${border.confidence ?? ""}">No border detected</button>`;
+  } else {
+    renderMask(
+      $("#borderMask"),
+      border.masks,
+      "border-mask",
+      "border masked as sheet edge",
+      border.confidence
+    );
+  }
+  if (block.present === false) {
+    $("#titleBlockCrop").innerHTML = `<button class="empty-analysis" data-feedback="title-block-mask" data-proposed="no title block detected" data-confidence="${block.confidence ?? ""}">No title block detected</button>`;
+  } else {
+    renderCrop($("#titleBlockCrop"), block.crop, "title-block-mask", "title block isolated", block.confidence ?? "", {
+      fit: "contain",
+    });
+  }
+  const candidateNotes = block.candidate?.notes?.length
+    ? `<button class="field-row" data-feedback="title-block-detector" data-proposed="${escapeHtml(block.candidate.notes.join("; "))}" data-confidence="${block.confidence ?? ""}">
+        <span>Detector notes</span>
+        <strong>${escapeHtml(block.candidate.notes.join("; "))}</strong>
+        <span class="confidence">${Math.round((block.confidence ?? 0) * 100)}%</span>
+      </button>`
+    : "";
+  $("#titleFields").innerHTML = candidateNotes + block.fields
     .map(
       (field) => `
         <button class="field-row" data-feedback="title-block-field" data-proposed="${escapeHtml(field.label)}: ${escapeHtml(field.value)}" data-confidence="${field.confidence}">
@@ -239,20 +372,22 @@ function renderGdt() {
     .map(
       (item, index) => `
         <article class="gdt-row">
-          <div class="gdt-original crop-view" id="gdtCrop${index}" data-feedback="gdt-original-crop" data-proposed="${escapeHtml(item.label)} original crop" data-confidence="${item.confidence}" data-crop="${cropData(item.crop)}"></div>
-          <button class="gdt-vector" data-feedback="gdt-vector-reconstruction" data-proposed="${escapeHtml(item.value)}" data-confidence="${item.confidence}">
-            ${symbolSvg(item.symbol, item.value)}
+          <div class="gdt-original crop-view" id="gdtCrop${index}" data-feedback="gdt-original-crop" data-proposed="${escapeHtml(item.label || item.kind || item.id)} original crop" data-confidence="${item.confidence}" data-crop="${cropData(item.crop)}"></div>
+          <button class="gdt-vector" data-feedback="gdt-vector-reconstruction" data-proposed="${escapeHtml(item.value || item.kind || "unclassified callout")}" data-confidence="${item.confidence}">
+            ${symbolSvg(item.symbol || "unclassified", item.value || item.kind || "unclassified")}
           </button>
-          <button class="gdt-meta" data-feedback="gdt-recognition" data-proposed="${escapeHtml(item.label)}: ${escapeHtml(item.value)}" data-confidence="${item.confidence}">
-            <strong>${escapeHtml(item.label)}</strong>
-            <span>${escapeHtml(item.value)}</span>
+          <button class="gdt-meta" data-feedback="gdt-recognition" data-proposed="${escapeHtml(item.label || item.kind || item.id)}: ${escapeHtml(item.value || "unclassified")}" data-confidence="${item.confidence}">
+            <strong>${escapeHtml(item.label || item.kind || item.id)}</strong>
+            <span>${escapeHtml(item.value || item.symbol || "unclassified")}</span>
             <span class="confidence">${Math.round(item.confidence * 100)}%</span>
           </button>
         </article>`
     )
     .join("");
   state.analysis.gdt.forEach((item, index) => {
-    renderCrop($(`#gdtCrop${index}`), item.crop, "gdt-original-crop", `${item.label} original crop`, item.confidence);
+    renderCrop($(`#gdtCrop${index}`), item.crop, "gdt-original-crop", `${item.label} original crop`, item.confidence, {
+      fit: "contain",
+    });
   });
 }
 
@@ -264,14 +399,17 @@ function renderProjections() {
           <div class="crop-view" id="projectionCrop${index}" data-feedback="projection-crop" data-proposed="${escapeHtml(projection.label)}" data-confidence="${projection.confidence}" data-crop="${cropData(projection.crop)}"></div>
           <button class="projection-label" data-feedback="projection-label" data-proposed="${escapeHtml(projection.label)} axis ${escapeHtml(projection.axis)}" data-confidence="${projection.confidence}" data-crop="${cropData(projection.crop)}">
             <strong>${escapeHtml(projection.label)}</strong>
-            <span>${escapeHtml(projection.axis)}</span>
+            <span>${escapeHtml(projection.segmentationMode || projection.axis)}</span>
             <span class="confidence">${Math.round(projection.confidence * 100)}%</span>
           </button>
         </article>`
     )
     .join("");
   state.analysis.projections.forEach((projection, index) => {
-    renderCrop($(`#projectionCrop${index}`), projection.crop, "projection-crop", projection.label, projection.confidence);
+    renderCrop($(`#projectionCrop${index}`), projection.crop, "projection-crop", projection.label, projection.confidence, {
+      fit: "contain",
+      masks: state.analysis.gdt?.map((item) => item.crop) || [],
+    });
   });
 }
 
@@ -280,7 +418,7 @@ function renderCallouts() {
     .map(
       (callout) => `
         <button class="callout-card" data-feedback="2d-callout" data-proposed="${escapeHtml(callout.label)}: ${escapeHtml(callout.value)}" data-confidence="${callout.confidence}">
-          <span>${escapeHtml(callout.label)}</span>
+          <span>${escapeHtml(callout.view ? `${callout.view} ${callout.kind}` : callout.label)}</span>
           <strong>${escapeHtml(callout.value)}</strong>
           <span class="confidence">${Math.round(callout.confidence * 100)}%</span>
         </button>`
@@ -306,7 +444,10 @@ function render3d() {
         <span class="confidence">${Math.round(perspective.confidence * 100)}%</span>
       </button>
     </article>`;
-  renderCrop($("#perspectiveCrop"), perspective.crop, "3d-view-crop", perspective.label, perspective.confidence);
+  renderCrop($("#perspectiveCrop"), perspective.crop, "3d-view-crop", perspective.label, perspective.confidence, {
+    fit: "contain",
+    masks: state.analysis.gdt?.map((item) => item.crop) || [],
+  });
 }
 
 function renderCad() {

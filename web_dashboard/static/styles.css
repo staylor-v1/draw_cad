@@ -301,7 +301,7 @@ progress {
 }
 
 #borderSubpanel {
-  grid-template-columns: minmax(280px, 44%) 1fr;
+  grid-template-columns: minmax(300px, 48%) 1fr;
   gap: 16px;
 }
 
@@ -310,6 +310,7 @@ progress {
 }
 
 .crop-view,
+.mask-view,
 .projection-card,
 .gdt-original,
 .cad-preview {
@@ -323,10 +324,50 @@ progress {
   min-height: 280px;
 }
 
+.mask-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.mask-card {
+  border: 1px solid var(--line);
+  background: #fffefa;
+  display: grid;
+  grid-template-rows: 1fr auto;
+}
+
+.mask-view {
+  min-height: 230px;
+  display: grid;
+  place-items: center;
+}
+
+.mask-view canvas {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  object-fit: contain;
+}
+
+.mask-label {
+  border: 0;
+  border-top: 1px solid var(--line);
+  min-height: 38px;
+  text-align: left;
+  padding: 0 10px;
+  font-weight: 850;
+}
+
 .crop-view img {
   position: absolute;
   max-width: none;
   transform-origin: top left;
+}
+
+.crop-view canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .field-list,

@@ -76,7 +76,16 @@
 
           <section class="analysis-body">
             <div class="subpanel is-active" id="borderSubpanel">
-              <div id="titleBlockCrop" class="crop-view"></div>
+              <div class="mask-stack">
+                <article class="mask-card">
+                  <div id="borderMask" class="mask-view"></div>
+                  <button class="mask-label" data-feedback="border-mask" data-proposed="border masked as sheet edge">Border mask</button>
+                </article>
+                <article class="mask-card">
+                  <div id="titleBlockCrop" class="crop-view"></div>
+                  <button class="mask-label" data-feedback="title-block-mask" data-proposed="title block isolated">Title block mask</button>
+                </article>
+              </div>
               <div id="titleFields" class="field-list"></div>
             </div>
             <div class="subpanel" id="gdtSubpanel">

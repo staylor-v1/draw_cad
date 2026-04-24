@@ -1,0 +1,27 @@
+examples:
+  - file: iso_10628_symbols_sheet_title_block.svg
+    derived_png: iso_10628_symbols_sheet_title_block.png
+    description: ISO 10628 symbol sheet with visible border zones, legend, and ISO 7200-style title block.
+    source: https://commons.wikimedia.org/wiki/File:ISO_10628-2_2012_Symbols_Sheet_1.svg
+    author: Steven Baltakatei Sandoval
+    license: CC BY-SA 4.0
+    use: positive title-block and border segmentation example
+  - file: iso_a2_title_block_template.svg
+    derived_png: iso_a2_title_block_template.png
+    description: ISO 5457 A2 drawing template with border zones; title block is off-canvas in the source SVG.
+    source: https://commons.wikimedia.org/wiki/File:Technical_Drawing_Template_(ISO_5457_1999_Size_A2).svg
+    author: Steven Baltakatei Sandoval
+    license: CC0 1.0
+    use: border-positive and title-block-negative example
+  - file: iso_sectioned_part_title_block.png
+    description: Public-domain sectioned mechanical part drawing without a visible title block.
+    source: https://commons.wikimedia.org/wiki/File:Engineering_drawing-dessin_de_definition.png
+    author: Greudin
+    license: public domain
+    use: title-block-negative example
+  - file: simple_mechanical_drawing.png
+    description: Public-domain simple mechanical drawing without a visible title block.
+    source: https://commons.wikimedia.org/wiki/File:Mech_draw_1.png
+    author: BAxelrod
+    license: public domain
+    use: title-block-negative example

@@ -1,0 +1,93 @@
+image: training_data/gdt/simple1.webp
+notes:
+  - Cropped drawing with no visible title block or sheet border.
+  - View C/datum C is called out at the bottom of the front view, but the corresponding projection is outside the crop.
+  - Expected visible callout counts are 10 front-view callouts and 3 side-view callouts.
+projections:
+  - id: front
+    label: front projection
+    axis: front
+    crop: {x: 0.157, y: 0.286, w: 0.185, h: 0.440}
+  - id: side
+    label: side projection
+    axis: side
+    crop: {x: 0.647, y: 0.285, w: 0.080, h: 0.435}
+callouts:
+  - id: front-01
+    view: front
+    kind: datum_feature
+    text: B
+    crop: {x: 0.073, y: 0.179, w: 0.030, h: 0.046}
+    note: Datum B flag at upper-left of front view.
+  - id: front-02
+    view: front
+    kind: linear_dimension
+    text: 2 +/- 0.1
+    crop: {x: 0.243, y: 0.190, w: 0.095, h: 0.045}
+    note: Top horizontal width dimension.
+  - id: front-03
+    view: front
+    kind: boxed_basic_dimension
+    text: "1"
+    crop: {x: 0.224, y: 0.238, w: 0.030, h: 0.042}
+    note: Boxed basic dimension above front view.
+  - id: front-04
+    view: front
+    kind: diameter_dimension
+    text: diameter 1.002 / 1.000
+    crop: {x: 0.345, y: 0.138, w: 0.066, h: 0.120}
+    note: Slanted hole diameter limit callout.
+  - id: front-05
+    view: front
+    kind: feature_control_frame
+    text: perpendicularity 0.005 A
+    crop: {x: 0.041, y: 0.325, w: 0.132, h: 0.052}
+    note: GD&T frame left of front view.
+  - id: front-06
+    view: front
+    kind: linear_dimension
+    text: 4 +/- 0
+    crop: {x: 0.139, y: 0.421, w: 0.035, h: 0.105}
+    note: Left vertical height dimension.
+  - id: front-07
+    view: front
+    kind: boxed_basic_dimension
+    text: "3"
+    crop: {x: 0.166, y: 0.545, w: 0.030, h: 0.047}
+    note: Boxed basic dimension beside left vertical dimension.
+  - id: front-08
+    view: front
+    kind: feature_control_frame
+    text: position diameter 0.003 M A B C
+    crop: {x: 0.397, y: 0.353, w: 0.188, h: 0.052}
+    note: GD&T frame right of front view.
+  - id: front-09
+    view: front
+    kind: datum_feature
+    text: C
+    crop: {x: 0.253, y: 0.789, w: 0.034, h: 0.052}
+    note: Bottom datum/view C reference; corresponding projection is not visible in crop.
+  - id: front-10
+    view: front
+    kind: feature_control_frame
+    text: perpendicularity 0.005 A B
+    crop: {x: 0.307, y: 0.807, w: 0.122, h: 0.052}
+    note: Bottom GD&T frame attached to front view.
+  - id: side-01
+    view: side
+    kind: linear_dimension
+    text: 1.0 +/- 0.1
+    crop: {x: 0.646, y: 0.245, w: 0.075, h: 0.045}
+    note: Top width dimension on side view.
+  - id: side-02
+    view: side
+    kind: feature_control_frame
+    text: flatness 0.003
+    crop: {x: 0.817, y: 0.443, w: 0.080, h: 0.052}
+    note: GD&T frame right of side view.
+  - id: side-03
+    view: side
+    kind: datum_feature
+    text: A
+    crop: {x: 0.807, y: 0.529, w: 0.034, h: 0.052}
+    note: Datum A flag right of side view.
