@@ -1,0 +1,9 @@
+case: image7.jpg__1354x0_q85_subsampling-2.jpg
+success: True
+first_step: pass_1.step
+second_step: pass_2.step
+bbox_extent_ratio: 0.9648154362235087
+volume_ratio: 0.9791430205082212
+surface_area_ratio: 0.9959358601465443
+face_count_ratio: 0.75
+center_distance: 77.3067511527277

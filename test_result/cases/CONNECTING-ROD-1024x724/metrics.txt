@@ -1,0 +1,9 @@
+case: CONNECTING-ROD-1024x724.webp
+success: True
+first_step: pass_1.step
+second_step: pass_2.step
+bbox_extent_ratio: 0.9641337375087157
+volume_ratio: 0.9747446999749413
+surface_area_ratio: 0.9945123725723441
+face_count_ratio: 0.75
+center_distance: 63.21439659789316

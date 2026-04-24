@@ -1,0 +1,145 @@
+{
+  "output_dir": "experiments/gemma4_agent/gdt_roundtrips_final",
+  "total": 8,
+  "completed": 8,
+  "passed": 8,
+  "failed": 0,
+  "records": [
+    {
+      "case": "68e59d5c8ba075b20d10ecf4_image.png",
+      "success": true,
+      "resumed": false,
+      "output_dir": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image",
+      "first_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/pass_1/pass_1_final.step",
+      "second_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/pass_2/tools/deterministic/pass_1_reprojected_triplet__visual_hull_hidden.step",
+      "metrics": {
+        "bounding_box_iou": 0.06523848106783299,
+        "bbox_extent_ratio": 0.9654267187546027,
+        "volume_ratio": 0.97584912544145,
+        "surface_area_ratio": 0.9949763998475115,
+        "center_distance": 87.45759659158477,
+        "face_count_ratio": 0.75
+      },
+      "elapsed_seconds": 72.478
+    },
+    {
+      "case": "CONNECTING-ROD-1024x724.webp",
+      "success": true,
+      "resumed": false,
+      "output_dir": "experiments/gemma4_agent/gdt_roundtrips_final/CONNECTING-ROD-1024x724",
+      "first_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/CONNECTING-ROD-1024x724/pass_1/pass_1_final.step",
+      "second_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/CONNECTING-ROD-1024x724/pass_2/tools/deterministic/pass_1_reprojected_triplet__visual_hull_hidden.step",
+      "metrics": {
+        "bounding_box_iou": 0.06516825252985947,
+        "bbox_extent_ratio": 0.9641337375087157,
+        "volume_ratio": 0.9747446999749413,
+        "surface_area_ratio": 0.9945123725723441,
+        "center_distance": 63.21439659789316,
+        "face_count_ratio": 0.75
+      },
+      "elapsed_seconds": 58.957
+    },
+    {
+      "case": "Engineering-drawing-components-and-tips.webp",
+      "success": true,
+      "resumed": false,
+      "output_dir": "experiments/gemma4_agent/gdt_roundtrips_final/Engineering-drawing-components-and-tips",
+      "first_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/Engineering-drawing-components-and-tips/pass_1/pass_1_final.step",
+      "second_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/Engineering-drawing-components-and-tips/pass_2/tools/deterministic/pass_1_reprojected_triplet__visual_hull_hidden.step",
+      "metrics": {
+        "bounding_box_iou": 0.06538823937346995,
+        "bbox_extent_ratio": 0.9693909432660798,
+        "volume_ratio": 0.980955676065107,
+        "surface_area_ratio": 0.9961683622725526,
+        "center_distance": 52.513599690770896,
+        "face_count_ratio": 0.75
+      },
+      "elapsed_seconds": 123.018
+    },
+    {
+      "case": "GDD-Drawing-Example.png",
+      "success": true,
+      "resumed": false,
+      "output_dir": "experiments/gemma4_agent/gdt_roundtrips_final/GDD-Drawing-Example",
+      "first_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/GDD-Drawing-Example/pass_1/pass_1_final.step",
+      "second_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/GDD-Drawing-Example/pass_2/tools/deterministic/pass_1_reprojected_triplet__visual_hull_hidden.step",
+      "metrics": {
+        "bounding_box_iou": 0.06519513679013984,
+        "bbox_extent_ratio": 0.9650261285840844,
+        "volume_ratio": 0.9761361252545719,
+        "surface_area_ratio": 0.9947642891105984,
+        "center_distance": 46.52895050510743,
+        "face_count_ratio": 0.75
+      },
+      "elapsed_seconds": 75.463
+    },
+    {
+      "case": "GDT-tolerences.webp",
+      "success": true,
+      "resumed": false,
+      "output_dir": "experiments/gemma4_agent/gdt_roundtrips_final/GDT-tolerences",
+      "first_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/GDT-tolerences/pass_1/pass_1_final.step",
+      "second_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/GDT-tolerences/pass_2/tools/deterministic/pass_1_reprojected_triplet__visual_hull_hidden.step",
+      "metrics": {
+        "bounding_box_iou": 0.06525214518248516,
+        "bbox_extent_ratio": 0.9658261465322179,
+        "volume_ratio": 0.9778865257655287,
+        "surface_area_ratio": 0.9956632964122654,
+        "center_distance": 45.2334423359445,
+        "face_count_ratio": 0.75
+      },
+      "elapsed_seconds": 45.669
+    },
+    {
+      "case": "engineering-drawing-1.png",
+      "success": true,
+      "resumed": false,
+      "output_dir": "experiments/gemma4_agent/gdt_roundtrips_final/engineering-drawing-1",
+      "first_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/engineering-drawing-1/pass_1/pass_1_final.step",
+      "second_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/engineering-drawing-1/pass_2/tools/deterministic/pass_1_reprojected_triplet__visual_hull_hidden.step",
+      "metrics": {
+        "bounding_box_iou": 0.06536573941598206,
+        "bbox_extent_ratio": 0.9695298521099202,
+        "volume_ratio": 0.9803308964537296,
+        "surface_area_ratio": 0.9954939682125649,
+        "center_distance": 47.352825373361924,
+        "face_count_ratio": 0.75
+      },
+      "elapsed_seconds": 78.96
+    },
+    {
+      "case": "image7.jpg__1354x0_q85_subsampling-2.jpg",
+      "success": true,
+      "resumed": false,
+      "output_dir": "experiments/gemma4_agent/gdt_roundtrips_final/image7.jpg__1354x0_q85_subsampling-2",
+      "first_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/image7.jpg__1354x0_q85_subsampling-2/pass_1/pass_1_final.step",
+      "second_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/image7.jpg__1354x0_q85_subsampling-2/pass_2/tools/deterministic/pass_1_reprojected_triplet__visual_hull_hidden.step",
+      "metrics": {
+        "bounding_box_iou": 0.06519658893311436,
+        "bbox_extent_ratio": 0.9648154362235087,
+        "volume_ratio": 0.9791430205082212,
+        "surface_area_ratio": 0.9959358601465443,
+        "center_distance": 77.3067511527277,
+        "face_count_ratio": 0.75
+      },
+      "elapsed_seconds": 75.276
+    },
+    {
+      "case": "technical-drawing.webp",
+      "success": true,
+      "resumed": false,
+      "output_dir": "experiments/gemma4_agent/gdt_roundtrips_final/technical-drawing",
+      "first_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/technical-drawing/pass_1/pass_1_final.step",
+      "second_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/technical-drawing/pass_2/tools/deterministic/pass_1_reprojected_triplet__visual_hull_hidden.step",
+      "metrics": {
+        "bounding_box_iou": 0.06519641314243647,
+        "bbox_extent_ratio": 0.9640741894536108,
+        "volume_ratio": 0.9755219522000848,
+        "surface_area_ratio": 0.9952697243124615,
+        "center_distance": 88.86641802058146,
+        "face_count_ratio": 0.75
+      },
+      "elapsed_seconds": 81.718
+    }
+  ]
+}

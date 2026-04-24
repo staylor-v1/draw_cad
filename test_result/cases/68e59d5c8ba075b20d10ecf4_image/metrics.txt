@@ -1,0 +1,9 @@
+case: 68e59d5c8ba075b20d10ecf4_image.png
+success: True
+first_step: pass_1.step
+second_step: pass_2.step
+bbox_extent_ratio: 0.9654267187546027
+volume_ratio: 0.97584912544145
+surface_area_ratio: 0.9949763998475115
+face_count_ratio: 0.75
+center_distance: 87.45759659158477

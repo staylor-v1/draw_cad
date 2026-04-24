@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" viewBox="-72 -6.108 144 12.216" xmlns="http://www.w3.org/2000/svg">
+    <polyline fill="none" points="-72,6.108 -72,-6.108" stroke="black" stroke-linecap="round" stroke-width="0.7" />
+    <polyline fill="none" points="72,6.108 72,-6.108" stroke="black" stroke-linecap="round" stroke-width="0.7" />
+    <polyline fill="none" points="-72,6.108 72,6.108" stroke="black" stroke-linecap="round" stroke-width="0.7" />
+    <polyline fill="none" points="-72,-6.108 72,-6.108" stroke="black" stroke-linecap="round" stroke-width="0.7" />
+    <polyline fill="none" points="-72,6.108 -72,-6.108" stroke="red" stroke-linecap="round" stroke-width="0.5" stroke-dasharray="3 2" />
+    <polyline fill="none" points="72,6.108 72,-6.108" stroke="red" stroke-linecap="round" stroke-width="0.5" stroke-dasharray="3 2" />
+    <polyline fill="none" points="-72,6.108 72,6.108" stroke="red" stroke-linecap="round" stroke-width="0.5" stroke-dasharray="3 2" />
+    <polyline fill="none" points="-72,-6.108 72,-6.108" stroke="red" stroke-linecap="round" stroke-width="0.5" stroke-dasharray="3 2" />
+</svg>

@@ -1,0 +1,9 @@
+case: engineering-drawing-1.png
+success: True
+first_step: pass_1.step
+second_step: pass_2.step
+bbox_extent_ratio: 0.9695298521099202
+volume_ratio: 0.9803308964537296
+surface_area_ratio: 0.9954939682125649
+face_count_ratio: 0.75
+center_distance: 47.352825373361924

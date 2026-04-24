@@ -94,6 +94,37 @@ def get_tool_schemas() -> list[dict[str, Any]]:
         {
             "type": "function",
             "function": {
+                "name": "prepare_drawing_masks",
+                "description": (
+                    "Create auditable raster mask products for a drawing: a sheet/title-block "
+                    "masked image, an annotation-candidate masked image, an isolated physical "
+                    "linework image, an overlay, and JSON region metadata. Use this before CAD "
+                    "reasoning on cluttered GD&T raster drawings."
+                ),
+                "parameters": {
+                    "type": "object",
+                    "required": ["drawing_path"],
+                    "properties": {
+                        "drawing_path": {"type": "string"},
+                        "output_dir": {
+                            "type": "string",
+                            "description": "Optional directory for mask image artifacts.",
+                        },
+                        "stem": {
+                            "type": "string",
+                            "description": "Filename stem for generated mask artifacts.",
+                        },
+                        "dark_threshold": {
+                            "type": "integer",
+                            "description": "Pixel threshold below which linework is considered dark.",
+                        },
+                    },
+                },
+            },
+        },
+        {
+            "type": "function",
+            "function": {
                 "name": "execute_cad_code",
                 "description": (
                     "Execute a complete build123d Python program and produce a STEP file. "
@@ -222,6 +253,12 @@ def dispatch_tool(
 
     tool_map = {
         "inspect_drawing": lambda: inspect_drawing(parsed["drawing_path"]),
+        "prepare_drawing_masks": lambda: prepare_drawing_masks(
+            drawing_path=parsed["drawing_path"],
+            output_dir=parsed.get("output_dir") or runtime.output_dir / "masks",
+            stem=parsed.get("stem") or "drawing",
+            dark_threshold=int(parsed.get("dark_threshold") or 210),
+        ),
         "run_deterministic_reconstruction": lambda: run_deterministic_reconstruction(
             drawing_path=parsed["drawing_path"],
             output_dir=runtime.output_dir / "deterministic",
@@ -321,6 +358,76 @@ def inspect_drawing(drawing_path: str | Path) -> dict[str, Any]:
 
     result["kind"] = "unknown"
     return result
+
+
+def prepare_drawing_masks(
+    drawing_path: str | Path,
+    output_dir: str | Path,
+    stem: str = "drawing",
+    dark_threshold: int = 210,
+) -> dict[str, Any]:
+    """Create heuristic mask products that separate sheet furniture from part linework."""
+    path = Path(drawing_path)
+    if not path.exists():
+        return {"success": False, "error": f"Drawing not found: {path}"}
+
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+    image = _open_drawing_as_rgb(path)
+    gray = ImageOps.grayscale(image)
+    width, height = image.size
+
+    sheet_regions = _infer_sheet_regions(gray, dark_threshold=dark_threshold)
+    sheet_masked = _mask_regions(image, sheet_regions)
+    annotation_regions = _infer_annotation_candidate_regions(
+        ImageOps.grayscale(sheet_masked),
+        excluded_regions=sheet_regions,
+        dark_threshold=dark_threshold,
+    )
+    all_mask_regions = [*sheet_regions, *annotation_regions]
+    annotation_masked = _mask_regions(image, all_mask_regions)
+    linework = _isolated_linework_image(annotation_masked, dark_threshold=dark_threshold)
+    overlay = _region_overlay(image, all_mask_regions)
+
+    stem = _safe_file_label(stem or path.stem)
+    original_path = output_path / f"{stem}_original.png"
+    sheet_masked_path = output_path / f"{stem}_sheet_masked.png"
+    annotation_masked_path = output_path / f"{stem}_annotation_masked.png"
+    linework_path = output_path / f"{stem}_physical_linework.png"
+    overlay_path = output_path / f"{stem}_mask_overlay.png"
+    metadata_path = output_path / f"{stem}_mask_regions.json"
+
+    image.save(original_path)
+    sheet_masked.save(sheet_masked_path)
+    annotation_masked.save(annotation_masked_path)
+    linework.save(linework_path)
+    overlay.save(overlay_path)
+
+    regions = [_region_record(region, width, height) for region in all_mask_regions]
+    metadata = {
+        "success": True,
+        "drawing_path": str(path),
+        "width": width,
+        "height": height,
+        "dark_threshold": dark_threshold,
+        "regions": regions,
+        "region_counts": _region_counts(regions),
+        "artifacts": {
+            "original_path": str(original_path),
+            "sheet_masked_path": str(sheet_masked_path),
+            "annotation_masked_path": str(annotation_masked_path),
+            "physical_linework_path": str(linework_path),
+            "overlay_path": str(overlay_path),
+            "metadata_path": str(metadata_path),
+        },
+        "guidance": [
+            "Treat heuristic regions as mask candidates; verify against the original drawing.",
+            "Use sheet_masked_path to reason after border/title-block removal.",
+            "Use annotation_masked_path and physical_linework_path to reason about part views.",
+        ],
+    }
+    metadata_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+    return metadata
 
 
 def run_deterministic_reconstruction(
@@ -607,10 +714,10 @@ def _view_svg(
     bounds = _bounds(visible + hidden)
     min_x, min_y, width, height = bounds
     body = []
-    for polyline in visible:
-        body.append(_polyline_svg(polyline, VISIBLE_STROKE, 0.7))
     for polyline in hidden:
         body.append(_polyline_svg(polyline, HIDDEN_STROKE, 0.5, dasharray="3 2"))
+    for polyline in visible:
+        body.append(_polyline_svg(polyline, VISIBLE_STROKE, 0.7))
     return (
         '<?xml version="1.0" encoding="utf-8"?>\n'
         f'<svg version="1.1" viewBox="{min_x:.6g} {min_y:.6g} {width:.6g} {height:.6g}" '
@@ -662,10 +769,10 @@ def _triplet_layout_svg(
         tx, ty = placements[suffix]
         matrix = f"matrix(1 0 0 1 {tx - min_x:.8g} {ty - min_y:.8g})"
         body = []
-        for polyline in polys["visible"]:
-            body.append(_polyline_svg(polyline, VISIBLE_STROKE, 0.7))
         for polyline in polys["hidden"]:
             body.append(_polyline_svg(polyline, HIDDEN_STROKE, 0.5, dasharray="3 2"))
+        for polyline in polys["visible"]:
+            body.append(_polyline_svg(polyline, VISIBLE_STROKE, 0.7))
         groups.append(f'  <g id="view_{html.escape(suffix)}" transform="{matrix}">\n' + "\n".join(body) + "\n  </g>")
     return (
         '<?xml version="1.0" encoding="utf-8"?>\n'
@@ -706,8 +813,8 @@ def _write_contact_sheet(
         y = pad
         draw.rectangle((x, y, x + thumb, y + thumb), outline="black")
         polys = view_polylines[suffix]
-        _draw_polylines(draw, polys["visible"], (x, y, thumb, thumb), fill="black", width=2)
         _draw_polylines(draw, polys["hidden"], (x, y, thumb, thumb), fill="red", width=1)
+        _draw_polylines(draw, polys["visible"], (x, y, thumb, thumb), fill="black", width=2)
         draw.text((x, y + thumb + 6), suffix, fill="black")
     image.save(output_path)
 
@@ -746,6 +853,200 @@ def _bounds(polylines: list[list[tuple[float, float]]]) -> tuple[float, float, f
     max_x = max(xs)
     max_y = max(ys)
     return (min_x, min_y, max(max_x - min_x, 1e-6), max(max_y - min_y, 1e-6))
+
+
+def _open_drawing_as_rgb(path: Path) -> Image.Image:
+    if path.suffix.lower() == ".svg":
+        try:
+            import cairosvg
+
+            png_bytes = cairosvg.svg2png(url=str(path), output_width=1400)
+            return Image.open(BytesIO(png_bytes)).convert("RGB")
+        except Exception:
+            pass
+    return Image.open(path).convert("RGB")
+
+
+def _infer_sheet_regions(gray: Image.Image, dark_threshold: int) -> list[dict[str, Any]]:
+    width, height = gray.size
+    pixels = gray.load()
+    margin_x = max(4, int(width * 0.045))
+    margin_y = max(4, int(height * 0.045))
+    regions: list[dict[str, Any]] = []
+
+    edge_specs = [
+        ("sheet_border_top", (0, 0, width, margin_y)),
+        ("sheet_border_bottom", (0, height - margin_y, width, height)),
+        ("sheet_border_left", (0, 0, margin_x, height)),
+        ("sheet_border_right", (width - margin_x, 0, width, height)),
+    ]
+    for label, bbox in edge_specs:
+        density = _dark_density(pixels, bbox, dark_threshold)
+        if density > 0.006:
+            regions.append(
+                {
+                    "type": label,
+                    "bbox": bbox,
+                    "confidence": min(0.95, 0.35 + density * 4.0),
+                    "source": "edge_dark_density",
+                }
+            )
+
+    aspect = width / max(height, 1)
+    title_bbox = (int(width * 0.58), int(height * 0.70), width, height)
+    title_density = _dark_density(pixels, title_bbox, dark_threshold)
+    if aspect > 1.05 or title_density > 0.015:
+        regions.append(
+            {
+                "type": "title_block_candidate",
+                "bbox": title_bbox,
+                "confidence": min(0.9, 0.35 + title_density * 3.0),
+                "source": "lower_right_sheet_heuristic",
+            }
+        )
+    return regions
+
+
+def _infer_annotation_candidate_regions(
+    gray: Image.Image,
+    excluded_regions: list[dict[str, Any]],
+    dark_threshold: int,
+) -> list[dict[str, Any]]:
+    import numpy as np
+    from scipy import ndimage
+
+    width, height = gray.size
+    total_area = max(width * height, 1)
+    dark = np.array(gray, dtype=np.uint8) < dark_threshold
+    for region in excluded_regions:
+        x1, y1, x2, y2 = _clamped_bbox(region["bbox"], width, height)
+        dark[y1:y2, x1:x2] = False
+
+    labels, count = ndimage.label(dark)
+    objects = ndimage.find_objects(labels)
+    candidates: list[dict[str, Any]] = []
+    for index, slices in enumerate(objects, start=1):
+        if slices is None:
+            continue
+        y_slice, x_slice = slices
+        x1, x2 = int(x_slice.start), int(x_slice.stop)
+        y1, y2 = int(y_slice.start), int(y_slice.stop)
+        box_w = x2 - x1
+        box_h = y2 - y1
+        if box_w < 3 or box_h < 3:
+            continue
+        area = int((labels[slices] == index).sum())
+        bbox_area = max(box_w * box_h, 1)
+        area_ratio = area / total_area
+        fill_ratio = area / bbox_area
+        aspect = max(box_w / max(box_h, 1), box_h / max(box_w, 1))
+
+        likely_annotation = (
+            area_ratio <= 0.010
+            and box_w <= width * 0.36
+            and box_h <= height * 0.22
+            and (aspect >= 2.8 or fill_ratio <= 0.35 or area <= 220)
+        )
+        if likely_annotation:
+            confidence = min(0.82, 0.38 + min(aspect, 8.0) * 0.035 + (1.0 - fill_ratio) * 0.18)
+            candidates.append(
+                {
+                    "type": "annotation_candidate",
+                    "bbox": (x1, y1, x2, y2),
+                    "confidence": confidence,
+                    "source": "connected_component_heuristic",
+                    "area_px": area,
+                    "fill_ratio": round(fill_ratio, 4),
+                }
+            )
+
+    candidates.sort(key=lambda region: (region["bbox"][1], region["bbox"][0]))
+    return candidates[:80]
+
+
+def _mask_regions(image: Image.Image, regions: list[dict[str, Any]]) -> Image.Image:
+    masked = image.copy()
+    draw = ImageDraw.Draw(masked)
+    width, height = image.size
+    for region in regions:
+        bbox = _clamped_bbox(region["bbox"], width, height)
+        draw.rectangle(bbox, fill="white")
+    return masked
+
+
+def _isolated_linework_image(image: Image.Image, dark_threshold: int) -> Image.Image:
+    gray = ImageOps.grayscale(image)
+    linework = gray.point(lambda value: 0 if value < dark_threshold else 255)
+    return linework.convert("RGB")
+
+
+def _region_overlay(image: Image.Image, regions: list[dict[str, Any]]) -> Image.Image:
+    overlay = image.copy()
+    draw = ImageDraw.Draw(overlay)
+    width, height = image.size
+    colors = {
+        "annotation_candidate": (230, 80, 40),
+        "title_block_candidate": (40, 130, 230),
+    }
+    for region in regions:
+        bbox = _clamped_bbox(region["bbox"], width, height)
+        color = colors.get(str(region.get("type")), (60, 170, 90))
+        draw.rectangle(bbox, outline=color, width=3)
+    return overlay
+
+
+def _dark_density(
+    pixels: Any,
+    bbox: tuple[int, int, int, int],
+    dark_threshold: int,
+) -> float:
+    x1, y1, x2, y2 = bbox
+    dark_count = 0
+    total = max((x2 - x1) * (y2 - y1), 1)
+    step = max(1, int(math.sqrt(total / 8000)))
+    sampled = 0
+    for y in range(y1, y2, step):
+        for x in range(x1, x2, step):
+            sampled += 1
+            if pixels[x, y] < dark_threshold:
+                dark_count += 1
+    return dark_count / max(sampled, 1)
+
+
+def _clamped_bbox(
+    bbox: tuple[int, int, int, int] | list[int],
+    width: int,
+    height: int,
+) -> tuple[int, int, int, int]:
+    x1, y1, x2, y2 = [int(round(value)) for value in bbox]
+    return (
+        max(0, min(width, x1)),
+        max(0, min(height, y1)),
+        max(0, min(width, x2)),
+        max(0, min(height, y2)),
+    )
+
+
+def _region_record(region: dict[str, Any], width: int, height: int) -> dict[str, Any]:
+    x1, y1, x2, y2 = _clamped_bbox(region["bbox"], width, height)
+    return {
+        **{key: value for key, value in region.items() if key != "bbox"},
+        "bbox": [x1, y1, x2, y2],
+        "area_ratio": round(((x2 - x1) * (y2 - y1)) / max(width * height, 1), 6),
+    }
+
+
+def _region_counts(regions: list[dict[str, Any]]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for region in regions:
+        region_type = str(region.get("type", "unknown"))
+        counts[region_type] = counts.get(region_type, 0) + 1
+    return counts
+
+
+def _safe_file_label(value: str) -> str:
+    safe = "".join(char if char.isalnum() or char in "._-" else "_" for char in value)
+    return safe[:80] or "drawing"
 
 
 def _ratio(a: float | None, b: float | None) -> float:
