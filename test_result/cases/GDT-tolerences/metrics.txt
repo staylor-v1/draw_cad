@@ -1,0 +1,9 @@
+case: GDT-tolerences.webp
+success: True
+first_step: pass_1.step
+second_step: pass_2.step
+bbox_extent_ratio: 0.9658261465322179
+volume_ratio: 0.9778865257655287
+surface_area_ratio: 0.9956632964122654
+face_count_ratio: 0.75
+center_distance: 45.2334423359445

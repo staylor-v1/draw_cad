@@ -4,9 +4,14 @@ from __future__ import annotations
 from pathlib import Path
 
 import gemma4_agent.agent as agent_module
-from gemma4_agent.agent import Gemma4RoundTripAgent, _stage_used_fallback
+from gemma4_agent.agent import (
+    Gemma4RoundTripAgent,
+    _repair_common_build123d_code,
+    _stage_used_fallback,
+)
 from gemma4_agent.extractors import (
     HeuristicEvidenceExtractor,
+    _fallback_evidence_from_text,
     merge_drawing_evidence,
     run_extractors,
 )
@@ -18,10 +23,13 @@ from gemma4_agent.training import (
     training_case_passed,
 )
 from gemma4_agent.toolbox import (
+    ToolRuntime,
     _bbox_extent_ratio,
+    dispatch_tool,
     get_tool_instructions,
     get_tool_schemas,
     inspect_drawing,
+    prepare_drawing_masks,
 )
 
 
@@ -48,6 +56,7 @@ def test_tool_schemas_include_roundtrip_tools():
     assert "render_step_to_drawing" in names
     assert "compare_cad_parts" in names
     assert "inspect_drawing" in names
+    assert "prepare_drawing_masks" in names
 
 
 def test_tool_instructions_embed_schema_json():
@@ -67,6 +76,57 @@ def test_inspect_drawing_parses_svg_triplet(tmp_path: Path):
     assert result["kind"] == "orthographic_svg_triplet"
     assert set(result["views"]) == {"f", "r", "t"}
     assert result["views"]["f"]["visible_polyline_count"] == 1
+
+
+def test_prepare_drawing_masks_writes_artifacts(tmp_path: Path):
+    image_path = tmp_path / "drawing.png"
+    image = Image.new("RGB", (240, 160), "white")
+    # Border and title block.
+    for x in range(10, 230):
+        image.putpixel((x, 10), (0, 0, 0))
+        image.putpixel((x, 150), (0, 0, 0))
+    for y in range(10, 151):
+        image.putpixel((10, y), (0, 0, 0))
+        image.putpixel((230, y), (0, 0, 0))
+    for x in range(150, 225):
+        image.putpixel((x, 118), (0, 0, 0))
+        image.putpixel((x, 145), (0, 0, 0))
+    for y in range(118, 146):
+        image.putpixel((150, y), (0, 0, 0))
+        image.putpixel((225, y), (0, 0, 0))
+    # Main part box and a small annotation-like mark.
+    for x in range(55, 135):
+        image.putpixel((x, 55), (0, 0, 0))
+        image.putpixel((x, 100), (0, 0, 0))
+    for y in range(55, 101):
+        image.putpixel((55, y), (0, 0, 0))
+        image.putpixel((135, y), (0, 0, 0))
+    for x in range(170, 190):
+        image.putpixel((x, 50), (0, 0, 0))
+    image.save(image_path)
+
+    result = prepare_drawing_masks(image_path, tmp_path / "masks", stem="case")
+
+    assert result["success"] is True
+    assert result["region_counts"]["title_block_candidate"] == 1
+    assert result["artifacts"]["metadata_path"].endswith("case_mask_regions.json")
+    for artifact_path in result["artifacts"].values():
+        assert Path(artifact_path).exists()
+
+
+def test_dispatch_prepare_drawing_masks_uses_runtime_output(tmp_path: Path):
+    image_path = tmp_path / "drawing.png"
+    Image.new("RGB", (80, 60), "white").save(image_path)
+
+    result = dispatch_tool(
+        "prepare_drawing_masks",
+        {"drawing_path": str(image_path), "stem": "tool_case"},
+        runtime=ToolRuntime(output_dir=tmp_path / "tool_output"),
+    )
+
+    assert result["success"] is True
+    assert Path(result["artifacts"]["metadata_path"]).exists()
+    assert "prepare_drawing_masks" in get_tool_instructions()
 
 
 def test_bbox_extent_ratio_is_translation_invariant():
@@ -140,9 +200,29 @@ def test_fallback_code_for_raster_uses_image_envelope(tmp_path: Path):
     code = Gemma4RoundTripAgent()._fallback_code_for_drawing(image_path)
 
     assert code is not None
-    assert "part = Box(20" in code
+    assert "Box(20" in code
+    assert "Mode.SUBTRACT" in code
     assert "fallback from raster drawing.png" in code
     assert "must not count as success" in code
+
+
+def test_repair_common_build123d_builder_idioms():
+    code = """from build123d import *
+
+with BuildPart() as p:
+    p.add(Box(2, 4, 1))
+    with p.location((0, 0, 0)):
+        p.cut(Cylinder(radius=0.5, height=1))
+
+part = p.part
+"""
+
+    repaired = _repair_common_build123d_code(code)
+
+    assert "p.add" not in repaired
+    assert "p.cut" not in repaired
+    assert "with Locations((0, 0, 0)):" in repaired
+    assert "Cylinder(radius=0.5, height=1, mode=Mode.SUBTRACT)" in repaired
 
 
 def test_stage_used_fallback_detects_baseline_geometry():
@@ -247,6 +327,20 @@ def test_merge_drawing_evidence_deduplicates_and_keeps_failures_visible():
     assert merged["physical_features"] == ["through hole", "slot"]
     assert merged["available_backend_names"] == ["gemma4"]
     assert "missing local model" in merged["uncertainties"][0]
+
+
+def test_fallback_evidence_from_text_keeps_structured_hints():
+    evidence = _fallback_evidence_from_text(
+        "Front view shows a rectangular plate with a through hole.\n"
+        "Diameter 10 mm, datum A, title block lower right.",
+        "bad json",
+    )
+
+    assert evidence["physical_features"]
+    assert evidence["dimensions"]
+    assert evidence["gd_t"]
+    assert evidence["annotation_regions"]
+    assert evidence["reconstruction_hints"]
 
 
 def test_heuristic_extractor_writes_local_evidence(tmp_path: Path):

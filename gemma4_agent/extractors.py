@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
@@ -37,7 +38,9 @@ Return this JSON shape:
   "uncertainties": []
 }
 
-Use concise strings. Include only evidence visible in the drawing."""
+Use concise strings. Include only evidence visible in the drawing. If a field is
+uncertain, put that uncertainty in "uncertainties" instead of returning malformed
+JSON or prose outside the JSON object."""
 
 
 JSON_REPAIR_SYSTEM_PROMPT = """You repair malformed JSON.
@@ -134,6 +137,7 @@ def merge_drawing_evidence(results: list[dict[str, Any]]) -> dict[str, Any]:
         "title_block_or_sheet_regions": [],
         "reconstruction_hints": [],
         "uncertainties": [],
+        "view_layout": [],
     }
     for result in results:
         evidence = result.get("evidence") if isinstance(result.get("evidence"), dict) else {}
@@ -147,6 +151,9 @@ def merge_drawing_evidence(results: list[dict[str, Any]]) -> dict[str, Any]:
             "uncertainties",
         ):
             merged[key].extend(_string_items(evidence.get(key)))
+        view_layout = str(evidence.get("view_layout", "")).strip()
+        if view_layout:
+            merged["view_layout"].append(view_layout)
         if result.get("success") is False:
             merged["uncertainties"].append(
                 f"{result.get('backend')} extractor unavailable or failed: {result.get('error')}"
@@ -169,26 +176,33 @@ class Gemma4EvidenceExtractor:
         output_path = Path(output_dir)
         output_path.mkdir(parents=True, exist_ok=True)
         image_b64, mime_type = encode_image_for_ollama(drawing_path)
-        payload = {
-            "model": self.runtime.model,
-            "messages": [
-                {"role": "system", "content": GEMMA_EVIDENCE_SYSTEM_PROMPT},
-                {
-                    "role": "user",
-                    "content": GEMMA_EVIDENCE_USER_PROMPT,
-                    "images": [image_b64],
-                },
-            ],
-            "stream": False,
-            "options": {"temperature": 0.0, "num_predict": 2048},
-        }
-        api_url = f"{self.runtime.base_url.rstrip('/')}/api/chat"
-        with httpx.Client(timeout=600) as client:
-            response = client.post(api_url, json=payload)
-            response.raise_for_status()
-            data = response.json()
-        content = data.get("message", {}).get("content", "")
-        evidence = _normalize_evidence(self._parse_or_repair(content))
+        content = self._chat_content(image_b64=image_b64, use_json_format=True)
+        if not content.strip():
+            content = self._chat_content(
+                image_b64=image_b64,
+                use_json_format=False,
+                user_prompt=(
+                    f"{GEMMA_EVIDENCE_USER_PROMPT}\n\n"
+                    "Your previous response was empty. Return the JSON object now."
+                ),
+            )
+        parse_error = None
+        try:
+            evidence = _normalize_evidence(self._parse_or_repair(content))
+        except Exception as exc:
+            parse_error = f"{exc.__class__.__name__}: {exc}"
+            evidence = _normalize_evidence(
+                _fallback_evidence_from_text(content, parse_error, drawing_path=drawing_path)
+            )
+        if not _has_useful_evidence(evidence):
+            fallback = _normalize_evidence(
+                _fallback_evidence_from_text(
+                    content,
+                    "Gemma returned valid JSON but no structured drawing hints.",
+                    drawing_path=drawing_path,
+                )
+            )
+            evidence = _merge_single_evidence(evidence, fallback)
         result = {
             "backend": self.name,
             "success": True,
@@ -197,8 +211,39 @@ class Gemma4EvidenceExtractor:
             "raw_content": content,
             "evidence": evidence,
         }
+        if parse_error:
+            result["parse_error"] = parse_error
         (output_path / "evidence.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
         return result
+
+    def _chat_content(
+        self,
+        *,
+        image_b64: str,
+        use_json_format: bool,
+        user_prompt: str = GEMMA_EVIDENCE_USER_PROMPT,
+    ) -> str:
+        payload: dict[str, Any] = {
+            "model": self.runtime.model,
+            "messages": [
+                {"role": "system", "content": GEMMA_EVIDENCE_SYSTEM_PROMPT},
+                {
+                    "role": "user",
+                    "content": user_prompt,
+                    "images": [image_b64],
+                },
+            ],
+            "stream": False,
+            "options": {"temperature": 0.0, "num_predict": 2048},
+        }
+        if use_json_format:
+            payload["format"] = "json"
+        api_url = f"{self.runtime.base_url.rstrip('/')}/api/chat"
+        with httpx.Client(timeout=600) as client:
+            response = client.post(api_url, json=payload)
+            response.raise_for_status()
+            data = response.json()
+        return str(data.get("message", {}).get("content", ""))
 
     def _parse_or_repair(self, content: str) -> dict[str, Any]:
         try:
@@ -222,6 +267,7 @@ class Gemma4EvidenceExtractor:
                 },
             ],
             "stream": False,
+            "format": "json",
             "options": {"temperature": 0.0, "num_predict": 2048},
         }
         with httpx.Client(timeout=600) as client:
@@ -424,6 +470,117 @@ def _normalize_evidence(value: dict[str, Any]) -> dict[str, Any]:
         "title_block_or_sheet_regions": _string_items(value.get("title_block_or_sheet_regions")),
         "reconstruction_hints": _string_items(value.get("reconstruction_hints")),
         "uncertainties": _string_items(value.get("uncertainties")),
+    }
+
+
+def _has_useful_evidence(evidence: dict[str, Any]) -> bool:
+    return any(
+        evidence.get(key)
+        for key in (
+            "physical_features",
+            "dimensions",
+            "gd_t",
+            "annotation_regions",
+            "title_block_or_sheet_regions",
+            "reconstruction_hints",
+        )
+    )
+
+
+def _merge_single_evidence(primary: dict[str, Any], fallback: dict[str, Any]) -> dict[str, Any]:
+    merged = dict(primary)
+    for key, value in fallback.items():
+        if isinstance(value, list):
+            merged[key] = list(dict.fromkeys([*_string_items(merged.get(key)), *value]))
+        elif value and not merged.get(key):
+            merged[key] = value
+    return merged
+
+
+def _fallback_evidence_from_text(
+    content: str,
+    reason: str,
+    drawing_path: str | Path | None = None,
+) -> dict[str, Any]:
+    """Coerce free-form model output into the evidence schema."""
+    lines = [
+        re.sub(r"\s+", " ", line.strip(" -*\t"))
+        for line in content.splitlines()
+        if line.strip(" -*\t")
+    ]
+    compact_lines = [line for line in lines if 4 <= len(line) <= 220][:24]
+    physical_keywords = re.compile(
+        r"\b(hole|bore|slot|cutout|pocket|boss|shaft|flange|rib|chamfer|fillet|thread|"
+        r"cylinder|rectangular|circle|profile|plate|block)\b",
+        re.IGNORECASE,
+    )
+    dimension_keywords = re.compile(r"\b(diameter|radius|width|height|depth|thickness|mm|inch|in\.|±|\+/-|phi|ø)\b", re.IGNORECASE)
+    gdt_keywords = re.compile(
+        r"\b(datum|position|flatness|parallelism|perpendicularity|profile|runout|concentricity|gd&t|gdt)\b",
+        re.IGNORECASE,
+    )
+    annotation_keywords = re.compile(r"\b(title|border|note|tolerance|revision|material|finish|sheet|scale)\b", re.IGNORECASE)
+
+    image_hints = _fallback_image_hints(drawing_path) if drawing_path else {}
+    return {
+        "physical_features": [line for line in compact_lines if physical_keywords.search(line)][:12],
+        "view_layout": _first_matching_line(
+            compact_lines,
+            re.compile(r"\b(front|right|top|side|view|orthographic)\b", re.IGNORECASE),
+        )
+        or str(image_hints.get("view_layout", "")),
+        "dimensions": [line for line in compact_lines if dimension_keywords.search(line)][:12],
+        "gd_t": [line for line in compact_lines if gdt_keywords.search(line)][:12],
+        "annotation_regions": [
+            *[line for line in compact_lines if annotation_keywords.search(line)][:12],
+            *image_hints.get("annotation_regions", []),
+        ],
+        "title_block_or_sheet_regions": [
+            line
+            for line in compact_lines
+            if re.search(r"\b(title|border|revision|sheet)\b", line, re.IGNORECASE)
+        ][:8]
+        + image_hints.get("title_block_or_sheet_regions", []),
+        "reconstruction_hints": [
+            "Gemma evidence was coerced from free-form output; use it as hints only.",
+            "Model the main physical part and ignore title blocks, borders, notes, dimensions, and GD&T frames as geometry.",
+            *image_hints.get("reconstruction_hints", []),
+            *compact_lines[:6],
+        ],
+        "uncertainties": [f"Structured JSON parse fallback used: {reason}"],
+    }
+
+
+def _first_matching_line(lines: list[str], pattern: re.Pattern[str]) -> str:
+    for line in lines:
+        if pattern.search(line):
+            return line
+    return ""
+
+
+def _fallback_image_hints(drawing_path: str | Path | None) -> dict[str, list[str] | str]:
+    if not drawing_path:
+        return {}
+    try:
+        with Image.open(drawing_path) as image:
+            gray = ImageOps.grayscale(image)
+            width, height = gray.size
+            dark_bbox = gray.point(lambda value: 255 if value < 210 else 0).getbbox()
+    except Exception:
+        return {}
+    aspect = width / max(height, 1)
+    layout = "landscape engineering drawing" if aspect >= 1.1 else "portrait/square engineering drawing"
+    hints = [
+        f"source raster size {width}x{height} px",
+        "Gemma returned no parseable details; inspect the image directly for holes, slots, bosses, and section views.",
+    ]
+    annotation_regions = [f"overall dark-line bounding region {dark_bbox}"] if dark_bbox else []
+    sheet_regions = ["landscape sheet; title block often appears near lower-right border"] if aspect >= 1.1 else []
+    return {
+        "view_layout": layout,
+        "annotation_regions": annotation_regions,
+        "title_block_or_sheet_regions": sheet_regions,
+        "reconstruction_hints": hints,
     }
 
 

@@ -1,0 +1,172 @@
+{
+  "success": true,
+  "output_dir": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image",
+  "config": {
+    "model": "gemma4:26b",
+    "base_url": "http://localhost:11434",
+    "temperature": 0.0,
+    "max_tokens": 4096,
+    "max_tool_rounds": 6,
+    "execution_timeout": 60,
+    "config_path": "config/total_view_data.yaml",
+    "system_prompt_path": "gemma4_agent/prompts/system.md",
+    "agent_profile_path": "gemma4_agent/prompts/agent.md",
+    "output_dir": "experiments/gemma4_agent",
+    "view_suffixes": [
+      "f",
+      "r",
+      "t"
+    ]
+  },
+  "source_drawing": "training_data/gdt/68e59d5c8ba075b20d10ecf4_image.png",
+  "first_stage": {
+    "drawing_path": "training_data/gdt/68e59d5c8ba075b20d10ecf4_image.png",
+    "output_dir": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/pass_1",
+    "final_text": "",
+    "code": "",
+    "successful_tool_steps": [],
+    "transcript_path": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/pass_1/transcript.json",
+    "fallback_generation": {
+      "reason": "no successful Gemma/tool STEP was available",
+      "result": {
+        "success": true,
+        "code_path": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/pass_1/pass_1_final.py",
+        "step_path": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/pass_1/pass_1_final.step",
+        "stdout": "Auto-exported to experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/pass_1/pass_1_final.step\n",
+        "stderr": "",
+        "error_category": "success",
+        "return_code": 0
+      }
+    }
+  },
+  "first_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/pass_1/pass_1_final.step",
+  "rendered_drawing": {
+    "success": true,
+    "step_path": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/pass_1/pass_1_final.step",
+    "layout_svg_path": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/rendered_from_pass_1/pass_1_reprojected_triplet.svg",
+    "contact_sheet_path": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/rendered_from_pass_1/pass_1_reprojected_contact_sheet.png",
+    "view_svg_paths": {
+      "f": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/rendered_from_pass_1/pass_1_reprojected_f.svg",
+      "r": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/rendered_from_pass_1/pass_1_reprojected_r.svg",
+      "t": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/rendered_from_pass_1/pass_1_reprojected_t.svg"
+    },
+    "views": {
+      "f": {
+        "visible_polyline_count": 4,
+        "hidden_polyline_count": 4
+      },
+      "r": {
+        "visible_polyline_count": 4,
+        "hidden_polyline_count": 4
+      },
+      "t": {
+        "visible_polyline_count": 4,
+        "hidden_polyline_count": 4
+      }
+    }
+  },
+  "second_stage": {
+    "drawing_path": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/rendered_from_pass_1/pass_1_reprojected_triplet.svg",
+    "output_dir": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/pass_2",
+    "final_text": "",
+    "code": "",
+    "successful_tool_steps": [
+      "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/pass_2/tools/deterministic/pass_1_reprojected_triplet__visual_hull_hidden.step",
+      "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/pass_2/tools/tool_code/candidate_1776920849535.step"
+    ],
+    "transcript_path": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/pass_2/transcript.json",
+    "used_tool_step_without_final_code": true,
+    "candidate_comparisons": [
+      {
+        "candidate_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/pass_2/tools/deterministic/pass_1_reprojected_triplet__visual_hull_hidden.step",
+        "equivalent": true,
+        "metrics": {
+          "bounding_box_iou": 0.06523848106783299,
+          "bbox_extent_ratio": 0.9654267187546027,
+          "volume_ratio": 0.97584912544145,
+          "surface_area_ratio": 0.9949763998475115,
+          "center_distance": 87.45759659158477,
+          "face_count_ratio": 0.75
+        }
+      }
+    ],
+    "selected_by_comparison": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/pass_2/tools/deterministic/pass_1_reprojected_triplet__visual_hull_hidden.step"
+  },
+  "second_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/pass_2/tools/deterministic/pass_1_reprojected_triplet__visual_hull_hidden.step",
+  "comparison": {
+    "success": true,
+    "equivalent": true,
+    "reference_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/pass_1/pass_1_final.step",
+    "candidate_step_path": "experiments/gemma4_agent/gdt_roundtrips_final/68e59d5c8ba075b20d10ecf4_image/pass_2/tools/deterministic/pass_1_reprojected_triplet__visual_hull_hidden.step",
+    "thresholds": {
+      "min_bbox_iou": 0.0,
+      "min_extent_ratio": 0.96,
+      "min_volume_ratio": 0.97,
+      "min_surface_area_ratio": 0.97,
+      "center_tolerance": 0.05,
+      "translation_invariant": true
+    },
+    "metrics": {
+      "bounding_box_iou": 0.06523848106783299,
+      "bbox_extent_ratio": 0.9654267187546027,
+      "volume_ratio": 0.97584912544145,
+      "surface_area_ratio": 0.9949763998475115,
+      "center_distance": 87.45759659158477,
+      "face_count_ratio": 0.75
+    },
+    "candidate_properties": {
+      "is_valid": true,
+      "volume": 189844.0682786833,
+      "surface_area": 35499.22993692435,
+      "bounding_box": [
+        [
+          -1.000005232481115e-07,
+          -1.0229820962260873e-07,
+          -1.0000001243449787e-07
+        ],
+        [
+          137.66835910227834,
+          106.32812510000001,
+          13.175521100002365
+        ]
+      ],
+      "center_of_mass": [
+        69.10024689209354,
+        53.21273912828163,
+        6.510873635200141
+      ],
+      "face_count": 8,
+      "edge_count": 32,
+      "vertex_count": 64,
+      "solid_count": 1,
+      "errors": []
+    },
+    "reference_properties": {
+      "is_valid": true,
+      "volume": 185259.168,
+      "surface_area": 35320.89599999999,
+      "bounding_box": [
+        [
+          -68.7000001,
+          -53.0000001,
+          -6.360000100000001
+        ],
+        [
+          68.7000001,
+          53.0000001,
+          6.360000100000001
+        ]
+      ],
+      "center_of_mass": [
+        -1.0911923237936503e-15,
+        -1.386880098969527e-15,
+        0.0
+      ],
+      "face_count": 6,
+      "edge_count": 24,
+      "vertex_count": 48,
+      "solid_count": 1,
+      "errors": []
+    }
+  }
+}

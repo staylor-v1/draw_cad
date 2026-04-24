@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" viewBox="0 0 280.36 148.576" xmlns="http://www.w3.org/2000/svg">
+  <g id="view_t" transform="matrix(1 0 0 1 83.52 62.42)">
+    <polyline fill="none" points="-72,-50.9 -72,50.9" stroke="black" stroke-linecap="round" stroke-width="0.7" />
+    <polyline fill="none" points="72,-50.9 72,50.9" stroke="black" stroke-linecap="round" stroke-width="0.7" />
+    <polyline fill="none" points="-72,-50.9 72,-50.9" stroke="black" stroke-linecap="round" stroke-width="0.7" />
+    <polyline fill="none" points="-72,50.9 72,50.9" stroke="black" stroke-linecap="round" stroke-width="0.7" />
+    <polyline fill="none" points="-72,-50.9 -72,50.9" stroke="red" stroke-linecap="round" stroke-width="0.5" stroke-dasharray="3 2" />
+    <polyline fill="none" points="72,-50.9 72,50.9" stroke="red" stroke-linecap="round" stroke-width="0.5" stroke-dasharray="3 2" />
+    <polyline fill="none" points="-72,-50.9 72,-50.9" stroke="red" stroke-linecap="round" stroke-width="0.5" stroke-dasharray="3 2" />
+    <polyline fill="none" points="-72,50.9 72,50.9" stroke="red" stroke-linecap="round" stroke-width="0.5" stroke-dasharray="3 2" />
+  </g>
+  <g id="view_f" transform="matrix(1 0 0 1 83.52 130.948)">
+    <polyline fill="none" points="-72,6.108 -72,-6.108" stroke="black" stroke-linecap="round" stroke-width="0.7" />
+    <polyline fill="none" points="72,6.108 72,-6.108" stroke="black" stroke-linecap="round" stroke-width="0.7" />
+    <polyline fill="none" points="-72,6.108 72,6.108" stroke="black" stroke-linecap="round" stroke-width="0.7" />
+    <polyline fill="none" points="-72,-6.108 72,-6.108" stroke="black" stroke-linecap="round" stroke-width="0.7" />
+    <polyline fill="none" points="-72,6.108 -72,-6.108" stroke="red" stroke-linecap="round" stroke-width="0.5" stroke-dasharray="3 2" />
+    <polyline fill="none" points="72,6.108 72,-6.108" stroke="red" stroke-linecap="round" stroke-width="0.5" stroke-dasharray="3 2" />
+    <polyline fill="none" points="-72,6.108 72,6.108" stroke="red" stroke-linecap="round" stroke-width="0.5" stroke-dasharray="3 2" />
+    <polyline fill="none" points="-72,-6.108 72,-6.108" stroke="red" stroke-linecap="round" stroke-width="0.5" stroke-dasharray="3 2" />
+  </g>
+  <g id="view_r" transform="matrix(1 0 0 1 217.94 130.948)">
+    <polyline fill="none" points="-50.9,-6.108 -50.9,6.108" stroke="black" stroke-linecap="round" stroke-width="0.7" />
+    <polyline fill="none" points="-50.9,-6.108 50.9,-6.108" stroke="black" stroke-linecap="round" stroke-width="0.7" />
+    <polyline fill="none" points="50.9,-6.108 50.9,6.108" stroke="black" stroke-linecap="round" stroke-width="0.7" />
+    <polyline fill="none" points="-50.9,6.108 50.9,6.108" stroke="black" stroke-linecap="round" stroke-width="0.7" />
+    <polyline fill="none" points="-50.9,-6.108 -50.9,6.108" stroke="red" stroke-linecap="round" stroke-width="0.5" stroke-dasharray="3 2" />
+    <polyline fill="none" points="-50.9,-6.108 50.9,-6.108" stroke="red" stroke-linecap="round" stroke-width="0.5" stroke-dasharray="3 2" />
+    <polyline fill="none" points="50.9,-6.108 50.9,6.108" stroke="red" stroke-linecap="round" stroke-width="0.5" stroke-dasharray="3 2" />
+    <polyline fill="none" points="-50.9,6.108 50.9,6.108" stroke="red" stroke-linecap="round" stroke-width="0.5" stroke-dasharray="3 2" />
+  </g>
+</svg>

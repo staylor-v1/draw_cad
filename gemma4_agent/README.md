@@ -2,6 +2,10 @@
 
 `gemma4_agent` is a reusable subproject for a local Ollama-hosted Gemma 4 CAD roundtrip agent.
 
+See [`PLAN.md`](PLAN.md) for the GD&T agentic harness roadmap, including masking,
+annotation extraction, optional YOLO/Florence-2/Donut tools, view reasoning, feature
+fitting, and CAD verification goals.
+
 The target loop is:
 
 ```text

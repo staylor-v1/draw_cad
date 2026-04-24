@@ -1,0 +1,9 @@
+case: technical-drawing.webp
+success: True
+first_step: pass_1.step
+second_step: pass_2.step
+bbox_extent_ratio: 0.9640741894536108
+volume_ratio: 0.9755219522000848
+surface_area_ratio: 0.9952697243124615
+face_count_ratio: 0.75
+center_distance: 88.86641802058146

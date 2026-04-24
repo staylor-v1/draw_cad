@@ -10,6 +10,7 @@ Raster engineering drawing policy:
 - Treat GD&T feature-control frames as manufacturing constraints, not 3D geometry.
 - For multi-view drawings, identify front/top/right/section views and reconcile them into one part. Ignore duplicate detail views unless they clarify a feature.
 - For shaded isometric views, use them only to resolve ambiguity; do not model visual styling, line weights, paper shadows, or annotations.
+- When mask artifacts are available, compare the original drawing, sheet/title-block masked drawing, annotation masked drawing, and isolated physical linework before choosing CAD features. Use masks to reduce clutter, but do not let a heuristic mask erase a visible physical edge without checking the original.
 
 Build123d coding policy:
 
