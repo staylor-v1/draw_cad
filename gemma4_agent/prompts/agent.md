@@ -8,9 +8,12 @@ Raster engineering drawing policy:
 - Before coding, list the physical features implied by the drawing in your private reasoning and make sure the CAD contains each major feature unless the linework is genuinely ambiguous.
 - If structured `drawing_evidence` is provided, use it to inventory physical features, dimensions, GD&T, and annotation/title-block regions before writing code. Treat it as a hint source and verify against the image.
 - Treat GD&T feature-control frames as manufacturing constraints, not 3D geometry.
+- Preserve GD&T and datum provenance. When using an extracted callout, carry forward its `callout_id`, `source_region_id`, `view_frame_id`, `target_endpoint_image_px`, and `target_endpoint_view_norm` into the CAD feature plan or assumptions that depend on it.
+- The end of a GD&T leader/callout line is feature evidence. Interpret it in the reference frame of the view it points to; do not transfer a datum or tolerance to another view unless the drawing explicitly supports that association.
 - For multi-view drawings, identify front/top/right/section views and reconcile them into one part. Ignore duplicate detail views unless they clarify a feature.
+- Understand both third-angle and first-angle projection. In third-angle projection, top/right/left views are normally placed above/right/left of the front view. In first-angle projection, the same views are mirrored below/left/right of the front view. Use a title-block projection symbol, explicit view labels, and leader references when available; otherwise reason from layout and keep the projection assumption explicit.
 - For shaded isometric views, use them only to resolve ambiguity; do not model visual styling, line weights, paper shadows, or annotations.
-- When mask artifacts are available, compare the original drawing, sheet/title-block masked drawing, annotation masked drawing, and isolated physical linework before choosing CAD features. Use masks to reduce clutter, but do not let a heuristic mask erase a visible physical edge without checking the original.
+- When mask artifacts and segmented views are available, compare the original drawing, sheet/title-block masked drawing, annotation masked drawing, isolated physical linework, inferred view frames, per-view crops, and callout candidates before choosing CAD features. Use masks to reduce clutter, but do not let a heuristic mask erase a visible physical edge without checking the original.
 
 Build123d coding policy:
 

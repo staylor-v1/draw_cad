@@ -1,6 +1,7 @@
 """Tests for the Gemma 4 roundtrip agent subproject."""
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import gemma4_agent.agent as agent_module
@@ -30,6 +31,7 @@ from gemma4_agent.toolbox import (
     get_tool_schemas,
     inspect_drawing,
     prepare_drawing_masks,
+    segment_drawing_views,
 )
 
 
@@ -57,6 +59,7 @@ def test_tool_schemas_include_roundtrip_tools():
     assert "compare_cad_parts" in names
     assert "inspect_drawing" in names
     assert "prepare_drawing_masks" in names
+    assert "segment_drawing_views" in names
 
 
 def test_tool_instructions_embed_schema_json():
@@ -94,21 +97,36 @@ def test_prepare_drawing_masks_writes_artifacts(tmp_path: Path):
     for y in range(118, 146):
         image.putpixel((150, y), (0, 0, 0))
         image.putpixel((225, y), (0, 0, 0))
-    # Main part box and a small annotation-like mark.
+    # Main part box and a small annotation-like callout box.
     for x in range(55, 135):
         image.putpixel((x, 55), (0, 0, 0))
         image.putpixel((x, 100), (0, 0, 0))
     for y in range(55, 101):
         image.putpixel((55, y), (0, 0, 0))
         image.putpixel((135, y), (0, 0, 0))
-    for x in range(170, 190):
-        image.putpixel((x, 50), (0, 0, 0))
+    for x in range(170, 200):
+        image.putpixel((x, 48), (0, 0, 0))
+        image.putpixel((x, 60), (0, 0, 0))
+    for y in range(48, 61):
+        image.putpixel((170, y), (0, 0, 0))
+        image.putpixel((200, y), (0, 0, 0))
+    for offset in range(0, 35):
+        image.putpixel((136 + offset, 70 - offset // 2), (0, 0, 0))
     image.save(image_path)
 
     result = prepare_drawing_masks(image_path, tmp_path / "masks", stem="case")
 
     assert result["success"] is True
+    assert result["coordinate_system"]["frame_id"] == "image_px"
+    assert result["artifact_transforms"]["annotation_masked_path"]["transform"] == "identity"
     assert result["region_counts"]["title_block_candidate"] == 1
+    assert result["view_frames"]
+    assert all("region_id" in region for region in result["regions"])
+    assert result["callout_candidates"]
+    callout = result["callout_candidates"][0]
+    assert callout["view_frame_id"] == result["view_frames"][0]["frame_id"]
+    assert "target_endpoint_image_px" in callout
+    assert all(0.0 <= value <= 1.0 for value in callout["target_endpoint_view_norm"])
     assert result["artifacts"]["metadata_path"].endswith("case_mask_regions.json")
     for artifact_path in result["artifacts"].values():
         assert Path(artifact_path).exists()
@@ -127,6 +145,101 @@ def test_dispatch_prepare_drawing_masks_uses_runtime_output(tmp_path: Path):
     assert result["success"] is True
     assert Path(result["artifacts"]["metadata_path"]).exists()
     assert "prepare_drawing_masks" in get_tool_instructions()
+
+
+def test_segment_drawing_views_preserves_crop_transforms(tmp_path: Path):
+    image_path = tmp_path / "multi_view.png"
+    image = Image.new("RGB", (260, 260), "white")
+    for bbox in [(90, 120, 150, 170), (90, 40, 150, 80), (180, 120, 220, 170)]:
+        x1, y1, x2, y2 = bbox
+        for x in range(x1, x2 + 1):
+            image.putpixel((x, y1), (0, 0, 0))
+            image.putpixel((x, y2), (0, 0, 0))
+        for y in range(y1, y2 + 1):
+            image.putpixel((x1, y), (0, 0, 0))
+            image.putpixel((x2, y), (0, 0, 0))
+    image.save(image_path)
+    masks = prepare_drawing_masks(image_path, tmp_path / "masks", stem="views")
+
+    result = segment_drawing_views(
+        image_path,
+        tmp_path / "segments",
+        mask_metadata_path=masks["artifacts"]["metadata_path"],
+        stem="views",
+        projection_system="unknown",
+        padding_px=4,
+    )
+
+    assert result["success"] is True
+    assert len(result["view_segments"]) == 3
+    third_angle = next(
+        item for item in result["projection_system_hypotheses"]
+        if item["projection_system"] == "third_angle"
+    )
+    assert set(third_angle["assignments"].values()) >= {"front", "top", "right"}
+    first_angle = next(
+        item for item in result["projection_system_hypotheses"]
+        if item["projection_system"] == "first_angle"
+    )
+    assert set(first_angle["assignments"].values()) >= {"front", "bottom", "left"}
+    for segment in result["view_segments"]:
+        assert segment["crop_transform"]["to_frame"] == "image_px"
+        assert Path(segment["crop_paths"]["physical_linework_path"]).exists()
+    assert Path(result["artifacts"]["metadata_path"]).exists()
+
+
+def test_initial_messages_attach_mask_images(tmp_path: Path):
+    image_path = tmp_path / "drawing.png"
+    Image.new("RGB", (120, 80), "white").save(image_path)
+    masks = prepare_drawing_masks(image_path, tmp_path / "masks", stem="case")
+
+    messages = Gemma4RoundTripAgent()._initial_messages(
+        drawing_path=image_path,
+        objective="Create CAD",
+        extra_context={"drawing_masks": masks},
+    )
+
+    content = json.loads(messages[1]["content"])
+    assert [item["role"] for item in content["attached_images"]] == [
+        "source_drawing",
+        "sheet_masked",
+        "annotation_masked",
+        "physical_linework",
+        "overlay",
+    ]
+    assert len(messages[1]["images"]) == 5
+
+
+def test_initial_messages_attach_segmented_view_images(tmp_path: Path):
+    image_path = tmp_path / "drawing.png"
+    image = Image.new("RGB", (180, 120), "white")
+    for bbox in [(35, 45, 80, 85), (110, 45, 150, 85)]:
+        x1, y1, x2, y2 = bbox
+        for x in range(x1, x2 + 1):
+            image.putpixel((x, y1), (0, 0, 0))
+            image.putpixel((x, y2), (0, 0, 0))
+        for y in range(y1, y2 + 1):
+            image.putpixel((x1, y), (0, 0, 0))
+            image.putpixel((x2, y), (0, 0, 0))
+    image.save(image_path)
+    masks = prepare_drawing_masks(image_path, tmp_path / "masks", stem="case")
+    segments = segment_drawing_views(
+        image_path,
+        tmp_path / "segments",
+        mask_metadata_path=masks["artifacts"]["metadata_path"],
+        stem="case",
+    )
+
+    messages = Gemma4RoundTripAgent()._initial_messages(
+        drawing_path=image_path,
+        objective="Create CAD",
+        extra_context={"drawing_masks": masks, "drawing_view_segments": segments},
+    )
+
+    content = json.loads(messages[1]["content"])
+    roles = [item["role"] for item in content["attached_images"]]
+    assert any(role.endswith("_physical_linework") for role in roles)
+    assert len(messages[1]["images"]) > 5
 
 
 def test_bbox_extent_ratio_is_translation_invariant():
@@ -362,6 +475,8 @@ def test_heuristic_extractor_writes_local_evidence(tmp_path: Path):
 def test_run_roundtrip_passes_drawing_evidence_to_first_stage(monkeypatch, tmp_path: Path):
     agent = Gemma4RoundTripAgent()
     captured_contexts = []
+    source_path = tmp_path / "source.png"
+    Image.new("RGB", (120, 80), "white").save(source_path)
 
     def fake_cad_from_drawing(*, drawing_path, output_dir, objective, extra_context=None):
         captured_contexts.append(extra_context or {})
@@ -385,10 +500,15 @@ def test_run_roundtrip_passes_drawing_evidence_to_first_stage(monkeypatch, tmp_p
     })
 
     summary = agent.run_roundtrip(
-        tmp_path / "source.png",
+        source_path,
         output_dir=tmp_path / "run",
         drawing_evidence={"physical_features": ["slot"]},
     )
 
     assert captured_contexts[0]["drawing_evidence"]["physical_features"] == ["slot"]
+    assert captured_contexts[0]["drawing_masks"]["success"] is True
+    assert Path(captured_contexts[0]["drawing_masks"]["artifacts"]["metadata_path"]).exists()
+    assert captured_contexts[0]["drawing_view_segments"]["success"] is False
     assert summary["drawing_evidence"]["physical_features"] == ["slot"]
+    assert summary["drawing_masks"]["success"] is True
+    assert summary["drawing_view_segments"]["success"] is False

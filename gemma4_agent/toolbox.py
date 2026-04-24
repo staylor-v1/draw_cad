@@ -125,6 +125,44 @@ def get_tool_schemas() -> list[dict[str, Any]]:
         {
             "type": "function",
             "function": {
+                "name": "segment_drawing_views",
+                "description": (
+                    "Crop the masked raster drawing into separate inferred orthographic "
+                    "views, preserving transforms back to the original image and adding "
+                    "first-angle/third-angle projection role hypotheses."
+                ),
+                "parameters": {
+                    "type": "object",
+                    "required": ["drawing_path"],
+                    "properties": {
+                        "drawing_path": {"type": "string"},
+                        "mask_metadata_path": {
+                            "type": "string",
+                            "description": "Optional prepare_drawing_masks metadata JSON path.",
+                        },
+                        "output_dir": {
+                            "type": "string",
+                            "description": "Optional directory for per-view crop artifacts.",
+                        },
+                        "stem": {
+                            "type": "string",
+                            "description": "Filename stem for generated view artifacts.",
+                        },
+                        "projection_system": {
+                            "type": "string",
+                            "description": "Optional hint: third_angle, first_angle, or unknown.",
+                        },
+                        "padding_px": {
+                            "type": "integer",
+                            "description": "Extra pixels to include around each inferred view frame.",
+                        },
+                    },
+                },
+            },
+        },
+        {
+            "type": "function",
+            "function": {
                 "name": "execute_cad_code",
                 "description": (
                     "Execute a complete build123d Python program and produce a STEP file. "
@@ -259,6 +297,14 @@ def dispatch_tool(
             stem=parsed.get("stem") or "drawing",
             dark_threshold=int(parsed.get("dark_threshold") or 210),
         ),
+        "segment_drawing_views": lambda: segment_drawing_views(
+            drawing_path=parsed["drawing_path"],
+            mask_metadata_path=parsed.get("mask_metadata_path"),
+            output_dir=parsed.get("output_dir") or runtime.output_dir / "views",
+            stem=parsed.get("stem") or "drawing",
+            projection_system=parsed.get("projection_system") or "unknown",
+            padding_px=int(parsed.get("padding_px") or 12),
+        ),
         "run_deterministic_reconstruction": lambda: run_deterministic_reconstruction(
             drawing_path=parsed["drawing_path"],
             output_dir=runtime.output_dir / "deterministic",
@@ -386,6 +432,7 @@ def prepare_drawing_masks(
     )
     all_mask_regions = [*sheet_regions, *annotation_regions]
     annotation_masked = _mask_regions(image, all_mask_regions)
+    view_linework = _isolated_linework_image(sheet_masked, dark_threshold=dark_threshold)
     linework = _isolated_linework_image(annotation_masked, dark_threshold=dark_threshold)
     overlay = _region_overlay(image, all_mask_regions)
 
@@ -403,14 +450,28 @@ def prepare_drawing_masks(
     linework.save(linework_path)
     overlay.save(overlay_path)
 
-    regions = [_region_record(region, width, height) for region in all_mask_regions]
+    view_frames = _infer_view_frames(view_linework, dark_threshold=dark_threshold)
+    regions = [
+        _region_record(region, width, height, region_id=f"region_{index:03d}")
+        for index, region in enumerate(all_mask_regions)
+    ]
+    regions = _attach_view_references_to_regions(regions, view_frames)
+    callout_candidates = [
+        _callout_candidate_from_region(region, view_frames)
+        for region in regions
+        if region.get("type") == "annotation_candidate"
+    ]
     metadata = {
         "success": True,
         "drawing_path": str(path),
         "width": width,
         "height": height,
         "dark_threshold": dark_threshold,
+        "coordinate_system": _image_coordinate_system(width, height),
+        "artifact_transforms": _artifact_transforms(),
+        "view_frames": view_frames,
         "regions": regions,
+        "callout_candidates": [candidate for candidate in callout_candidates if candidate],
         "region_counts": _region_counts(regions),
         "artifacts": {
             "original_path": str(original_path),
@@ -422,11 +483,137 @@ def prepare_drawing_masks(
         },
         "guidance": [
             "Treat heuristic regions as mask candidates; verify against the original drawing.",
+            "All bboxes and points are in the original image_px frame unless explicitly marked view-relative.",
+            "Callout target estimates are heuristic anchors; preserve region_id and view_frame_id when building a CAD feature plan.",
             "Use sheet_masked_path to reason after border/title-block removal.",
             "Use annotation_masked_path and physical_linework_path to reason about part views.",
         ],
     }
     metadata_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+    return metadata
+
+
+def segment_drawing_views(
+    drawing_path: str | Path,
+    output_dir: str | Path,
+    mask_metadata_path: str | Path | None = None,
+    stem: str = "drawing",
+    projection_system: str = "unknown",
+    padding_px: int = 12,
+) -> dict[str, Any]:
+    """Crop inferred view frames and describe first/third-angle role hypotheses."""
+    path = Path(drawing_path)
+    if not path.exists():
+        return {"success": False, "error": f"Drawing not found: {path}"}
+
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+    stem = _safe_file_label(stem or path.stem)
+
+    if mask_metadata_path:
+        mask_metadata = json.loads(Path(mask_metadata_path).read_text(encoding="utf-8"))
+    else:
+        mask_metadata = prepare_drawing_masks(
+            drawing_path=path,
+            output_dir=output_path / "masks",
+            stem=stem,
+        )
+    if not mask_metadata.get("success"):
+        return {
+            "success": False,
+            "drawing_path": str(path),
+            "error": "Mask metadata unavailable.",
+            "mask_metadata": mask_metadata,
+        }
+
+    view_frames = list(mask_metadata.get("view_frames") or [])
+    if not view_frames:
+        return {
+            "success": False,
+            "drawing_path": str(path),
+            "error": "No view frames were inferred from the masked drawing.",
+            "mask_metadata_path": str(mask_metadata_path or mask_metadata["artifacts"]["metadata_path"]),
+        }
+
+    image_width = int(mask_metadata["width"])
+    image_height = int(mask_metadata["height"])
+    artifacts = mask_metadata.get("artifacts", {})
+    image_sources = _view_crop_sources(artifacts)
+    projection_hypotheses = _projection_system_hypotheses(
+        view_frames,
+        projection_system=projection_system,
+    )
+    role_by_system = {
+        hypothesis["projection_system"]: hypothesis["assignments"]
+        for hypothesis in projection_hypotheses
+    }
+    regions_by_view = _regions_by_nearest_view(mask_metadata.get("regions", []))
+    callouts_by_view = _callouts_by_view(mask_metadata.get("callout_candidates", []))
+
+    view_segments: list[dict[str, Any]] = []
+    for index, frame in enumerate(view_frames):
+        crop_bbox = _padded_bbox(frame["bbox"], padding_px, image_width, image_height)
+        view_id = f"view_segment_{index:03d}"
+        crop_paths: dict[str, str] = {}
+        for source_name, source_path in image_sources.items():
+            with Image.open(source_path) as source_image:
+                crop = source_image.convert("RGB").crop(crop_bbox)
+                crop_path = output_path / f"{stem}_{view_id}_{source_name}.png"
+                crop.save(crop_path)
+                crop_paths[f"{source_name}_path"] = str(crop_path)
+
+        frame_id = frame["frame_id"]
+        role_hypotheses = {
+            system: {
+                "role": assignments.get(frame_id, "unassigned"),
+                "projection_system": system,
+            }
+            for system, assignments in role_by_system.items()
+        }
+        view_segments.append(
+            {
+                "view_id": view_id,
+                "source_view_frame_id": frame_id,
+                "bbox_image_px": frame["bbox"],
+                "crop_bbox_image_px": list(crop_bbox),
+                "bbox_norm_image": frame.get("bbox_norm_image"),
+                "crop_transform": {
+                    "from_frame": f"{view_id}_crop_px",
+                    "to_frame": "image_px",
+                    "translation_px": [crop_bbox[0], crop_bbox[1]],
+                    "scale": 1.0,
+                    "x_axis": "right",
+                    "y_axis": "down",
+                },
+                "role_hypotheses": role_hypotheses,
+                "nearby_annotation_region_ids": regions_by_view.get(frame_id, [])[:12],
+                "callout_candidate_ids": callouts_by_view.get(frame_id, [])[:20],
+                "crop_paths": crop_paths,
+            }
+        )
+
+    metadata = {
+        "success": True,
+        "drawing_path": str(path),
+        "mask_metadata_path": str(mask_metadata_path or mask_metadata["artifacts"]["metadata_path"]),
+        "coordinate_system": mask_metadata.get("coordinate_system"),
+        "projection_conventions": _projection_conventions(),
+        "projection_system_hypotheses": projection_hypotheses,
+        "view_segments": view_segments,
+        "artifacts": {
+            "metadata_path": str(output_path / f"{stem}_view_segments.json"),
+        },
+        "guidance": [
+            "Use explicit labels and projection symbols when legible, but do not require them.",
+            "Third-angle placement keeps top/right/left views above/right/left of the front view.",
+            "First-angle placement mirrors top/right/left views below/left/right of the front view.",
+            "Every crop records a translation back to image_px; preserve this when linking features and GD&T callouts.",
+        ],
+    }
+    Path(metadata["artifacts"]["metadata_path"]).write_text(
+        json.dumps(metadata, indent=2),
+        encoding="utf-8",
+    )
     return metadata
 
 
@@ -995,6 +1182,70 @@ def _region_overlay(image: Image.Image, regions: list[dict[str, Any]]) -> Image.
     return overlay
 
 
+def _infer_view_frames(linework: Image.Image, dark_threshold: int) -> list[dict[str, Any]]:
+    import numpy as np
+    from scipy import ndimage
+
+    gray = ImageOps.grayscale(linework)
+    width, height = gray.size
+    total_area = max(width * height, 1)
+    dark = np.array(gray, dtype=np.uint8) < dark_threshold
+    if not dark.any():
+        return []
+
+    join_iterations = max(1, min(4, min(width, height) // 120))
+    joined = ndimage.binary_dilation(dark, iterations=join_iterations)
+    labels, _count = ndimage.label(joined)
+    objects = ndimage.find_objects(labels)
+    frames: list[dict[str, Any]] = []
+    for label_index, slices in enumerate(objects, start=1):
+        if slices is None:
+            continue
+        y_slice, x_slice = slices
+        x1, x2 = int(x_slice.start), int(x_slice.stop)
+        y1, y2 = int(y_slice.start), int(y_slice.stop)
+        box_w = x2 - x1
+        box_h = y2 - y1
+        bbox_area = max(box_w * box_h, 1)
+        component_area = int((labels[slices] == label_index).sum())
+        bbox_area_ratio = bbox_area / total_area
+        fill_ratio = component_area / bbox_area
+        touches_edge = x1 <= 2 or y1 <= 2 or x2 >= width - 2 or y2 >= height - 2
+
+        likely_view = (
+            box_w >= max(12, width * 0.04)
+            and box_h >= max(12, height * 0.04)
+            and bbox_area_ratio >= 0.003
+            and bbox_area_ratio <= 0.65
+            and not (touches_edge and bbox_area_ratio > 0.18)
+        )
+        if not likely_view:
+            continue
+
+        frames.append(
+            {
+                "frame_id": f"view_{len(frames):03d}",
+                "bbox": [x1, y1, x2, y2],
+                "bbox_norm_image": _bbox_norm([x1, y1, x2, y2], width, height),
+                "center_px": _bbox_center([x1, y1, x2, y2]),
+                "origin_image_px": [x1, y1],
+                "origin": "top_left",
+                "x_axis": "right",
+                "y_axis": "down",
+                "units": "px",
+                "source": "sheet_masked_linework_component",
+                "component_area_px": component_area,
+                "bbox_area_ratio": round(bbox_area_ratio, 6),
+                "fill_ratio": round(fill_ratio, 4),
+            }
+        )
+
+    frames.sort(key=lambda frame: (frame["bbox"][1], frame["bbox"][0]))
+    for index, frame in enumerate(frames[:12]):
+        frame["frame_id"] = f"view_{index:03d}"
+    return frames[:12]
+
+
 def _dark_density(
     pixels: Any,
     bbox: tuple[int, int, int, int],
@@ -1019,21 +1270,361 @@ def _clamped_bbox(
     height: int,
 ) -> tuple[int, int, int, int]:
     x1, y1, x2, y2 = [int(round(value)) for value in bbox]
+    x1 = max(0, min(width, x1))
+    y1 = max(0, min(height, y1))
+    x2 = max(0, min(width, x2))
+    y2 = max(0, min(height, y2))
+    if x2 < x1:
+        x1, x2 = x2, x1
+    if y2 < y1:
+        y1, y2 = y2, y1
     return (
-        max(0, min(width, x1)),
-        max(0, min(height, y1)),
-        max(0, min(width, x2)),
-        max(0, min(height, y2)),
+        x1,
+        y1,
+        x2,
+        y2,
     )
 
 
-def _region_record(region: dict[str, Any], width: int, height: int) -> dict[str, Any]:
+def _region_record(
+    region: dict[str, Any],
+    width: int,
+    height: int,
+    region_id: str,
+) -> dict[str, Any]:
     x1, y1, x2, y2 = _clamped_bbox(region["bbox"], width, height)
+    bbox = [x1, y1, x2, y2]
     return {
+        "region_id": region_id,
         **{key: value for key, value in region.items() if key != "bbox"},
-        "bbox": [x1, y1, x2, y2],
+        "bbox": bbox,
+        "bbox_norm_image": _bbox_norm(bbox, width, height),
+        "center_px": _bbox_center(bbox),
         "area_ratio": round(((x2 - x1) * (y2 - y1)) / max(width * height, 1), 6),
     }
+
+
+def _attach_view_references_to_regions(
+    regions: list[dict[str, Any]],
+    view_frames: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    for region in regions:
+        view_frame = _nearest_view_frame(region.get("center_px"), view_frames)
+        if not view_frame:
+            continue
+        center_px = region["center_px"]
+        region["nearest_view_frame_id"] = view_frame["frame_id"]
+        region["center_view_px"] = _point_in_view_frame(center_px, view_frame)
+        region["center_view_norm"] = _point_in_view_norm(center_px, view_frame)
+    return regions
+
+
+def _callout_candidate_from_region(
+    region: dict[str, Any],
+    view_frames: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    view_frame = _nearest_view_frame(region.get("center_px"), view_frames)
+    if not view_frame:
+        return None
+
+    endpoint = _nearest_point_on_bbox(region["center_px"], view_frame["bbox"])
+    confidence = float(region.get("confidence", 0.5))
+    return {
+        "callout_id": str(region["region_id"]).replace("region_", "callout_"),
+        "source_region_id": region["region_id"],
+        "source_region_type": region.get("type", "unknown"),
+        "view_frame_id": view_frame["frame_id"],
+        "target_endpoint_image_px": endpoint,
+        "target_endpoint_view_px": _point_in_view_frame(endpoint, view_frame),
+        "target_endpoint_view_norm": _point_in_view_norm(endpoint, view_frame),
+        "source_region_center_image_px": region["center_px"],
+        "source_region_center_view_px": _point_in_view_frame(
+            region["center_px"],
+            view_frame,
+        ),
+        "source_region_center_view_norm": _point_in_view_norm(region["center_px"], view_frame),
+        "association_method": "nearest_view_bbox_projection",
+        "confidence": round(min(0.5, confidence * 0.55), 3),
+        "caveat": "Heuristic anchor only; verify leader/callout line pixels in the original image.",
+    }
+
+
+def _image_coordinate_system(width: int, height: int) -> dict[str, Any]:
+    return {
+        "frame_id": "image_px",
+        "origin": "top_left",
+        "x_axis": "right",
+        "y_axis": "down",
+        "units": "px",
+        "width": width,
+        "height": height,
+        "normalized_frame": {
+            "origin": "top_left",
+            "x_axis": "right",
+            "y_axis": "down",
+            "x_range": [0.0, 1.0],
+            "y_range": [0.0, 1.0],
+        },
+    }
+
+
+def _artifact_transforms() -> dict[str, dict[str, str]]:
+    return {
+        artifact: {
+            "from_frame": "image_px",
+            "to_frame": "image_px",
+            "transform": "identity",
+        }
+        for artifact in [
+            "original_path",
+            "sheet_masked_path",
+            "annotation_masked_path",
+            "physical_linework_path",
+            "overlay_path",
+        ]
+    }
+
+
+def _view_crop_sources(artifacts: dict[str, Any]) -> dict[str, Path]:
+    sources: dict[str, Path] = {}
+    for source_name, artifact_key in {
+        "original": "original_path",
+        "sheet_masked": "sheet_masked_path",
+        "annotation_masked": "annotation_masked_path",
+        "physical_linework": "physical_linework_path",
+    }.items():
+        artifact_path = artifacts.get(artifact_key)
+        if artifact_path and Path(artifact_path).exists():
+            sources[source_name] = Path(artifact_path)
+    return sources
+
+
+def _projection_conventions() -> dict[str, Any]:
+    return {
+        "third_angle": {
+            "description": "Common in US/Canada practice; the projected view is placed on the same side as the viewing direction.",
+            "layout_rules": {
+                "top": "above_front",
+                "bottom": "below_front",
+                "right": "right_of_front",
+                "left": "left_of_front",
+            },
+        },
+        "first_angle": {
+            "description": "Common in ISO/European practice; the projected view is placed on the opposite side of the front view.",
+            "layout_rules": {
+                "top": "below_front",
+                "bottom": "above_front",
+                "right": "left_of_front",
+                "left": "right_of_front",
+            },
+        },
+        "notes": [
+            "A drawing should normally indicate the projection method with a projection symbol or title-block note.",
+            "Do not mix first-angle and third-angle role assignments within one drawing unless the drawing explicitly says to.",
+        ],
+    }
+
+
+def _projection_system_hypotheses(
+    view_frames: list[dict[str, Any]],
+    projection_system: str,
+) -> list[dict[str, Any]]:
+    front = _select_front_view_frame(view_frames)
+    if not front:
+        return []
+
+    requested = _normalized_projection_system(projection_system)
+    systems = [requested] if requested in {"third_angle", "first_angle"} else ["third_angle", "first_angle"]
+    hypotheses: list[dict[str, Any]] = []
+    for system in systems:
+        assignments = {
+            frame["frame_id"]: _projected_view_role(frame, front, system)
+            for frame in view_frames
+        }
+        assignments[front["frame_id"]] = "front"
+        confidence = _projection_assignment_confidence(assignments, requested == system)
+        hypotheses.append(
+            {
+                "projection_system": system,
+                "confidence": confidence,
+                "front_view_frame_id": front["frame_id"],
+                "assignments": assignments,
+                "basis": (
+                    "Layout hypothesis from inferred view-frame centers; prefer title-block "
+                    "projection symbols or explicit view labels when available."
+                ),
+            }
+        )
+    return hypotheses
+
+
+def _select_front_view_frame(view_frames: list[dict[str, Any]]) -> dict[str, Any] | None:
+    if not view_frames:
+        return None
+    centers = [frame["center_px"] for frame in view_frames]
+    mean_x = sum(point[0] for point in centers) / len(centers)
+    mean_y = sum(point[1] for point in centers) / len(centers)
+
+    def score(frame: dict[str, Any]) -> tuple[float, float]:
+        x1, y1, x2, y2 = frame["bbox"]
+        area = max((x2 - x1) * (y2 - y1), 1)
+        center_distance = _distance(frame["center_px"], [mean_x, mean_y])
+        return (-area, center_distance)
+
+    return min(view_frames, key=score)
+
+
+def _projected_view_role(
+    frame: dict[str, Any],
+    front: dict[str, Any],
+    projection_system: str,
+) -> str:
+    if frame["frame_id"] == front["frame_id"]:
+        return "front"
+
+    dx = float(frame["center_px"][0]) - float(front["center_px"][0])
+    dy = float(frame["center_px"][1]) - float(front["center_px"][1])
+    front_x1, front_y1, front_x2, front_y2 = front["bbox"]
+    x_threshold = max((front_x2 - front_x1) * 0.35, 12.0)
+    y_threshold = max((front_y2 - front_y1) * 0.35, 12.0)
+
+    if abs(dx) < x_threshold and dy < -y_threshold:
+        return "top" if projection_system == "third_angle" else "bottom"
+    if abs(dx) < x_threshold and dy > y_threshold:
+        return "bottom" if projection_system == "third_angle" else "top"
+    if dx > x_threshold and abs(dy) < y_threshold:
+        return "right" if projection_system == "third_angle" else "left"
+    if dx < -x_threshold and abs(dy) < y_threshold:
+        return "left" if projection_system == "third_angle" else "right"
+    if dy < -y_threshold:
+        return "upper_auxiliary_or_detail"
+    if dy > y_threshold:
+        return "lower_auxiliary_or_detail"
+    return "side_or_detail_unresolved"
+
+
+def _projection_assignment_confidence(assignments: dict[str, str], requested: bool) -> float:
+    resolved_roles = {
+        role
+        for role in assignments.values()
+        if role in {"front", "top", "bottom", "right", "left"}
+    }
+    base = 0.36 + 0.08 * min(len(resolved_roles), 4)
+    if requested:
+        base += 0.12
+    if len(assignments) == 1:
+        base = min(base, 0.34)
+    return round(min(base, 0.78), 3)
+
+
+def _normalized_projection_system(value: str) -> str:
+    normalized = value.strip().lower().replace("-", "_").replace(" ", "_")
+    if normalized in {"third", "thirdangle", "third_angle", "3rd", "3rd_angle"}:
+        return "third_angle"
+    if normalized in {"first", "firstangle", "first_angle", "1st", "1st_angle"}:
+        return "first_angle"
+    return "unknown"
+
+
+def _regions_by_nearest_view(regions: list[dict[str, Any]]) -> dict[str, list[str]]:
+    grouped: dict[str, list[str]] = {}
+    for region in regions:
+        view_id = region.get("nearest_view_frame_id")
+        region_id = region.get("region_id")
+        if view_id and region_id and region.get("type") == "annotation_candidate":
+            grouped.setdefault(str(view_id), []).append(str(region_id))
+    return grouped
+
+
+def _callouts_by_view(callouts: list[dict[str, Any]]) -> dict[str, list[str]]:
+    grouped: dict[str, list[str]] = {}
+    for callout in callouts:
+        view_id = callout.get("view_frame_id")
+        callout_id = callout.get("callout_id")
+        if view_id and callout_id:
+            grouped.setdefault(str(view_id), []).append(str(callout_id))
+    return grouped
+
+
+def _padded_bbox(
+    bbox: list[int] | tuple[int, int, int, int],
+    padding_px: int,
+    width: int,
+    height: int,
+) -> tuple[int, int, int, int]:
+    x1, y1, x2, y2 = bbox
+    return _clamped_bbox(
+        (x1 - padding_px, y1 - padding_px, x2 + padding_px, y2 + padding_px),
+        width,
+        height,
+    )
+
+
+def _nearest_view_frame(
+    point: list[float] | None,
+    view_frames: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    if not point or not view_frames:
+        return None
+    return min(
+        view_frames,
+        key=lambda frame: _distance(point, _nearest_point_on_bbox(point, frame["bbox"])),
+    )
+
+
+def _nearest_point_on_bbox(
+    point: list[float],
+    bbox: list[int] | tuple[int, int, int, int],
+) -> list[float]:
+    x, y = float(point[0]), float(point[1])
+    x1, y1, x2, y2 = [float(value) for value in bbox]
+    clamped_x = min(max(x, x1), x2)
+    clamped_y = min(max(y, y1), y2)
+    if x1 <= x <= x2 and y1 <= y <= y2:
+        distances = [
+            (abs(x - x1), [x1, y]),
+            (abs(x2 - x), [x2, y]),
+            (abs(y - y1), [x, y1]),
+            (abs(y2 - y), [x, y2]),
+        ]
+        return [round(value, 3) for value in min(distances, key=lambda item: item[0])[1]]
+    return [round(clamped_x, 3), round(clamped_y, 3)]
+
+
+def _point_in_view_frame(point: list[float], view_frame: dict[str, Any]) -> list[float]:
+    x1, y1, _x2, _y2 = view_frame["bbox"]
+    return [round(float(point[0]) - x1, 3), round(float(point[1]) - y1, 3)]
+
+
+def _point_in_view_norm(point: list[float], view_frame: dict[str, Any]) -> list[float]:
+    x1, y1, x2, y2 = view_frame["bbox"]
+    width = max(float(x2 - x1), 1.0)
+    height = max(float(y2 - y1), 1.0)
+    view_px = _point_in_view_frame(point, view_frame)
+    return [
+        round(min(max(view_px[0] / width, 0.0), 1.0), 6),
+        round(min(max(view_px[1] / height, 0.0), 1.0), 6),
+    ]
+
+
+def _bbox_center(bbox: list[int] | tuple[int, int, int, int]) -> list[float]:
+    x1, y1, x2, y2 = bbox
+    return [round((x1 + x2) / 2.0, 3), round((y1 + y2) / 2.0, 3)]
+
+
+def _bbox_norm(
+    bbox: list[int] | tuple[int, int, int, int],
+    width: int,
+    height: int,
+) -> list[float]:
+    x1, y1, x2, y2 = bbox
+    return [
+        round(x1 / max(width, 1), 6),
+        round(y1 / max(height, 1), 6),
+        round(x2 / max(width, 1), 6),
+        round(y2 / max(height, 1), 6),
+    ]
 
 
 def _region_counts(regions: list[dict[str, Any]]) -> dict[str, int]:

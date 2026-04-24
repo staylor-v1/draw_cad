@@ -5,17 +5,19 @@ Use these tools as the only external actions available while reconstructing part
 Recommended workflow:
 
 1. Call `inspect_drawing` on the current drawing.
-2. For cluttered raster engineering drawings, call `prepare_drawing_masks` and inspect the sheet/title-block masked image, annotation masked image, physical linework image, overlay, and region metadata before deciding what geometry to model.
-3. If the drawing is an orthographic SVG triplet, call `run_deterministic_reconstruction` and inspect the verified candidate scores.
-4. If deterministic reconstruction is unavailable or insufficient, write build123d code and call `execute_cad_code`.
-5. If the source is a parseable SVG, call `evaluate_step_against_drawing`.
-6. For roundtrip testing, call `render_step_to_drawing` on the first STEP, reconstruct from that generated drawing, then call `compare_cad_parts`.
-7. Return final build123d code only after at least one successful execution or verified deterministic candidate.
+2. For cluttered raster engineering drawings, call `prepare_drawing_masks` and inspect the sheet/title-block masked image, annotation masked image, physical linework image, overlay, view frame metadata, callout candidates, and region metadata.
+3. Call `segment_drawing_views` after masking to crop each inferred view separately and inspect the first-angle/third-angle role hypotheses before deciding what geometry to model.
+4. If the drawing is an orthographic SVG triplet, call `run_deterministic_reconstruction` and inspect the verified candidate scores.
+5. If deterministic reconstruction is unavailable or insufficient, write build123d code and call `execute_cad_code`.
+6. If the source is a parseable SVG, call `evaluate_step_against_drawing`.
+7. For roundtrip testing, call `render_step_to_drawing` on the first STEP, reconstruct from that generated drawing, then call `compare_cad_parts`.
+8. Return final build123d code only after at least one successful execution or verified deterministic candidate.
 
 Tool behavior:
 
 - `inspect_drawing` identifies raster drawings and parses FreeCAD-style SVG orthographic triplets.
-- `prepare_drawing_masks` creates heuristic mask artifacts for border/title-block regions, annotation candidates, and isolated physical linework. Treat those masks as candidates to verify, not truth.
+- `prepare_drawing_masks` creates heuristic mask artifacts for border/title-block regions, annotation candidates, isolated physical linework, inferred view frames, and GD&T/callout anchor candidates. Treat those masks as candidates to verify, not truth. All mask artifacts preserve the original `image_px` coordinate frame. Each region includes original-image bbox/center fields, and each callout candidate includes a `view_frame_id`, `target_endpoint_image_px`, and `target_endpoint_view_norm` so CAD feature planning can reference the original drawing evidence.
+- `segment_drawing_views` crops each inferred view from the original, masked, and physical-linework images. Each crop includes a transform back to `image_px`, nearby annotation/callout IDs, and projection role hypotheses. Use explicit labels and projection symbols if legible. If labels are missing, compare the first-angle and third-angle hypotheses: third-angle places top/right/left views above/right/left of the front view; first-angle places them below/left/right of the front view.
 - `run_deterministic_reconstruction` searches existing deterministic candidate generators and returns a best scored STEP for SVG triplets.
 - `execute_cad_code` runs build123d code in a subprocess and returns a STEP path or categorized error.
 - `evaluate_step_against_drawing` compares STEP reprojection to SVG linework.

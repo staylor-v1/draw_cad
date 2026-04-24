@@ -19,7 +19,9 @@ from gemma4_agent.toolbox import (
     encode_image_for_ollama,
     execute_cad_code,
     get_tool_schemas,
+    prepare_drawing_masks,
     render_step_to_drawing,
+    segment_drawing_views,
 )
 from src.pipeline.reasoning_stage import extract_code
 from src.reconstruction.training_svg_dataset import load_training_svg_triplet
@@ -28,6 +30,15 @@ from src.reconstruction.training_svg_dataset import load_training_svg_triplet
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_SYSTEM_PROMPT = Path(__file__).resolve().parent / "prompts" / "system.md"
 DEFAULT_AGENT_PROFILE = Path(__file__).resolve().parent / "prompts" / "agent.md"
+_RASTER_SUFFIXES = {".png", ".jpg", ".jpeg", ".webp", ".bmp"}
+_ATTACHABLE_DRAWING_SUFFIXES = {*_RASTER_SUFFIXES, ".svg"}
+_MASK_IMAGE_ARTIFACT_KEYS = (
+    "sheet_masked_path",
+    "annotation_masked_path",
+    "physical_linework_path",
+    "overlay_path",
+)
+_MAX_SEGMENTED_VIEW_ATTACHMENTS = 8
 
 
 @dataclass(frozen=True)
@@ -82,6 +93,17 @@ class Gemma4RoundTripAgent:
         root = Path(output_dir) if output_dir else self.config.output_dir / _run_id()
         root.mkdir(parents=True, exist_ok=True)
         source_drawing = Path(drawing_path)
+        drawing_masks = self._prepare_masks_for_first_pass(source_drawing, root)
+        drawing_view_segments = self._prepare_view_segments_for_first_pass(
+            source_drawing,
+            root,
+            drawing_masks,
+        )
+        first_extra_context: dict[str, Any] = {"drawing_evidence": drawing_evidence or {}}
+        if drawing_masks:
+            first_extra_context["drawing_masks"] = drawing_masks
+        if drawing_view_segments:
+            first_extra_context["drawing_view_segments"] = drawing_view_segments
 
         first_stage = self._cad_from_drawing(
             drawing_path=source_drawing,
@@ -90,7 +112,7 @@ class Gemma4RoundTripAgent:
                 "Create the first CAD part from the source drawing. Use tools to inspect, "
                 "execute, and verify before returning final build123d code."
             ),
-            extra_context={"drawing_evidence": drawing_evidence or {}},
+            extra_context=first_extra_context,
         )
         first_step = self._materialize_stage_step(
             stage=first_stage,
@@ -147,6 +169,8 @@ class Gemma4RoundTripAgent:
             "config": _json_safe(asdict(self.config)),
             "source_drawing": str(source_drawing),
             "drawing_evidence": drawing_evidence or {},
+            "drawing_masks": drawing_masks,
+            "drawing_view_segments": drawing_view_segments,
             "first_stage": first_stage,
             "first_step_path": first_step,
             "rendered_drawing": rendered,
@@ -159,6 +183,35 @@ class Gemma4RoundTripAgent:
             encoding="utf-8",
         )
         return _json_safe(summary)
+
+    def _prepare_masks_for_first_pass(self, drawing_path: Path, root: Path) -> dict[str, Any] | None:
+        if drawing_path.suffix.lower() not in _RASTER_SUFFIXES:
+            return None
+        result = prepare_drawing_masks(
+            drawing_path,
+            output_dir=root / "masks",
+            stem=drawing_path.stem,
+        )
+        return result if result.get("success") else result
+
+    def _prepare_view_segments_for_first_pass(
+        self,
+        drawing_path: Path,
+        root: Path,
+        drawing_masks: dict[str, Any] | None,
+    ) -> dict[str, Any] | None:
+        if drawing_path.suffix.lower() not in _RASTER_SUFFIXES:
+            return None
+        if not drawing_masks or not drawing_masks.get("success"):
+            return None
+        metadata_path = (drawing_masks.get("artifacts") or {}).get("metadata_path")
+        result = segment_drawing_views(
+            drawing_path,
+            output_dir=root / "views",
+            mask_metadata_path=metadata_path,
+            stem=drawing_path.stem,
+        )
+        return result if result.get("success") else result
 
     def _cad_from_drawing(
         self,
@@ -328,7 +381,7 @@ class Gemma4RoundTripAgent:
 
     def _fallback_code_for_drawing(self, drawing_path: Path) -> str | None:
         suffix = drawing_path.suffix.lower()
-        if suffix in {".png", ".jpg", ".jpeg", ".webp", ".bmp"}:
+        if suffix in _RASTER_SUFFIXES:
             with Image.open(drawing_path) as image:
                 width = max(float(image.width) / 10.0, 10.0)
                 height = max(float(image.height) / 10.0, 10.0)
@@ -434,16 +487,27 @@ class Gemma4RoundTripAgent:
                 "For raster engineering drawings, reconstruct the main physical part only.",
                 "Ignore title blocks, borders, notes, GD&T feature-control frames, and tolerance text as geometry.",
                 "If drawing_evidence is provided in extra_context, use it as structured hints but verify against the image.",
+                "If drawing_masks is provided, compare the attached mask images against the original before choosing CAD features.",
+                "If drawing_view_segments is provided, use the segmented view crops and projection hypotheses to identify view axes before CAD construction.",
             ],
             "extra_context": _json_safe(extra_context or {}),
         }
+        attached_images = _attached_image_paths(drawing_path, extra_context or {})
+        if attached_images:
+            user_text["attached_images"] = [
+                {"index": index, "role": role, "path": str(path)}
+                for index, (role, path) in enumerate(attached_images)
+            ]
         message: dict[str, Any] = {
             "role": "user",
             "content": json.dumps(user_text, indent=2),
         }
-        if drawing_path.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".svg"}:
-            image_b64, _ = encode_image_for_ollama(drawing_path)
-            message["images"] = [image_b64]
+        if attached_images:
+            images = []
+            for _, path in attached_images:
+                image_b64, _ = encode_image_for_ollama(path)
+                images.append(image_b64)
+            message["images"] = images
         return [
             {"role": "system", "content": system_prompt},
             message,
@@ -473,6 +537,50 @@ class Gemma4RoundTripAgent:
 
 def _run_id() -> str:
     return time.strftime("%Y%m%d_%H%M%S")
+
+
+def _attached_image_paths(
+    drawing_path: Path,
+    extra_context: dict[str, Any],
+) -> list[tuple[str, Path]]:
+    attached: list[tuple[str, Path]] = []
+    if drawing_path.suffix.lower() in _ATTACHABLE_DRAWING_SUFFIXES and drawing_path.exists():
+        attached.append(("source_drawing", drawing_path))
+
+    masks = extra_context.get("drawing_masks") if isinstance(extra_context, dict) else None
+    artifacts = masks.get("artifacts") if isinstance(masks, dict) and isinstance(masks.get("artifacts"), dict) else {}
+    for key in _MASK_IMAGE_ARTIFACT_KEYS:
+        raw_path = artifacts.get(key)
+        if not raw_path:
+            continue
+        path = Path(raw_path)
+        if path.exists() and path.suffix.lower() in _ATTACHABLE_DRAWING_SUFFIXES:
+            attached.append((key.removesuffix("_path"), path))
+
+    view_segments = (
+        extra_context.get("drawing_view_segments")
+        if isinstance(extra_context, dict)
+        else None
+    )
+    segments = (
+        view_segments.get("view_segments")
+        if isinstance(view_segments, dict) and isinstance(view_segments.get("view_segments"), list)
+        else []
+    )
+    for segment in segments[:_MAX_SEGMENTED_VIEW_ATTACHMENTS]:
+        if not isinstance(segment, dict):
+            continue
+        crop_paths = segment.get("crop_paths")
+        if not isinstance(crop_paths, dict):
+            continue
+        raw_path = crop_paths.get("physical_linework_path")
+        if not raw_path:
+            continue
+        path = Path(raw_path)
+        if path.exists() and path.suffix.lower() in _ATTACHABLE_DRAWING_SUFFIXES:
+            role = f"{segment.get('view_id', 'view_segment')}_physical_linework"
+            attached.append((role, path))
+    return attached
 
 
 def _diagnostic_envelope_code(width: float, depth: float, height: float, reason: str) -> str:

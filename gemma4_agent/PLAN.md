@@ -46,6 +46,8 @@ The harness should make these choices visible to the reasoning agent:
   engineering drawing.
 - Use detector/VLM evidence to identify and mask non-geometry regions, not to blindly
   add geometry.
+- Use view segmentation after masking so the reasoning model can inspect each
+  orthographic view independently while preserving transforms back to the source sheet.
 - Use deterministic reconstruction for parseable SVG triplets and generated drawings.
 - Use `execute_cad_code` for custom build123d programs and repair tool errors before
   changing the modeling strategy.
@@ -95,6 +97,7 @@ through experiments.
    Output:
    - structured GD&T and dimension evidence
    - association graph from annotations to drawing entities or feature regions
+   - original-image and view-relative coordinates for every callout endpoint
    - a second masked image where annotations/callouts are removed or dimmed
 
 3. **Physical Linework Isolation**
@@ -112,6 +115,7 @@ through experiments.
 
    Output:
    - per-view linework masks
+   - per-view coordinate frames tied back to the original drawing pixels
    - candidate edge primitives: lines, arcs, circles, ellipses, splines
    - uncertainty regions where physical linework and annotations overlap
 
@@ -124,12 +128,15 @@ through experiments.
    Candidate tools:
    - deterministic SVG triplet parser where available
    - view-layout heuristics
+   - first-angle and third-angle projection role hypotheses
+   - explicit view labels and title-block projection symbols when legible
    - Gemma 4 multimodal reasoning
    - geometric consistency checks against candidate extents
 
    Output:
    - selected canonical views
    - view-to-axis mapping
+   - projection-system assumption: third-angle, first-angle, or unresolved
    - scale and unit assumptions
    - rejected decorative/detail-only regions
 
@@ -150,6 +157,8 @@ through experiments.
    - feature inventory: holes, slots, pockets, bosses, shafts, flanges, ribs, steps,
      chamfers, fillets, threads, and revolved profiles
    - ordered CAD operation plan
+   - preserved references from each CAD feature back to source callout/region IDs and
+     view-relative target points
    - assumptions and unresolved ambiguities
 
 6. **CAD Construction**
@@ -219,6 +228,11 @@ through experiments.
   - isolated physical linework
   - per-view crops
 - Keep masks reversible and auditable so failures can be diagnosed visually.
+- Preserve `image_px` coordinates across all derived mask artifacts. When a view crop
+  or view-local frame is introduced, record the transform back to the original image.
+- Segment views into separate crops after masking. Include both third-angle and
+  first-angle view-role hypotheses unless the projection symbol or title block makes
+  the projection system explicit.
 
 ### Geometry Tools
 
@@ -238,10 +252,11 @@ through experiments.
    Gemma-only extraction.
 5. Add callout association data structures: annotation region -> leader line ->
    target feature region.
-6. Add curve/primitive fitting over masked physical linework.
-7. Make first-pass CAD use extracted feature plans before falling back to generic
+6. Add view segmentation and projection-system reasoning for masked linework.
+7. Add curve/primitive fitting over masked physical linework.
+8. Make first-pass CAD use extracted feature plans before falling back to generic
    envelopes.
-8. Gate success on source fidelity, no fallback geometry, and CAD roundtrip stability.
+9. Gate success on source fidelity, no fallback geometry, and CAD roundtrip stability.
 
 ## Implementation Status
 
@@ -250,6 +265,19 @@ through experiments.
   overlay, and JSON region metadata artifacts. The first implementation is heuristic
   and intentionally auditable; Gemma should verify the masks against the original
   drawing before trusting them.
+- 2026-04-24: Wired mask generation into `Gemma4RoundTripAgent.run_roundtrip` for
+  raster source drawings. The first-pass Gemma message now receives the original image
+  plus sheet-masked, annotation-masked, physical-linework, and overlay images in a
+  documented attachment order, with mask metadata in `extra_context`.
+- 2026-04-24: Added coordinate-system metadata, inferred view frames, and heuristic
+  callout anchor candidates to `prepare_drawing_masks`. Callouts now preserve
+  `source_region_id`, `view_frame_id`, `target_endpoint_image_px`, and
+  `target_endpoint_view_norm` so a CAD feature plan can point back to the original
+  GD&T evidence.
+- 2026-04-24: Added `segment_drawing_views` to crop inferred views from original,
+  masked, and physical-linework images. Each crop records its translation back to
+  `image_px` and carries third-angle/first-angle role hypotheses so Gemma can reason
+  about view axes before CAD construction.
 
 ## Experiment Discipline
 
