@@ -40,6 +40,11 @@ Return this JSON shape:
 Use concise strings. Include only evidence visible in the drawing."""
 
 
+JSON_REPAIR_SYSTEM_PROMPT = """You repair malformed JSON.
+
+Return one valid JSON object only. Do not add markdown, explanations, or code fences."""
+
+
 @dataclass(frozen=True)
 class ExtractorRuntime:
     """Runtime configuration for optional drawing-evidence extractors."""
@@ -183,7 +188,7 @@ class Gemma4EvidenceExtractor:
             response.raise_for_status()
             data = response.json()
         content = data.get("message", {}).get("content", "")
-        evidence = _normalize_evidence(extract_json_object(content))
+        evidence = _normalize_evidence(self._parse_or_repair(content))
         result = {
             "backend": self.name,
             "success": True,
@@ -194,6 +199,36 @@ class Gemma4EvidenceExtractor:
         }
         (output_path / "evidence.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
         return result
+
+    def _parse_or_repair(self, content: str) -> dict[str, Any]:
+        try:
+            return extract_json_object(content)
+        except Exception:
+            repaired = self._repair_json(content)
+            return extract_json_object(repaired)
+
+    def _repair_json(self, content: str) -> str:
+        api_url = f"{self.runtime.base_url.rstrip('/')}/api/chat"
+        payload = {
+            "model": self.runtime.model,
+            "messages": [
+                {"role": "system", "content": JSON_REPAIR_SYSTEM_PROMPT},
+                {
+                    "role": "user",
+                    "content": (
+                        "Repair this malformed JSON into one valid JSON object with the same schema:\n\n"
+                        f"{content}"
+                    ),
+                },
+            ],
+            "stream": False,
+            "options": {"temperature": 0.0, "num_predict": 2048},
+        }
+        with httpx.Client(timeout=600) as client:
+            response = client.post(api_url, json=payload)
+            response.raise_for_status()
+            data = response.json()
+        return data.get("message", {}).get("content", "")
 
 
 class HeuristicEvidenceExtractor:
