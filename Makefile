@@ -1,4 +1,4 @@
-.PHONY: install test lint run-pipeline run-benchmark run-optimizer clean
+.PHONY: install test lint run-dashboard run-pipeline run-benchmark run-optimizer clean
 
 install:
 	pip install -e ".[all]"
@@ -8,6 +8,9 @@ install-core:
 
 test:
 	pytest tests/ -v
+
+run-dashboard:
+	.venv/bin/python web_ui.py --port 12080
 
 run-pipeline:
 	python scripts/run_pipeline.py $(ARGS)

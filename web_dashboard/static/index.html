@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Draw CAD Development Dashboard</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Draw CAD development</p>
+          <h1>Drawing Intake Console</h1>
+        </div>
+        <div class="run-meta">
+          <span id="modelBadge">Gemma 4 idle</span>
+          <strong id="currentFile">No drawing loaded</strong>
+        </div>
+      </header>
+
+      <nav class="tabs" aria-label="Dashboard tabs">
+        <button class="tab is-active" data-tab="image">Image</button>
+        <button class="tab" data-tab="analysis">Analysis</button>
+        <button class="tab" data-tab="cad">CAD</button>
+      </nav>
+
+      <section class="workspace">
+        <article class="panel is-active" id="imagePanel">
+          <section class="image-intake">
+            <label class="dropzone" for="imageInput">
+              <span>Load drawing image</span>
+              <strong>Choose file</strong>
+              <input id="imageInput" type="file" accept="image/*" />
+            </label>
+            <div class="image-stage">
+              <img id="originalImage" alt="Original engineering drawing" />
+              <div id="emptyImageState" class="empty-state">Awaiting drawing image</div>
+            </div>
+          </section>
+        </article>
+
+        <article class="panel" id="analysisPanel">
+          <section class="analysis-head">
+            <div>
+              <p class="eyebrow">Analysis workflow</p>
+              <h2>Segmentation and CAD construction</h2>
+            </div>
+            <button id="processButton" class="primary-action" disabled>Process</button>
+          </section>
+
+          <section class="phase-grid" aria-label="Processing progress">
+            <div class="phase-card" data-phase-card="segmenting">
+              <div>
+                <span>Segmenting image</span>
+                <strong id="segmentingPercent">0%</strong>
+              </div>
+              <progress id="segmentingProgress" value="0" max="100"></progress>
+            </div>
+            <div class="phase-card" data-phase-card="cad">
+              <div>
+                <span>Constructing CAD</span>
+                <strong id="cadPercent">0%</strong>
+              </div>
+              <progress id="cadProgress" value="0" max="100"></progress>
+            </div>
+          </section>
+
+          <nav class="subtabs" aria-label="Analysis views">
+            <button class="subtab is-active" data-subtab="border">Border and Title Block</button>
+            <button class="subtab" data-subtab="gdt">GD&amp;T</button>
+            <button class="subtab" data-subtab="projections">Projections</button>
+            <button class="subtab" data-subtab="callouts">2D plus callouts</button>
+            <button class="subtab" data-subtab="view3d">3D view</button>
+          </nav>
+
+          <section class="analysis-body">
+            <div class="subpanel is-active" id="borderSubpanel">
+              <div id="titleBlockCrop" class="crop-view"></div>
+              <div id="titleFields" class="field-list"></div>
+            </div>
+            <div class="subpanel" id="gdtSubpanel">
+              <div id="gdtList" class="gdt-list"></div>
+            </div>
+            <div class="subpanel" id="projectionsSubpanel">
+              <div id="projectionGrid" class="projection-grid"></div>
+            </div>
+            <div class="subpanel" id="calloutsSubpanel">
+              <div id="calloutGrid" class="callout-grid"></div>
+            </div>
+            <div class="subpanel" id="view3dSubpanel">
+              <div id="view3dContent"></div>
+            </div>
+          </section>
+        </article>
+
+        <article class="panel" id="cadPanel">
+          <section class="cad-layout">
+            <div class="cad-preview">
+              <div class="cad-gridlines"></div>
+              <div class="cad-part" aria-hidden="true"></div>
+            </div>
+            <div id="cadSummary" class="cad-summary"></div>
+          </section>
+        </article>
+      </section>
+
+      <aside class="feedback-tray">
+        <div class="feedback-actions">
+          <button data-template="missing-callout">Missing callout</button>
+          <button data-template="bad-crop">Bad crop</button>
+          <button data-template="wrong-symbol">Wrong symbol</button>
+          <button data-template="wrong-axis">Wrong axis label</button>
+          <button data-template="bad-cad">CAD issue</button>
+          <button id="copyFeedback">Copy</button>
+        </div>
+        <textarea id="feedbackText" spellcheck="false">filename=<none> | area=dashboard | issue=&lt;issue&gt;</textarea>
+      </aside>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>
