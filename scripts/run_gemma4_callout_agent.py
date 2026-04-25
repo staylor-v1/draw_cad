@@ -11,6 +11,7 @@ from pathlib import Path
 
 from src.segmentation.callouts import load_callout_fixture, split_callouts_by_view
 from src.segmentation.title_block import analyze_drawing_structure
+from src.vectorization.raster_to_dxf import raster_to_vector
 
 
 def main() -> None:
@@ -26,7 +27,8 @@ def main() -> None:
 
     tool_context = analyze_drawing_structure(image_path)
     teacher = load_callout_fixture(image_path)
-    response = call_gemma(args.model, image_path, tool_context)
+    vector_context = raster_to_vector(image_path)
+    response = call_gemma(args.model, image_path, tool_context, vector_context.to_dict())
     parsed = parse_json_object(response)
     score = score_response(parsed, teacher)
 
@@ -36,6 +38,7 @@ def main() -> None:
         "toolContext": {
             "projectionCount": len(tool_context["projections"]),
             "gdtCount": len(tool_context["gdt"]),
+            "vectorCounts": vector_context.to_dict()["counts"],
             "teacherCalloutCount": len(teacher),
             "teacherCountsByView": {key: len(value) for key, value in split_callouts_by_view(teacher).items()},
         },
@@ -49,8 +52,17 @@ def main() -> None:
     print(f"Wrote {out}")
 
 
-def call_gemma(model: str, image_path: Path, tool_context: dict) -> str:
+def call_gemma(model: str, image_path: Path, tool_context: dict, vector_context: dict) -> str:
     image_b64 = base64.b64encode(image_path.read_bytes()).decode()
+    vector_rectangles = [
+        {
+            "kind": item["kind"],
+            "confidence": item["confidence"],
+            "crop": item["crop"],
+            "source": item["source"],
+        }
+        for item in sorted(vector_context["rectangles"], key=lambda entry: entry["confidence"], reverse=True)[:12]
+    ]
     prompt = f"""You are a tool-using engineering drawing callout agent.
 
 The deterministic tools found:
@@ -58,11 +70,17 @@ The deterministic tools found:
 - border.present={tool_context['border']['present']}
 - projection_count={len(tool_context['projections'])}
 - gdt_candidate_count={len(tool_context['gdt'])}
+- vector_segment_count={vector_context['counts']['segments']}
+- vector_rectangle_count={vector_context['counts']['rectangles']}
+- vector_rectangles_top12={json.dumps(vector_rectangles)}
 
 Task:
 Identify every visible callout attached to the two visible projections.
 The left projection is front_view. The right projection is side_view.
 The image is cropped from a larger drawing; do not invent the missing C projection.
+Use the vector rectangles as teacher-tool evidence for feature-control frames
+and boxed/basic dimensions, but still verify against the image before assigning
+text.
 
 Return strict JSON only:
 {{

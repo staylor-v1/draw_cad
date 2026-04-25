@@ -107,3 +107,77 @@ def test_simple1_teacher_fixture_identifies_all_visible_callouts():
     assert len(front) == 10
     assert len(side) == 3
     assert any(item["id"] == "front-09" and "not visible" in item["note"] for item in front)
+    assert len(structure["annotationMasks"]) > len(callouts)
+    assert any(item["source"] == "vector_annotation_line" for item in structure["annotationMasks"])
+
+
+def test_simple1_annotation_masks_do_not_blank_lower_front_geometry():
+    structure = analyze_drawing_structure(Path("training_data/gdt/simple1.webp"))
+    front = next(item for item in structure["projections"] if item["axis"] == "front")["crop"]
+    front_bottom_geometry_masks = []
+    for mask in structure["annotationMasks"]:
+        if mask.get("source") != "vector_annotation_line" or mask.get("orientation") not in {"horizontal", "vertical"}:
+            continue
+        crop = mask["crop"]
+        overlaps_front = (
+            crop["x"] < front["x"] + front["w"]
+            and crop["x"] + crop["w"] > front["x"]
+            and crop["y"] < front["y"] + front["h"]
+            and crop["y"] + crop["h"] > front["y"]
+        )
+        if not overlaps_front:
+            continue
+        relative_y = (max(crop["y"], front["y"]) - front["y"]) / front["h"]
+        if relative_y >= 0.72:
+            front_bottom_geometry_masks.append(mask)
+
+    assert front_bottom_geometry_masks == []
+
+
+def test_simple1_masks_boxed_three_length_callout_without_side_false_positive():
+    structure = analyze_drawing_structure(Path("training_data/gdt/simple1.webp"))
+    front = next(item for item in structure["projections"] if item["axis"] == "front")["crop"]
+    side = next(item for item in structure["projections"] if item["axis"] == "side")["crop"]
+
+    boxed_three_masks = [
+        item
+        for item in structure["annotationMasks"]
+        if item.get("source") == "teacher_fixture" and item.get("label") == "3"
+    ]
+    assert boxed_three_masks
+
+    front_length_line_masks = []
+    for mask in structure["annotationMasks"]:
+        crop = mask["crop"]
+        overlaps_front = (
+            crop["x"] < front["x"] + front["w"]
+            and crop["x"] + crop["w"] > front["x"]
+            and crop["y"] < front["y"] + front["h"]
+            and crop["y"] + crop["h"] > front["y"]
+        )
+        if not overlaps_front or mask.get("source") != "vector_annotation_line":
+            continue
+        relative_x = (max(crop["x"], front["x"]) - front["x"]) / front["w"]
+        relative_y = (max(crop["y"], front["y"]) - front["y"]) / front["h"]
+        if mask.get("orientation") == "vertical" and relative_x <= 0.08 and 0.42 <= relative_y <= 0.50:
+            front_length_line_masks.append(mask)
+
+    assert front_length_line_masks
+
+    side_mid_false_masks = []
+    for mask in structure["annotationMasks"]:
+        crop = mask["crop"]
+        overlaps_side = (
+            crop["x"] < side["x"] + side["w"]
+            and crop["x"] + crop["w"] > side["x"]
+            and crop["y"] < side["y"] + side["h"]
+            and crop["y"] + crop["h"] > side["y"]
+        )
+        if not overlaps_side:
+            continue
+        relative_y = (max(crop["y"], side["y"]) - side["y"]) / side["h"]
+        relative_width = min(crop["x"] + crop["w"], side["x"] + side["w"]) - max(crop["x"], side["x"])
+        if 0.22 <= relative_y <= 0.42 and relative_width / side["w"] > 0.45:
+            side_mid_false_masks.append(mask)
+
+    assert side_mid_false_masks == []

@@ -29,6 +29,13 @@ work can decide when to keep, revise, or replace these assumptions.
    - This is lower authority than ASME/ISO, but useful for implementation
      heuristics and visual expectations.
 
+4. **Open-source vectorization tool documentation**
+   - Potrace, VTracer, AutoTrace, and ezdxf documentation guide tool-selection
+     experiments for turning pixel drawings into line/vector evidence.
+   - These sources are implementation pedigree rather than drawing-standard
+     pedigree; they explain why the current harness prefers local OpenCV plus
+     ezdxf first while preserving a path to external vectorizers.
+
 ## Findings With Pedigree
 
 ### Separate border detection from title block extraction
@@ -96,6 +103,8 @@ Design consequence:
 - Border segmentation is a sheet-format cleanup/verification task.
 - Title block segmentation is a metadata extraction task.
 - Revision tables may need a separate segmentation class later.
+- Raster-to-DXF conversion should expose line primitives as teacher-tool evidence
+  before it is trusted as final CAD reconstruction.
 - The dashboard should make segmentation mistakes easy to report with a copied
   text payload containing filename, region, proposed classification, crop, and
   `issue=<issue>`.
@@ -110,4 +119,11 @@ Design consequence:
   https://www.mcgill.ca/engineeringdesign/step-step-design-process/basics-graphics-communication/drawing-format-and-elements
 - St-5 CAD Standard Drawing Layout, Borders and Margins:
   https://www.cad-standard.com/technical-drawing-basics/drawing-sheet-layout-boarders-margins
-
+- VTracer Python binding:
+  https://pypi.org/project/vtracer/
+- Potrace:
+  https://potrace.sourceforge.net/
+- ezdxf:
+  https://pypi.org/project/ezdxf/
+- AutoTrace:
+  https://github.com/autotrace/autotrace

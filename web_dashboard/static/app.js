@@ -45,6 +45,15 @@ function currentFilename() {
   return state.upload?.filename || "<none>";
 }
 
+function annotationMasks() {
+  if (state.analysis?.annotationMasks?.length) {
+    return state.analysis.annotationMasks.map((item) => item.crop || item).filter(Boolean);
+  }
+  return [...(state.analysis?.gdt || []), ...(state.analysis?.callouts || [])]
+    .map((item) => item.crop)
+    .filter(Boolean);
+}
+
 function setFeedback(area, proposed, issue = "<issue>", extra = {}) {
   const fields = {
     filename: currentFilename(),
@@ -408,7 +417,7 @@ function renderProjections() {
   state.analysis.projections.forEach((projection, index) => {
     renderCrop($(`#projectionCrop${index}`), projection.crop, "projection-crop", projection.label, projection.confidence, {
       fit: "contain",
-      masks: state.analysis.gdt?.map((item) => item.crop) || [],
+      masks: annotationMasks(),
     });
   });
 }
@@ -417,7 +426,7 @@ function renderCallouts() {
   $("#calloutGrid").innerHTML = state.analysis.callouts
     .map(
       (callout) => `
-        <button class="callout-card" data-feedback="2d-callout" data-proposed="${escapeHtml(callout.label)}: ${escapeHtml(callout.value)}" data-confidence="${callout.confidence}">
+        <button class="callout-card" data-feedback="2d-callout" data-proposed="${escapeHtml(callout.label)}: ${escapeHtml(callout.value)}" data-confidence="${callout.confidence}" data-crop="${callout.crop ? cropData(callout.crop) : ""}">
           <span>${escapeHtml(callout.view ? `${callout.view} ${callout.kind}` : callout.label)}</span>
           <strong>${escapeHtml(callout.value)}</strong>
           <span class="confidence">${Math.round(callout.confidence * 100)}%</span>
@@ -446,7 +455,7 @@ function render3d() {
     </article>`;
   renderCrop($("#perspectiveCrop"), perspective.crop, "3d-view-crop", perspective.label, perspective.confidence, {
     fit: "contain",
-    masks: state.analysis.gdt?.map((item) => item.crop) || [],
+    masks: annotationMasks(),
   });
 }
 

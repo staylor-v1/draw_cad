@@ -18,6 +18,7 @@ dependencies = [
     "Pillow>=10.0",
     "cairosvg>=2.7.0",
     "opencv-python-headless>=4.8.0",
+    "ezdxf>=1.4.0",
 ]
 
 [project.optional-dependencies]

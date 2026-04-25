@@ -35,7 +35,24 @@ def detect_gdt_callouts(image_path: str | Path) -> list[dict]:
     image = cv2.imread(str(image_path), cv2.IMREAD_GRAYSCALE)
     if image is None:
         return []
-    return [callout.to_dict() for callout in detect_gdt_callouts_from_array(image)]
+    pixel_candidates = detect_gdt_callouts_from_array(image)
+    vector_candidates = _detect_vector_rectangular_callouts(image_path)
+    merged = _dedupe_callouts([*pixel_candidates, *vector_candidates])
+    ordered = sorted(merged, key=lambda item: (item.crop.y, item.crop.x))
+    return [
+        GdtCallout(
+            id=f"gdt-{index + 1}",
+            crop=item.crop,
+            confidence=item.confidence,
+            kind=item.kind,
+            symbol=item.symbol,
+            value=item.value,
+            line_rows=item.line_rows,
+            line_cols=item.line_cols,
+            notes=item.notes,
+        ).to_dict()
+        for index, item in enumerate(ordered)
+    ]
 
 
 def detect_gdt_callouts_from_array(gray: np.ndarray) -> list[GdtCallout]:
@@ -117,6 +134,43 @@ def detect_gdt_callouts_from_array(gray: np.ndarray) -> list[GdtCallout]:
         )
         for index, item in enumerate(ordered)
     ]
+
+
+def _detect_vector_rectangular_callouts(image_path: str | Path) -> list[GdtCallout]:
+    """Use vectorized ruled rectangles as additional high-recall callout evidence."""
+
+    try:
+        from src.vectorization.raster_to_dxf import raster_to_vector
+    except ImportError:
+        return []
+
+    try:
+        vector = raster_to_vector(image_path)
+    except (OSError, ValueError, cv2.error):
+        return []
+
+    candidates: list[GdtCallout] = []
+    for index, rectangle in enumerate(vector.rectangles):
+        if rectangle.kind not in {"feature_control_frame", "boxed_annotation"}:
+            continue
+        score = min(0.93, max(0.38, rectangle.confidence - 0.02))
+        candidates.append(
+            GdtCallout(
+                id=f"vector-gdt-{index + 1}",
+                crop=rectangle.crop,
+                confidence=round(score, 3),
+                kind=rectangle.kind,
+                symbol="unclassified",
+                value="",
+                line_rows=rectangle.line_rows,
+                line_cols=rectangle.line_cols,
+                notes=(
+                    "ruled callout detected from vectorized DXF line evidence",
+                    "candidate should be verified against OCR/Gemma symbol classification",
+                ),
+            )
+        )
+    return candidates
 
 
 def make_gdt_masked_projection(image_path: str | Path, projection: dict, callouts: list[dict]) -> Image.Image:
