@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from src.segmentation.gdt import detect_gdt_callouts
+from src.segmentation.masks import _largest_angle_cluster
 from src.vectorization.raster_to_dxf import raster_to_vector, write_dxf
 
 
@@ -25,3 +26,19 @@ def test_flange2_gdt_detector_includes_vector_frame_evidence():
     assert len(callouts) >= 4
     assert any("vectorized DXF line evidence" in " ".join(item["notes"]) for item in callouts)
     assert any(item["kind"] == "feature_control_frame" for item in callouts)
+
+
+def test_public_thread_reference_images_emit_repeated_thread_line_evidence():
+    examples = [
+        Path("training_data/thread_examples/mcgill_conventional_thread_representation.jpg"),
+        Path("training_data/thread_examples/mcgill_sectional_external_internal_threads.jpg"),
+        Path("training_data/thread_examples/mcgill_rolled_thread_representation.jpg"),
+    ]
+
+    for image_path in examples:
+        result = raster_to_vector(image_path)
+        diagonal_segments = [segment for segment in result.segments if segment.orientation == "diagonal"]
+        horizontal_segments = [segment for segment in result.segments if segment.orientation == "horizontal"]
+
+        assert result.to_dict()["counts"]["segments"] >= 20
+        assert _largest_angle_cluster(diagonal_segments) >= 3 or len(horizontal_segments) >= 10

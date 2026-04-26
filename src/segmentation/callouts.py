@@ -53,6 +53,24 @@ def load_projection_fixture(image_path: str | Path) -> list[dict]:
     ]
 
 
+def load_non_callout_fixture(image_path: str | Path) -> list[dict]:
+    path = Path(image_path)
+    fixture = ANNOTATION_DIR / f"{path.stem}_callouts.yaml"
+    if not fixture.exists():
+        return []
+    data = yaml.safe_load(fixture.read_text(encoding="utf-8")) or {}
+    return [
+        {
+            "id": item["id"],
+            "kind": item["kind"],
+            "crop": item["crop"],
+            "note": item.get("note", ""),
+            "source": "teacher_fixture",
+        }
+        for item in data.get("non_callout_regions", [])
+    ]
+
+
 def split_callouts_by_view(callouts: list[dict]) -> dict[str, list[dict]]:
     views: dict[str, list[dict]] = {}
     for item in callouts:

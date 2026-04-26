@@ -20,13 +20,25 @@ def build_annotation_masks(
 ) -> list[dict]:
     """Build rectangular masks for annotation crops and nearby vector linework."""
 
-    protected_boxes = [NormalizedBox(**item["crop"]) for item in protected_regions or [] if item.get("crop")]
-    masks = _annotation_crop_masks(annotations, protected_boxes)
+    protected_targets = [
+        {
+            "box": NormalizedBox(**item["crop"]),
+            "axis": item.get("axis", "unassigned"),
+            "label": item.get("label", ""),
+            "segmentation_mode": item.get("segmentationMode", ""),
+            "confidence": item.get("confidence", 0.0),
+        }
+        for item in protected_regions or []
+        if item.get("crop") and _is_reliable_projection_target(item)
+    ]
+    protected_boxes = [target["box"] for target in protected_targets]
     try:
         vector = raster_to_vector(image_path)
     except (OSError, ValueError, cv2.error):
-        return masks
+        return _annotation_crop_masks(annotations, protected_boxes, ())
 
+    thread_zones = _detect_thread_like_zones(annotations, vector.segments, vector.width, vector.height)
+    masks = _annotation_crop_masks(annotations, protected_boxes, thread_zones)
     annotation_targets = [
         {
             "box": NormalizedBox(**item["crop"]),
@@ -34,12 +46,15 @@ def build_annotation_masks(
             "label": item.get("label") or item.get("kind") or item.get("id") or "annotation",
         }
         for item in annotations
-        if item.get("crop") and not _box_center_in_any_region(NormalizedBox(**item["crop"]), protected_boxes, item)
+        if item.get("crop")
+        and not _box_center_in_any_region(NormalizedBox(**item["crop"]), protected_boxes, item)
+        and not _box_overlaps_any(NormalizedBox(**item["crop"]), thread_zones, min_fraction=0.45)
     ]
     segment_masks = _segment_masks_near_annotations(
         vector.segments,
         annotation_targets,
-        protected_boxes,
+        protected_targets,
+        thread_zones,
         vector.width,
         vector.height,
     )
@@ -53,13 +68,21 @@ def build_annotation_masks(
     return masks
 
 
-def _annotation_crop_masks(annotations: list[dict], protected_boxes: list[NormalizedBox]) -> list[dict]:
+def _annotation_crop_masks(
+    annotations: list[dict],
+    protected_boxes: list[NormalizedBox],
+    thread_zones: tuple[NormalizedBox, ...],
+) -> list[dict]:
     masks = []
     for item in annotations:
         if not item.get("crop"):
             continue
         box = NormalizedBox(**item["crop"]).clipped()
         if _box_center_in_any_region(box, protected_boxes, item):
+            continue
+        if item.get("source") != "teacher_fixture" and _box_overlaps_any(box, thread_zones, min_fraction=0.45):
+            continue
+        if _should_skip_full_annotation_crop(item, box, protected_boxes):
             continue
         masks.append(
             {
@@ -74,7 +97,8 @@ def _annotation_crop_masks(annotations: list[dict], protected_boxes: list[Normal
 def _segment_masks_near_annotations(
     segments: tuple[VectorSegment, ...],
     annotation_targets: list[dict],
-    protected_boxes: list[NormalizedBox],
+    protected_targets: list[dict],
+    thread_zones: tuple[NormalizedBox, ...],
     width: int,
     height: int,
 ) -> list[dict]:
@@ -88,12 +112,15 @@ def _segment_masks_near_annotations(
             continue
         if segment.orientation == "diagonal" and segment.length > max_len * 0.82:
             continue
+        if _segment_midpoint_in_any_box(segment, list(thread_zones), width, height):
+            continue
         touched_targets = [
             target for target in annotation_targets if _segment_touches_box(segment, target["box"], width, height)
         ]
         if not touched_targets:
             continue
         touches_teacher = any(target["source"] == "teacher_fixture" for target in touched_targets)
+        protected_boxes = [target["box"] for target in protected_targets]
         midpoint_in_protected = _segment_midpoint_in_any_box(segment, protected_boxes, width, height)
         if (
             segment.orientation in {"horizontal", "vertical"}
@@ -102,15 +129,191 @@ def _segment_masks_near_annotations(
         ):
             continue
         crop = _segment_to_box(segment, width, height)
+        if _mask_intrudes_into_narrow_projection(crop, protected_targets):
+            continue
         masks.append(
             {
                 "label": f"vector annotation line {index + 1}",
                 "crop": crop.to_dict(),
+                "shape": "line",
+                "line": _segment_to_line(segment, width, height),
                 "source": "vector_annotation_line",
                 "orientation": segment.orientation,
             }
         )
     return masks
+
+
+def _detect_thread_like_zones(
+    annotations: list[dict],
+    segments: tuple[VectorSegment, ...],
+    width: int,
+    height: int,
+) -> tuple[NormalizedBox, ...]:
+    zones: list[NormalizedBox] = []
+    for item in annotations:
+        if item.get("source") == "teacher_fixture" or not item.get("crop"):
+            continue
+        box = NormalizedBox(**item["crop"]).clipped()
+        if _thread_cluster_score(box, segments, width, height) < 0.85:
+            continue
+        zones.append(_expand_box_xy(box, 0.01, 0.045).clipped())
+    return _merge_zones(zones)
+
+
+def _thread_cluster_score(
+    box: NormalizedBox,
+    segments: tuple[VectorSegment, ...],
+    width: int,
+    height: int,
+) -> float:
+    in_box = [
+        segment
+        for segment in segments
+        if segment.orientation in {"diagonal", "horizontal"}
+        and _segment_midpoint_in_box(segment, box, width, height)
+        and min(width, height) * 0.012 <= segment.length <= max(width, height) * 0.24
+    ]
+    if len(in_box) < 8:
+        return 0.0
+
+    diagonal = [segment for segment in in_box if segment.orientation == "diagonal"]
+    horizontal = [segment for segment in in_box if segment.orientation == "horizontal"]
+    diagonal_cluster = _largest_angle_cluster(diagonal)
+    horizontal_rows = _distinct_segment_coordinates(horizontal, axis="y", width=width, height=height)
+
+    score = 0.0
+    if diagonal_cluster >= 3:
+        score += 0.6
+    if horizontal_rows >= 5:
+        score += 0.5
+    if len(in_box) >= 14:
+        score += 0.25
+    if box.w >= 0.09 and box.h >= 0.05:
+        score += 0.15
+    return score
+
+
+def _largest_angle_cluster(segments: list[VectorSegment], tolerance: float = 12.0) -> int:
+    if not segments:
+        return 0
+    angles = sorted(segment.angle for segment in segments)
+    largest = 1
+    for index, angle in enumerate(angles):
+        largest = max(largest, sum(1 for other in angles[index:] if abs(other - angle) <= tolerance))
+    return largest
+
+
+def _distinct_segment_coordinates(
+    segments: list[VectorSegment],
+    *,
+    axis: str,
+    width: int,
+    height: int,
+) -> int:
+    if not segments:
+        return 0
+    tolerance = max(0.006, 4 / max(width, height))
+    values = []
+    for segment in segments:
+        if axis == "y":
+            values.append(((segment.y1 + segment.y2) / 2.0) / height)
+        else:
+            values.append(((segment.x1 + segment.x2) / 2.0) / width)
+    groups: list[float] = []
+    for value in sorted(values):
+        if not groups or abs(value - groups[-1]) > tolerance:
+            groups.append(value)
+    return len(groups)
+
+
+def _segment_midpoint_in_box(segment: VectorSegment, box: NormalizedBox, width: int, height: int) -> bool:
+    midpoint_x = ((segment.x1 + segment.x2) / 2.0) / width
+    midpoint_y = ((segment.y1 + segment.y2) / 2.0) / height
+    return _point_in_box(midpoint_x, midpoint_y, box)
+
+
+def _expand_box(box: NormalizedBox, pad: float) -> NormalizedBox:
+    return NormalizedBox(box.x - pad, box.y - pad, box.w + 2 * pad, box.h + 2 * pad)
+
+
+def _expand_box_xy(box: NormalizedBox, pad_x: float, pad_y: float) -> NormalizedBox:
+    return NormalizedBox(box.x - pad_x, box.y - pad_y, box.w + 2 * pad_x, box.h + 2 * pad_y)
+
+
+def _merge_zones(zones: list[NormalizedBox]) -> tuple[NormalizedBox, ...]:
+    merged: list[NormalizedBox] = []
+    for zone in zones:
+        current = zone
+        kept = []
+        for other in merged:
+            if _box_overlap_fraction(current, other) > 0.05:
+                current = NormalizedBox(
+                    min(current.x, other.x),
+                    min(current.y, other.y),
+                    max(current.x + current.w, other.x + other.w) - min(current.x, other.x),
+                    max(current.y + current.h, other.y + other.h) - min(current.y, other.y),
+                ).clipped()
+            else:
+                kept.append(other)
+        kept.append(current)
+        merged = kept
+    return tuple(merged)
+
+
+def _box_overlaps_any(box: NormalizedBox, zones: tuple[NormalizedBox, ...], *, min_fraction: float) -> bool:
+    return any(_box_overlap_fraction(box, zone) >= min_fraction for zone in zones)
+
+
+def _box_overlap_fraction(a: NormalizedBox, b: NormalizedBox) -> float:
+    ix = max(0.0, min(a.x + a.w, b.x + b.w) - max(a.x, b.x))
+    iy = max(0.0, min(a.y + a.h, b.y + b.h) - max(a.y, b.y))
+    if ix <= 0 or iy <= 0:
+        return 0.0
+    return (ix * iy) / max(min(a.w * a.h, b.w * b.h), 1e-6)
+
+
+def _should_skip_full_annotation_crop(item: dict, box: NormalizedBox, protected_boxes: list[NormalizedBox]) -> bool:
+    """Avoid filled masks for broad teacher crops that pass through part geometry."""
+
+    if item.get("source") != "teacher_fixture":
+        return False
+    if item.get("kind") != "section_marker":
+        return False
+    if box.h < 0.18 and box.w < 0.18:
+        return False
+    return any(_box_overlap_fraction(box, protected_box) >= 0.45 for protected_box in protected_boxes)
+
+
+def _mask_intrudes_into_narrow_projection(mask: NormalizedBox, protected_targets: list[dict]) -> bool:
+    for target in protected_targets:
+        box = target["box"]
+        if target.get("axis") != "side" and box.w > 0.11:
+            continue
+        ix = max(0.0, min(mask.x + mask.w, box.x + box.w) - max(mask.x, box.x))
+        iy = max(0.0, min(mask.y + mask.h, box.y + box.h) - max(mask.y, box.y))
+        if ix <= 0 or iy <= 0:
+            continue
+        relative_y_end = (min(mask.y + mask.h, box.y + box.h) - box.y) / max(box.h, 1e-6)
+        width_fraction = ix / max(box.w, 1e-6)
+        if relative_y_end > 0.02 and width_fraction > 0.10:
+            return True
+    return False
+
+
+def _is_reliable_projection_target(item: dict) -> bool:
+    """Return True when a projection crop is reliable enough to suppress masks.
+
+    Broad, unassigned detector candidates often include annotation fields. Using
+    them as protected regions prevents obvious callouts from being masked.
+    """
+
+    axis = item.get("axis", "unassigned")
+    if axis and axis != "unassigned":
+        return True
+    if item.get("segmentationMode") == "teacher_fixture":
+        return True
+    return float(item.get("confidence") or 0.0) >= 0.75
 
 
 def _box_center_in_any_region(box: NormalizedBox, regions: list[NormalizedBox], item: dict) -> bool:
@@ -185,6 +388,17 @@ def _segment_to_box(segment: VectorSegment, width: int, height: int) -> Normaliz
         x0 -= pad
         x1 += pad
     return NormalizedBox(x0 / width, y0 / height, (x1 - x0) / width, (y1 - y0) / height).clipped()
+
+
+def _segment_to_line(segment: VectorSegment, width: int, height: int) -> dict:
+    stroke = max(3, int(min(width, height) * 0.004))
+    return {
+        "x1": segment.x1 / width,
+        "y1": segment.y1 / height,
+        "x2": segment.x2 / width,
+        "y2": segment.y2 / height,
+        "width": stroke / min(width, height),
+    }
 
 
 def _point_in_box(x: float, y: float, box: NormalizedBox) -> bool:

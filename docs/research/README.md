@@ -10,6 +10,7 @@ the same assumptions without repeating basic research.
 - [Drawing Sheet Border and Title Block Recognition](./drawing_sheet_border_title_block.md)
 - [GD&T Callout Recognition](./gdt_callout_recognition.md)
 - [Raster-to-Vector and DXF Harness Notes](./raster_to_vector_dxf.md)
+- [Thread Representation and Projection Masking](./thread_representation_and_masking.md)
 - [Title Block Segmentation Harness](./title_block_segmentation_harness.md)
 - [Source Pedigree for Drawing Format Decisions](./source_pedigree.md)
 

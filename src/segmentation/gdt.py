@@ -37,7 +37,7 @@ def detect_gdt_callouts(image_path: str | Path) -> list[dict]:
         return []
     pixel_candidates = detect_gdt_callouts_from_array(image)
     vector_candidates = _detect_vector_rectangular_callouts(image_path)
-    merged = _dedupe_callouts([*pixel_candidates, *vector_candidates])
+    merged = _filter_non_callout_regions(image_path, _dedupe_callouts([*pixel_candidates, *vector_candidates]))
     ordered = sorted(merged, key=lambda item: (item.crop.y, item.crop.x))
     return [
         GdtCallout(
@@ -173,6 +173,30 @@ def _detect_vector_rectangular_callouts(image_path: str | Path) -> list[GdtCallo
     return candidates
 
 
+def _filter_non_callout_regions(image_path: str | Path, candidates: list[GdtCallout]) -> list[GdtCallout]:
+    """Remove detector candidates that overlap teacher negative regions.
+
+    This keeps the GD&T tab from promoting known part geometry, such as thread
+    texture, as if it were an annotation candidate.
+    """
+
+    try:
+        from src.segmentation.callouts import load_non_callout_fixture
+        from src.segmentation.masks import _box_overlap_fraction
+    except ImportError:
+        return candidates
+
+    negatives = [NormalizedBox(**item["crop"]) for item in load_non_callout_fixture(image_path)]
+    if not negatives:
+        return candidates
+    kept = []
+    for candidate in candidates:
+        if any(_box_overlap_fraction(candidate.crop, negative) >= 0.25 for negative in negatives):
+            continue
+        kept.append(candidate)
+    return kept
+
+
 def make_gdt_masked_projection(image_path: str | Path, projection: dict, callouts: list[dict]) -> Image.Image:
     image = Image.open(image_path).convert("RGB")
     width, height = image.size
@@ -218,7 +242,22 @@ def _score_callout(w: int, h: int, line_rows: int, line_cols: int, density: floa
 def _dedupe_callouts(callouts: list[GdtCallout]) -> list[GdtCallout]:
     kept: list[GdtCallout] = []
     for candidate in sorted(callouts, key=lambda item: item.confidence, reverse=True):
-        if any(_box_iou(candidate.crop, other.crop) > 0.45 for other in kept):
+        replacement_index = None
+        duplicate = False
+        for index, other in enumerate(kept):
+            if _box_iou(candidate.crop, other.crop) > 0.45 or _box_containment(candidate.crop, other.crop) > 0.82:
+                duplicate = True
+                break
+            if _box_containment(other.crop, candidate.crop) > 0.82:
+                if _box_area(candidate.crop) > _box_area(other.crop) and candidate.confidence >= other.confidence - 0.08:
+                    replacement_index = index
+                else:
+                    duplicate = True
+                break
+        if replacement_index is not None:
+            kept[replacement_index] = candidate
+            continue
+        if duplicate:
             continue
         kept.append(candidate)
     return kept
@@ -232,3 +271,15 @@ def _box_iou(a: NormalizedBox, b: NormalizedBox) -> float:
     inter = ix * iy
     union = a.w * a.h + b.w * b.h - inter
     return inter / max(union, 1e-6)
+
+
+def _box_containment(a: NormalizedBox, b: NormalizedBox) -> float:
+    ax1, ay1 = a.x + a.w, a.y + a.h
+    bx1, by1 = b.x + b.w, b.y + b.h
+    ix = max(0.0, min(ax1, bx1) - max(a.x, b.x))
+    iy = max(0.0, min(ay1, by1) - max(a.y, b.y))
+    return (ix * iy) / max(a.w * a.h, 1e-6)
+
+
+def _box_area(box: NormalizedBox) -> float:
+    return box.w * box.h
