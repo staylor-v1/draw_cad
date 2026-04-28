@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Training Candidate Review</title>
+    <link rel="stylesheet" href="/training-review.css" />
+  </head>
+  <body>
+    <main class="review-shell">
+      <header class="review-header">
+        <div>
+          <p class="eyebrow">GD&T Training Set</p>
+          <h1>Candidate Drawing Review</h1>
+        </div>
+        <div class="review-actions">
+          <button id="select-visible" type="button">Select Visible</button>
+          <button id="clear-visible" type="button">Clear Visible</button>
+          <button id="copy-selected" type="button">Copy List</button>
+          <button id="save-selection" class="primary" type="button">Save Selection</button>
+        </div>
+      </header>
+
+      <section class="toolbar" aria-label="Candidate filters">
+        <label class="search-field">
+          <span>Search</span>
+          <input id="search" type="search" autocomplete="off" placeholder="source, filename, extension" />
+        </label>
+        <label>
+          <span>Preview</span>
+          <select id="preview-filter">
+            <option value="all">All</option>
+            <option value="image">Images</option>
+            <option value="pdf">PDF</option>
+            <option value="file">CAD files</option>
+          </select>
+        </label>
+        <label>
+          <span>Confidence</span>
+          <select id="confidence-filter">
+            <option value="all">All</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="unrated">Unrated</option>
+          </select>
+        </label>
+        <label>
+          <span>Source</span>
+          <select id="source-filter">
+            <option value="all">All sources</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="status-strip">
+        <div><strong id="visible-count">0</strong> visible</div>
+        <div><strong id="selected-count">0</strong> selected</div>
+        <div id="save-status">Not saved yet</div>
+      </section>
+
+      <section id="candidate-grid" class="candidate-grid" aria-live="polite"></section>
+    </main>
+
+    <template id="candidate-template">
+      <article class="candidate-card">
+        <label class="candidate-check">
+          <input type="checkbox" />
+          <span></span>
+        </label>
+        <div class="preview"></div>
+        <div class="candidate-meta">
+          <div class="candidate-title"></div>
+          <div class="candidate-subtitle"></div>
+          <div class="candidate-tags"></div>
+        </div>
+      </article>
+    </template>
+
+    <dialog id="candidate-dialog" class="candidate-dialog" aria-label="Candidate drawing detail">
+      <form method="dialog" class="dialog-frame">
+        <header class="dialog-header">
+          <div>
+            <div id="dialog-source" class="dialog-source"></div>
+            <h2 id="dialog-title"></h2>
+          </div>
+          <div class="dialog-actions">
+            <button id="dialog-select" type="button">Use</button>
+            <a id="dialog-open" class="open-link" target="_blank" rel="noreferrer">Open</a>
+            <button class="icon-button" value="close" aria-label="Close detail view" title="Close">x</button>
+          </div>
+        </header>
+        <div id="dialog-preview" class="dialog-preview"></div>
+        <footer class="dialog-footer">
+          <span id="dialog-path"></span>
+        </footer>
+      </form>
+    </dialog>
+
+    <script type="module" src="/training-review.js"></script>
+  </body>
+</html>

@@ -76,8 +76,10 @@ class BorderSegmentation:
 def analyze_drawing_structure(image_path: str | Path) -> dict:
     """Return title-block and border segmentation data for a drawing image."""
 
-    from src.segmentation.callouts import load_callout_fixture, load_projection_fixture
+    from src.segmentation.callouts import load_callout_fixture, load_non_callout_fixture, load_projection_fixture
     from src.segmentation.gdt import detect_gdt_callouts
+    from src.segmentation.masks import build_annotation_masks
+    from src.segmentation.vision_callouts import detect_vision_callouts, usable_vision_callouts_for_masks
 
     image = Image.open(image_path)
     title_block = detect_title_block(image)
@@ -101,6 +103,10 @@ def analyze_drawing_structure(image_path: str | Path) -> dict:
     projections = projection_fixture or detect_projection_regions(image, title_block.crop if title_block.present else None)
     gdt = detect_gdt_callouts(image_path)
     callouts = load_callout_fixture(image_path)
+    vision_callouts = detect_vision_callouts(image_path)
+    vision_mask_callouts = usable_vision_callouts_for_masks(vision_callouts, [*gdt, *callouts])
+    non_callouts = load_non_callout_fixture(image_path)
+    annotation_masks = build_annotation_masks(image_path, [*gdt, *callouts, *vision_mask_callouts], projections)
     return {
         "titleBlock": {
             "present": title_block.present,
@@ -111,7 +117,10 @@ def analyze_drawing_structure(image_path: str | Path) -> dict:
         "border": border.to_dict(),
         "projections": projections,
         "gdt": gdt,
+        "visionCallouts": vision_callouts,
         "callouts": callouts,
+        "nonCalloutRegions": non_callouts,
+        "annotationMasks": annotation_masks,
     }
 
 
@@ -372,6 +381,7 @@ def iter_default_title_block_images(root: str | Path = ".") -> Iterable[Path]:
     root = Path(root)
     patterns = [
         "training_data/gdt/*",
+        "training_data/thread_examples/*",
         "training_data/title_block_examples/*",
         "benchmarks/drawings/*/drawing.*",
         "test_result/cases/*/original.*",

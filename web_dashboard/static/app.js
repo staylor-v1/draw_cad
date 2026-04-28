@@ -1,6 +1,9 @@
 const state = {
   upload: null,
   analysis: null,
+  runtimeMode: "tools",
+  gemmaModel: "gemma4:26b",
+  analysisStrategy: "tools_only",
   activeTab: "image",
   activeSubtab: "border",
 };
@@ -41,8 +44,52 @@ function setSubtab(tabName) {
   Object.entries(subtabs).forEach(([name, panel]) => panel.classList.toggle("is-active", name === tabName));
 }
 
+function setRuntimeMode(mode) {
+  state.runtimeMode = mode;
+  if (mode === "tools") {
+    state.analysisStrategy = "tools_only";
+  } else if (state.analysisStrategy === "tools_only") {
+    state.analysisStrategy = "gemma_teacher_calibrated";
+  }
+  $("#analysisStrategySelect").value = state.analysisStrategy;
+  $$(".mode-button").forEach((button) => button.classList.toggle("is-active", button.dataset.mode === mode));
+  updateModelBadge();
+  renderRuntimeSummary();
+}
+
+function setAnalysisStrategy(strategy) {
+  state.analysisStrategy = strategy;
+  state.runtimeMode = strategy === "tools_only" ? "tools" : "gemma";
+  $$(".mode-button").forEach((button) => button.classList.toggle("is-active", button.dataset.mode === state.runtimeMode));
+  updateModelBadge();
+  renderRuntimeSummary();
+}
+
+function setGemmaModel(model) {
+  state.gemmaModel = model;
+  updateModelBadge();
+  renderRuntimeSummary();
+}
+
+function updateModelBadge() {
+  $("#modelBadge").textContent = state.upload
+    ? state.runtimeMode === "gemma"
+      ? `${state.gemmaModel} ready`
+      : "Tools ready"
+    : "No drawing loaded";
+}
+
 function currentFilename() {
   return state.upload?.filename || "<none>";
+}
+
+function annotationMasks() {
+  if (state.analysis?.annotationMasks?.length) {
+    return state.analysis.annotationMasks.map((item) => (item.shape === "line" ? item : item.crop || item)).filter(Boolean);
+  }
+  return [...(state.analysis?.gdt || []), ...(state.analysis?.callouts || [])]
+    .map((item) => item.crop)
+    .filter(Boolean);
 }
 
 function setFeedback(area, proposed, issue = "<issue>", extra = {}) {
@@ -65,6 +112,10 @@ function attachFeedback(root = document) {
     node.dataset.feedbackBound = "true";
     node.addEventListener("click", (event) => {
       event.stopPropagation();
+      if (node.dataset.suppressNextClick === "true") {
+        node.dataset.suppressNextClick = "false";
+        return;
+      }
       setFeedback(
         node.dataset.feedback,
         node.dataset.proposed || node.textContent.trim(),
@@ -107,7 +158,7 @@ async function onImageSelected(event) {
   image.src = upload.url;
   $(".image-stage").classList.add("has-image");
   $("#currentFile").textContent = upload.filename;
-  $("#modelBadge").textContent = "Gemma 4 ready";
+  updateModelBadge();
   $("#processButton").disabled = false;
   setFeedback("image", "original drawing loaded", "<issue>");
   setTab("analysis");
@@ -142,7 +193,12 @@ function animateProgress() {
 async function processDrawing() {
   if (!state.upload) return;
   $("#processButton").disabled = true;
-  $("#modelBadge").textContent = "Gemma 4 processing";
+  $$(".mode-button").forEach((button) => (button.disabled = true));
+  $("#gemmaModelSelect").disabled = true;
+  $("#analysisStrategySelect").disabled = true;
+  const mode = state.runtimeMode;
+  $("#modelBadge").textContent = mode === "gemma" ? `${state.gemmaModel} processing` : "Tools processing";
+  $("#runtimeSummary").innerHTML = `<div class="runtime-row"><strong>${escapeHtml(strategyLabel(state.analysisStrategy))}</strong><span>${mode === "gemma" ? escapeHtml(state.gemmaModel) : "algorithmic-tools"}</span><span>Processing ${escapeHtml(state.upload.filename)}</span></div>`;
   const progressDone = animateProgress();
   const response = await fetch("/api/analyze", {
     method: "POST",
@@ -151,6 +207,9 @@ async function processDrawing() {
       id: state.upload.id,
       filename: state.upload.filename,
       imageUrl: state.upload.url,
+      mode,
+      gemmaModel: state.gemmaModel,
+      analysisStrategy: state.analysisStrategy,
     }),
   });
   const analysis = await response.json();
@@ -159,10 +218,17 @@ async function processDrawing() {
   $("#modelBadge").textContent = analysis.status;
   renderAnalysis();
   $("#processButton").disabled = false;
+  $$(".mode-button").forEach((button) => (button.disabled = false));
+  $("#gemmaModelSelect").disabled = false;
+  $("#analysisStrategySelect").disabled = false;
 }
 
 function cropData(crop) {
   return `${Math.round(crop.x * 100)},${Math.round(crop.y * 100)},${Math.round(crop.w * 100)},${Math.round(crop.h * 100)}`;
+}
+
+function preciseCropData(crop) {
+  return [crop.x, crop.y, crop.w, crop.h].map((value) => value.toFixed(4)).join(",");
 }
 
 function renderCrop(container, crop, feedback, proposed, confidence, options = {}) {
@@ -205,11 +271,20 @@ function renderCrop(container, crop, feedback, proposed, confidence, options = {
         drawWidth,
         drawHeight
       );
+      context.save();
+      context.beginPath();
+      context.rect(dx, dy, drawWidth, drawHeight);
+      context.clip();
       (options.masks || []).forEach((mask) => {
-        const ix0 = Math.max(crop.x, mask.x);
-        const iy0 = Math.max(crop.y, mask.y);
-        const ix1 = Math.min(crop.x + crop.w, mask.x + mask.w);
-        const iy1 = Math.min(crop.y + crop.h, mask.y + mask.h);
+        if (mask.shape === "line" && mask.line) {
+          drawLineMask(context, mask.line, crop, image, scale, dx, dy);
+          return;
+        }
+        const maskCrop = mask.crop || mask;
+        const ix0 = Math.max(crop.x, maskCrop.x);
+        const iy0 = Math.max(crop.y, maskCrop.y);
+        const ix1 = Math.min(crop.x + crop.w, maskCrop.x + maskCrop.w);
+        const iy1 = Math.min(crop.y + crop.h, maskCrop.y + maskCrop.h);
         if (ix1 <= ix0 || iy1 <= iy0) return;
         const mx = dx + ((ix0 - crop.x) * image.naturalWidth * scale);
         const my = dy + ((iy0 - crop.y) * image.naturalHeight * scale);
@@ -222,9 +297,13 @@ function renderCrop(container, crop, feedback, proposed, confidence, options = {
         context.strokeRect(mx, my, mw, mh);
         context.setLineDash([]);
       });
+      context.restore();
       context.strokeStyle = "#c7462d";
       context.lineWidth = 2;
       context.strokeRect(dx + 1, dy + 1, Math.max(1, drawWidth - 2), Math.max(1, drawHeight - 2));
+      if (options.rectangleTool) {
+        installRectangleTool(container, canvas, crop, { dx, dy, drawWidth, drawHeight }, feedback, proposed, confidence);
+      }
     };
     image.src = state.upload.url;
     return;
@@ -242,6 +321,142 @@ function renderCrop(container, crop, feedback, proposed, confidence, options = {
   };
   image.src = state.upload.url;
   container.appendChild(image);
+}
+
+function drawLineMask(context, line, crop, image, scale, dx, dy) {
+  const x1 = dx + ((line.x1 - crop.x) * image.naturalWidth * scale);
+  const y1 = dy + ((line.y1 - crop.y) * image.naturalHeight * scale);
+  const x2 = dx + ((line.x2 - crop.x) * image.naturalWidth * scale);
+  const y2 = dy + ((line.y2 - crop.y) * image.naturalHeight * scale);
+  const strokeWidth = Math.max(5, Math.min(12, (line.width || 0.006) * image.naturalWidth * scale));
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  context.strokeStyle = "#fffefa";
+  context.lineWidth = strokeWidth;
+  context.setLineDash([]);
+  context.beginPath();
+  context.moveTo(x1, y1);
+  context.lineTo(x2, y2);
+  context.stroke();
+  context.strokeStyle = "#c7462d";
+  context.lineWidth = 2;
+  context.setLineDash([5, 4]);
+  context.beginPath();
+  context.moveTo(x1, y1);
+  context.lineTo(x2, y2);
+  context.stroke();
+  context.setLineDash([]);
+}
+
+function installRectangleTool(container, canvas, crop, draw, feedback, proposed, confidence) {
+  container.classList.add("has-rectangle-tool");
+  const existing = container.querySelector(".draw-selection");
+  if (existing) existing.remove();
+
+  const selection = document.createElement("div");
+  selection.className = "draw-selection";
+  container.appendChild(selection);
+
+  let start = null;
+  let active = false;
+
+  const canvasPoint = (event) => {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: ((event.clientX - rect.left) / Math.max(1, rect.width)) * canvas.width,
+      y: ((event.clientY - rect.top) / Math.max(1, rect.height)) * canvas.height,
+    };
+  };
+
+  const clampToDrawing = (point) => ({
+    x: Math.min(draw.dx + draw.drawWidth, Math.max(draw.dx, point.x)),
+    y: Math.min(draw.dy + draw.drawHeight, Math.max(draw.dy, point.y)),
+  });
+
+  const paintSelection = (a, b) => {
+    const canvasRect = canvas.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+    const scaleX = canvasRect.width / Math.max(1, canvas.width);
+    const scaleY = canvasRect.height / Math.max(1, canvas.height);
+    const left = Math.min(a.x, b.x) * scaleX + canvasRect.left - containerRect.left;
+    const top = Math.min(a.y, b.y) * scaleY + canvasRect.top - containerRect.top;
+    const width = Math.abs(b.x - a.x) * scaleX;
+    const height = Math.abs(b.y - a.y) * scaleY;
+    selection.style.display = "block";
+    selection.style.left = `${left}px`;
+    selection.style.top = `${top}px`;
+    selection.style.width = `${width}px`;
+    selection.style.height = `${height}px`;
+  };
+
+  const toImageCrop = (a, b) => {
+    const x0 = (Math.min(a.x, b.x) - draw.dx) / Math.max(1, draw.drawWidth);
+    const y0 = (Math.min(a.y, b.y) - draw.dy) / Math.max(1, draw.drawHeight);
+    const x1 = (Math.max(a.x, b.x) - draw.dx) / Math.max(1, draw.drawWidth);
+    const y1 = (Math.max(a.y, b.y) - draw.dy) / Math.max(1, draw.drawHeight);
+    return {
+      absolute: {
+        x: crop.x + Math.max(0, Math.min(1, x0)) * crop.w,
+        y: crop.y + Math.max(0, Math.min(1, y0)) * crop.h,
+        w: Math.max(0, Math.min(1, x1) - Math.max(0, Math.min(1, x0))) * crop.w,
+        h: Math.max(0, Math.min(1, y1) - Math.max(0, Math.min(1, y0))) * crop.h,
+      },
+      local: {
+        x: Math.max(0, Math.min(1, x0)),
+        y: Math.max(0, Math.min(1, y0)),
+        w: Math.max(0, Math.min(1, x1) - Math.max(0, Math.min(1, x0))),
+        h: Math.max(0, Math.min(1, y1) - Math.max(0, Math.min(1, y0))),
+      },
+    };
+  };
+
+  canvas.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0) return;
+    event.preventDefault();
+    event.stopPropagation();
+    active = true;
+    start = clampToDrawing(canvasPoint(event));
+    selection.style.display = "none";
+    canvas.setPointerCapture(event.pointerId);
+  });
+
+  canvas.addEventListener("pointermove", (event) => {
+    if (!active || !start) return;
+    event.preventDefault();
+    const current = clampToDrawing(canvasPoint(event));
+    paintSelection(start, current);
+  });
+
+  canvas.addEventListener("pointerup", (event) => {
+    if (!active || !start) return;
+    event.preventDefault();
+    event.stopPropagation();
+    active = false;
+    const end = clampToDrawing(canvasPoint(event));
+    const width = Math.abs(end.x - start.x);
+    const height = Math.abs(end.y - start.y);
+    if (width < 6 || height < 6) {
+      selection.style.display = "none";
+      return;
+    }
+    container.dataset.suppressNextClick = "true";
+    paintSelection(start, end);
+    const marked = toImageCrop(start, end);
+    setFeedback("projection-rectangle", `${proposed} marked error rectangle`, "<issue>", {
+      confidence,
+      crop: cropData(crop),
+      rect: cropData(marked.absolute),
+      rectExact: preciseCropData(marked.absolute),
+      rectWithinProjection: preciseCropData(marked.local),
+      originalArea: feedback,
+    });
+  });
+
+  canvas.addEventListener("pointercancel", () => {
+    active = false;
+    start = null;
+    selection.style.display = "none";
+  });
 }
 
 function renderMask(container, masks, feedback, proposed, confidence) {
@@ -286,6 +501,7 @@ function renderMask(container, masks, feedback, proposed, confidence) {
 function renderEmptyAnalysis() {
   $("#borderMask").innerHTML = "";
   $("#titleBlockCrop").innerHTML = "";
+  renderRuntimeSummary();
   ["titleFields", "gdtList", "projectionGrid", "calloutGrid", "view3dContent"].forEach((id) => {
     $(`#${id}`).innerHTML = `<div class="empty-analysis">No analysis result</div>`;
   });
@@ -293,6 +509,7 @@ function renderEmptyAnalysis() {
 }
 
 function renderAnalysis() {
+  renderRuntimeSummary();
   renderTitleBlock();
   renderGdt();
   renderProjections();
@@ -300,6 +517,65 @@ function renderAnalysis() {
   render3d();
   renderCad();
   attachFeedback(document);
+}
+
+function renderRuntimeSummary() {
+  const target = $("#runtimeSummary");
+  if (!state.analysis) {
+    target.innerHTML = `
+      <div class="runtime-row">
+        <strong>${state.runtimeMode === "gemma" ? "Gemma mode" : "Tools mode"}</strong>
+        <span>${escapeHtml(strategyLabel(state.analysisStrategy))}</span>
+        <span>${state.runtimeMode === "gemma" ? `${state.gemmaModel} full-image inference will run during Process` : "Deterministic segmentation tools only"}</span>
+      </div>`;
+    return;
+  }
+  const mode = state.analysis.runtimeMode || state.runtimeMode;
+  const gemma = state.analysis.gemma;
+  if (mode !== "gemma") {
+    target.innerHTML = `
+      <button class="runtime-row" data-feedback="runtime-mode" data-proposed="algorithmic tools mode" data-confidence="">
+        <strong>Tools mode</strong>
+        <span>${escapeHtml(strategyLabel(state.analysis.analysisStrategy || "tools_only"))}</span>
+        <span>Algorithmic segmentation only</span>
+        <span>${escapeHtml(state.analysis.status)}</span>
+      </button>`;
+    return;
+  }
+  if (!gemma) {
+    target.innerHTML = `
+      <button class="runtime-row is-error" data-feedback="gemma-runtime" data-proposed="Gemma result missing">
+        <strong>Gemma mode</strong>
+        <span>No Gemma result returned</span>
+      </button>`;
+    return;
+  }
+  const score = gemma.score || {};
+  const parsed = gemma.ok ? "parsed" : "not parsed";
+  const count = score.totalExpected !== undefined
+    ? `${score.totalFound || 0}/${score.totalExpected || 0}`
+    : score.total_expected !== undefined
+      ? `${score.total_found || 0}/${score.total_expected || 0}`
+      : "unscored";
+  target.innerHTML = `
+    <button class="runtime-row ${gemma.ok ? "" : "is-error"}" data-feedback="gemma-runtime" data-proposed="Gemma ${escapeHtml(parsed)} callout count ${escapeHtml(count)}" data-confidence="">
+      <strong>Gemma mode</strong>
+      <span>${escapeHtml(strategyLabel(gemma.strategy || state.analysis.analysisStrategy || state.analysisStrategy))}</span>
+      <span>${escapeHtml(gemma.model || state.analysis.model || "gemma4")}</span>
+      <span>${escapeHtml(parsed)} · callouts ${escapeHtml(count)}</span>
+      ${gemma.error ? `<span>${escapeHtml(gemma.error)}</span>` : ""}
+    </button>`;
+}
+
+function strategyLabel(strategy) {
+  const labels = {
+    tools_only: "Tools only",
+    gemma_image_only: "Gemma image only",
+    gemma_tools_briefing: "Gemma tools briefing",
+    gemma_candidate_review: "Gemma candidate review",
+    gemma_teacher_calibrated: "Gemma teacher calibrated",
+  };
+  return labels[strategy] || strategy || "Unknown strategy";
 }
 
 function renderTitleBlock() {
@@ -368,7 +644,8 @@ function symbolSvg(symbol, value) {
 }
 
 function renderGdt() {
-  $("#gdtList").innerHTML = state.analysis.gdt
+  const gdtItems = [...(state.analysis.gdt || []), ...(state.analysis.visionCallouts || [])];
+  $("#gdtList").innerHTML = gdtItems
     .map(
       (item, index) => `
         <article class="gdt-row">
@@ -384,8 +661,8 @@ function renderGdt() {
         </article>`
     )
     .join("");
-  state.analysis.gdt.forEach((item, index) => {
-    renderCrop($(`#gdtCrop${index}`), item.crop, "gdt-original-crop", `${item.label} original crop`, item.confidence, {
+  gdtItems.forEach((item, index) => {
+    renderCrop($(`#gdtCrop${index}`), item.crop, "gdt-original-crop", `${item.label || item.id} original crop`, item.confidence, {
       fit: "contain",
     });
   });
@@ -408,22 +685,59 @@ function renderProjections() {
   state.analysis.projections.forEach((projection, index) => {
     renderCrop($(`#projectionCrop${index}`), projection.crop, "projection-crop", projection.label, projection.confidence, {
       fit: "contain",
-      masks: state.analysis.gdt?.map((item) => item.crop) || [],
+      masks: annotationMasks(),
+      rectangleTool: true,
     });
   });
 }
 
 function renderCallouts() {
-  $("#calloutGrid").innerHTML = state.analysis.callouts
+  const toolCallouts = state.analysis.callouts
     .map(
       (callout) => `
-        <button class="callout-card" data-feedback="2d-callout" data-proposed="${escapeHtml(callout.label)}: ${escapeHtml(callout.value)}" data-confidence="${callout.confidence}">
+        <button class="callout-card" data-feedback="2d-callout" data-proposed="${escapeHtml(callout.label)}: ${escapeHtml(callout.value)}" data-confidence="${callout.confidence}" data-crop="${callout.crop ? cropData(callout.crop) : ""}">
           <span>${escapeHtml(callout.view ? `${callout.view} ${callout.kind}` : callout.label)}</span>
           <strong>${escapeHtml(callout.value)}</strong>
           <span class="confidence">${Math.round(callout.confidence * 100)}%</span>
         </button>`
     )
     .join("");
+  const gemmaCallouts = gemmaViewCallouts();
+  const gemmaSection = gemmaCallouts.length
+    ? `
+      <section class="gemma-callout-section">
+        <h3>Gemma inference</h3>
+        <div class="callout-grid">
+          ${gemmaCallouts
+            .map(
+              (callout) => `
+                <button class="callout-card" data-feedback="gemma-callout" data-proposed="${escapeHtml(callout.view)} ${escapeHtml(callout.kind)}: ${escapeHtml(callout.text)}">
+                  <span>${escapeHtml(callout.view)} ${escapeHtml(callout.kind)}</span>
+                  <strong>${escapeHtml(callout.text || callout.id || "unread")}</strong>
+                  <span class="confidence">${escapeHtml(callout.reason || "Gemma full-image inference")}</span>
+                </button>`
+            )
+            .join("")}
+        </div>
+      </section>`
+    : "";
+  $("#calloutGrid").innerHTML = toolCallouts + gemmaSection;
+}
+
+function gemmaViewCallouts() {
+  const views = state.analysis?.gemma?.parsedResponse?.views;
+  if (!views || typeof views !== "object") return [];
+  return Object.entries(views).flatMap(([view, items]) =>
+    Array.isArray(items)
+      ? items.map((item) => ({
+          view,
+          id: item.id || "",
+          kind: item.kind || "callout",
+          text: item.text || item.value || "",
+          reason: item.reason || "",
+        }))
+      : []
+  );
 }
 
 function render3d() {
@@ -446,7 +760,7 @@ function render3d() {
     </article>`;
   renderCrop($("#perspectiveCrop"), perspective.crop, "3d-view-crop", perspective.label, perspective.confidence, {
     fit: "contain",
-    masks: state.analysis.gdt?.map((item) => item.crop) || [],
+    masks: annotationMasks(),
   });
 }
 
@@ -474,6 +788,9 @@ function quickTemplate(template) {
 
 $$(".tab").forEach((button) => button.addEventListener("click", () => setTab(button.dataset.tab)));
 $$(".subtab").forEach((button) => button.addEventListener("click", () => setSubtab(button.dataset.subtab)));
+$$(".mode-button").forEach((button) => button.addEventListener("click", () => setRuntimeMode(button.dataset.mode)));
+$("#gemmaModelSelect").addEventListener("change", (event) => setGemmaModel(event.target.value));
+$("#analysisStrategySelect").addEventListener("change", (event) => setAnalysisStrategy(event.target.value));
 $("#imageInput").addEventListener("change", onImageSelected);
 $("#processButton").addEventListener("click", processDrawing);
 $("#copyFeedback").addEventListener("click", async () => {
