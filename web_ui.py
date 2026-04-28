@@ -10,6 +10,7 @@ import posixpath
 import tempfile
 import uuid
 import socket
+from datetime import datetime, timezone
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -26,6 +27,11 @@ ROOT = Path(__file__).resolve().parent
 STATIC_DIR = ROOT / "web_dashboard" / "static"
 RUN_DIR = ROOT / "experiments" / "web_dashboard"
 UPLOAD_DIR = RUN_DIR / "uploads"
+GRABCAD_REVIEW_DIR = ROOT / "training_data" / "gdt_grabcad"
+GRABCAD_CANDIDATE_DIR = GRABCAD_REVIEW_DIR / "orthographic_2d_candidates"
+GRABCAD_EXTRACTION_MANIFEST = GRABCAD_REVIEW_DIR / "extraction_manifest.json"
+GRABCAD_SELECTION_JSON = GRABCAD_REVIEW_DIR / "selected_training_candidates.json"
+GRABCAD_SELECTION_TXT = GRABCAD_REVIEW_DIR / "selected_training_candidates.txt"
 GEMMA_MODELS = {"gemma4:26b", "gemma4:e4b"}
 ANALYSIS_STRATEGIES = {
     "tools_only",
@@ -45,9 +51,14 @@ class DashboardHandler(SimpleHTTPRequestHandler):
         route = unquote(urlparse(path).path)
         if route == "/":
             return str(STATIC_DIR / "index.html")
+        if route == "/training-review":
+            return str(STATIC_DIR / "training-review.html")
         if route.startswith("/uploads/"):
             relative = route.removeprefix("/uploads/")
             return str(_contained_path(UPLOAD_DIR, relative))
+        if route.startswith("/training-candidates/"):
+            relative = route.removeprefix("/training-candidates/")
+            return str(_contained_path(GRABCAD_CANDIDATE_DIR, relative))
         return str(_contained_path(STATIC_DIR, route))
 
     def end_headers(self) -> None:
@@ -62,7 +73,20 @@ class DashboardHandler(SimpleHTTPRequestHandler):
         if route == "/api/analyze":
             self._handle_analyze()
             return
+        if route == "/api/training-selection":
+            self._handle_training_selection_save()
+            return
         self.send_error(HTTPStatus.NOT_FOUND, "Unknown endpoint")
+
+    def do_GET(self) -> None:
+        route = urlparse(self.path).path
+        if route == "/api/training-candidates":
+            self._handle_training_candidates()
+            return
+        if route == "/api/training-selection":
+            self._handle_training_selection_get()
+            return
+        super().do_GET()
 
     def _handle_upload(self) -> None:
         content_type = self.headers.get("Content-Type", "")
@@ -133,6 +157,43 @@ class DashboardHandler(SimpleHTTPRequestHandler):
                 analysis["status"] = "gemma-error"
         self._send_json(analysis)
 
+    def _handle_training_candidates(self) -> None:
+        self._send_json(
+            {
+                "root": str(GRABCAD_REVIEW_DIR.relative_to(ROOT)),
+                "candidateDir": str(GRABCAD_CANDIDATE_DIR.relative_to(ROOT)),
+                "selectionPath": str(GRABCAD_SELECTION_JSON.relative_to(ROOT)),
+                "candidates": _load_training_candidates(),
+                "selection": _load_training_selection(),
+            }
+        )
+
+    def _handle_training_selection_get(self) -> None:
+        self._send_json(_load_training_selection())
+
+    def _handle_training_selection_save(self) -> None:
+        length = int(self.headers.get("Content-Length", "0"))
+        try:
+            payload = json.loads(self.rfile.read(length) or b"{}")
+        except json.JSONDecodeError:
+            self._send_json({"error": "Expected a JSON selection payload."}, HTTPStatus.BAD_REQUEST)
+            return
+        selected = payload.get("selected")
+        if not isinstance(selected, list):
+            self._send_json({"error": "Expected selected to be a list of candidate paths."}, HTTPStatus.BAD_REQUEST)
+            return
+        known = {candidate["path"] for candidate in _load_training_candidates()}
+        cleaned = sorted({path for path in selected if isinstance(path, str) and path in known})
+        GRABCAD_REVIEW_DIR.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "selected": cleaned,
+            "count": len(cleaned),
+            "updatedAt": _utc_timestamp(),
+        }
+        GRABCAD_SELECTION_JSON.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+        GRABCAD_SELECTION_TXT.write_text("\n".join(cleaned) + ("\n" if cleaned else ""), encoding="utf-8")
+        self._send_json(payload)
+
     def _send_json(self, payload: dict, status: HTTPStatus = HTTPStatus.OK) -> None:
         body = json.dumps(payload, indent=2).encode("utf-8")
         self.send_response(status)
@@ -162,6 +223,90 @@ def _contained_path(base: Path, route: str) -> Path:
     if candidate == root or root in candidate.parents:
         return candidate
     return root / "__not_found__"
+
+
+def _utc_timestamp() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def _load_training_candidates() -> list[dict]:
+    manifest = {}
+    if GRABCAD_EXTRACTION_MANIFEST.exists():
+        try:
+            manifest = json.loads(GRABCAD_EXTRACTION_MANIFEST.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            manifest = {}
+
+    manifest_candidates = manifest.get("candidates") or []
+    if manifest_candidates:
+        candidates = []
+        for item in manifest_candidates:
+            relative_path = item.get("extracted_path") or ""
+            local_path = ROOT / relative_path
+            if not local_path.exists() or GRABCAD_CANDIDATE_DIR.resolve() not in local_path.resolve().parents:
+                continue
+            extension = local_path.suffix.lower().lstrip(".")
+            candidates.append(
+                {
+                    "path": relative_path,
+                    "name": local_path.name,
+                    "url": f"/training-candidates/{local_path.name}",
+                    "sourceArchive": item.get("source_archive"),
+                    "modelSlug": item.get("model_slug"),
+                    "originalMember": item.get("original_member"),
+                    "extension": extension,
+                    "sizeBytes": item.get("size_bytes", local_path.stat().st_size),
+                    "confidence": item.get("confidence", "unrated"),
+                    "notes": item.get("notes", []),
+                    "previewKind": _candidate_preview_kind(extension),
+                }
+            )
+        return sorted(candidates, key=lambda item: (item["modelSlug"] or "", item["name"]))
+
+    candidates = []
+    for local_path in sorted(GRABCAD_CANDIDATE_DIR.glob("*")):
+        if not local_path.is_file():
+            continue
+        extension = local_path.suffix.lower().lstrip(".")
+        candidates.append(
+            {
+                "path": str(local_path.relative_to(ROOT)),
+                "name": local_path.name,
+                "url": f"/training-candidates/{local_path.name}",
+                "sourceArchive": None,
+                "modelSlug": local_path.name.split("__", 1)[0],
+                "originalMember": local_path.name,
+                "extension": extension,
+                "sizeBytes": local_path.stat().st_size,
+                "confidence": "unrated",
+                "notes": [],
+                "previewKind": _candidate_preview_kind(extension),
+            }
+        )
+    return candidates
+
+
+def _candidate_preview_kind(extension: str) -> str:
+    if extension in {"jpg", "jpeg", "png", "webp", "tif", "tiff", "bmp"}:
+        return "image"
+    if extension == "pdf":
+        return "pdf"
+    return "file"
+
+
+def _load_training_selection() -> dict:
+    if not GRABCAD_SELECTION_JSON.exists():
+        return {"selected": [], "count": 0, "updatedAt": None}
+    try:
+        selection = json.loads(GRABCAD_SELECTION_JSON.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {"selected": [], "count": 0, "updatedAt": None}
+    selected = [path for path in selection.get("selected", []) if isinstance(path, str)]
+    return {
+        "selected": selected,
+        "count": len(selected),
+        "updatedAt": selection.get("updatedAt"),
+    }
 
 
 def _probably_has_3d_view(filename: str) -> bool:
@@ -341,6 +486,7 @@ def _mock_analysis(
             "kind": "feature_control_frame",
         },
     ]
+    detected_vision_callouts = structure.get("visionCallouts") or []
 
     return {
         "filename": filename,
@@ -364,6 +510,7 @@ def _mock_analysis(
             ],
         },
         "gdt": detected_gdt,
+        "visionCallouts": detected_vision_callouts,
         "projections": detected_projections,
         "callouts": detected_callouts,
         "annotationMasks": detected_annotation_masks,

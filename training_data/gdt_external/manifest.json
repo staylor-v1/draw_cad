@@ -1,0 +1,1732 @@
+{
+  "name": "external_gdt_training_set",
+  "createdBy": "scripts/compile_external_gdt_training_set.py",
+  "sourcePolicy": {
+    "included": "NIST public information/public-domain assets and Wikimedia Commons files with explicit license metadata.",
+    "excluded": "Commercial/blog/university examples without clear redistribution terms are listed for review only."
+  },
+  "counts": {
+    "assets": 84,
+    "renderedImages": 101,
+    "nistPdfs": 12,
+    "commonsFiles": 72
+  },
+  "assets": [
+    {
+      "id": "nist_pmi_ctc_01",
+      "group": "nist_pmi",
+      "role": "full_drawing",
+      "title": "Complex Test Case 1",
+      "source_url": "https://www.nist.gov/document/nist-cad-model-ctc-01",
+      "page_url": "https://www.nist.gov/document/nist-cad-model-ctc-01",
+      "license": "NIST public information/public domain unless marked otherwise",
+      "license_url": "https://www.nist.gov/copyrights-disclaimers",
+      "local_path": "training_data/gdt_external/raw/nist_pmi/nist_pmi_ctc_01.pdf",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ctc_01-1.png"
+      ],
+      "sha256": "5f71e173eff4381afb5dc79d9ff44d213f436a59519bd2142746f378f7d70e93",
+      "bytes": 55077,
+      "notes": [
+        "NIST MBE PMI validation/conformance test-case drawing",
+        "Good source for feature control frames, datum features, datum targets, dimensions, and title blocks"
+      ]
+    },
+    {
+      "id": "nist_pmi_ctc_02",
+      "group": "nist_pmi",
+      "role": "full_drawing",
+      "title": "Complex Test Case 2",
+      "source_url": "https://www.nist.gov/document/nist-cad-model-ctc-02",
+      "page_url": "https://www.nist.gov/document/nist-cad-model-ctc-02",
+      "license": "NIST public information/public domain unless marked otherwise",
+      "license_url": "https://www.nist.gov/copyrights-disclaimers",
+      "local_path": "training_data/gdt_external/raw/nist_pmi/nist_pmi_ctc_02.pdf",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ctc_02-1.png",
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ctc_02-2.png",
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ctc_02-3.png"
+      ],
+      "sha256": "e9aabbf22d9f05b6d3ee40288b10ff99837af203033afbd80a3bcc5754159672",
+      "bytes": 210564,
+      "notes": [
+        "NIST MBE PMI validation/conformance test-case drawing",
+        "Good source for feature control frames, datum features, datum targets, dimensions, and title blocks"
+      ]
+    },
+    {
+      "id": "nist_pmi_ctc_03",
+      "group": "nist_pmi",
+      "role": "full_drawing",
+      "title": "Complex Test Case 3",
+      "source_url": "https://www.nist.gov/document/nist-cad-model-ctc-03",
+      "page_url": "https://www.nist.gov/document/nist-cad-model-ctc-03",
+      "license": "NIST public information/public domain unless marked otherwise",
+      "license_url": "https://www.nist.gov/copyrights-disclaimers",
+      "local_path": "training_data/gdt_external/raw/nist_pmi/nist_pmi_ctc_03.pdf",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ctc_03-1.png"
+      ],
+      "sha256": "675698e729f756659fa99f04ceb065bc3f1445e1219f16841a2877b2499f5491",
+      "bytes": 94974,
+      "notes": [
+        "NIST MBE PMI validation/conformance test-case drawing",
+        "Good source for feature control frames, datum features, datum targets, dimensions, and title blocks"
+      ]
+    },
+    {
+      "id": "nist_pmi_ctc_04",
+      "group": "nist_pmi",
+      "role": "full_drawing",
+      "title": "Complex Test Case 4",
+      "source_url": "https://www.nist.gov/document/nist-cad-model-ctc-04",
+      "page_url": "https://www.nist.gov/document/nist-cad-model-ctc-04",
+      "license": "NIST public information/public domain unless marked otherwise",
+      "license_url": "https://www.nist.gov/copyrights-disclaimers",
+      "local_path": "training_data/gdt_external/raw/nist_pmi/nist_pmi_ctc_04.pdf",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ctc_04-1.png"
+      ],
+      "sha256": "20cadec4d310beb86df89cda103149184c0612e3004dd3eec8d88ce354ea536a",
+      "bytes": 60260,
+      "notes": [
+        "NIST MBE PMI validation/conformance test-case drawing",
+        "Good source for feature control frames, datum features, datum targets, dimensions, and title blocks"
+      ]
+    },
+    {
+      "id": "nist_pmi_ctc_05",
+      "group": "nist_pmi",
+      "role": "full_drawing",
+      "title": "Complex Test Case 5",
+      "source_url": "https://www.nist.gov/document/nist-cad-model-ctc-05",
+      "page_url": "https://www.nist.gov/document/nist-cad-model-ctc-05",
+      "license": "NIST public information/public domain unless marked otherwise",
+      "license_url": "https://www.nist.gov/copyrights-disclaimers",
+      "local_path": "training_data/gdt_external/raw/nist_pmi/nist_pmi_ctc_05.pdf",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ctc_05-1.png",
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ctc_05-2.png"
+      ],
+      "sha256": "82eeafd5167ab590d6e1dc6ecce65aaecff322ecc6069ee6616accda941cee8f",
+      "bytes": 88700,
+      "notes": [
+        "NIST MBE PMI validation/conformance test-case drawing",
+        "Good source for feature control frames, datum features, datum targets, dimensions, and title blocks"
+      ]
+    },
+    {
+      "id": "nist_pmi_ftc_06",
+      "group": "nist_pmi",
+      "role": "full_drawing",
+      "title": "Fully Toleranced Test Case 6",
+      "source_url": "https://www.nist.gov/document/nist-cad-model-ftc-06",
+      "page_url": "https://www.nist.gov/document/nist-cad-model-ftc-06",
+      "license": "NIST public information/public domain unless marked otherwise",
+      "license_url": "https://www.nist.gov/copyrights-disclaimers",
+      "local_path": "training_data/gdt_external/raw/nist_pmi/nist_pmi_ftc_06.pdf",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_06-1.png",
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_06-2.png",
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_06-3.png"
+      ],
+      "sha256": "501a976013cb1e2c13bfc998b5dfa010b064945a1f0a1eaa303a59d96ddc893c",
+      "bytes": 167608,
+      "notes": [
+        "NIST MBE PMI validation/conformance test-case drawing",
+        "Good source for feature control frames, datum features, datum targets, dimensions, and title blocks"
+      ]
+    },
+    {
+      "id": "nist_pmi_ftc_07",
+      "group": "nist_pmi",
+      "role": "full_drawing",
+      "title": "Fully Toleranced Test Case 7",
+      "source_url": "https://www.nist.gov/document/nist-cad-model-ftc-07",
+      "page_url": "https://www.nist.gov/document/nist-cad-model-ftc-07",
+      "license": "NIST public information/public domain unless marked otherwise",
+      "license_url": "https://www.nist.gov/copyrights-disclaimers",
+      "local_path": "training_data/gdt_external/raw/nist_pmi/nist_pmi_ftc_07.pdf",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_07-1.png",
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_07-2.png",
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_07-3.png",
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_07-4.png"
+      ],
+      "sha256": "fcb214aa1aee70040b11eed88b65ebe42104f2ce1d0e94cb06668a75f8ec2456",
+      "bytes": 720347,
+      "notes": [
+        "NIST MBE PMI validation/conformance test-case drawing",
+        "Good source for feature control frames, datum features, datum targets, dimensions, and title blocks"
+      ]
+    },
+    {
+      "id": "nist_pmi_ftc_08",
+      "group": "nist_pmi",
+      "role": "full_drawing",
+      "title": "Fully Toleranced Test Case 8",
+      "source_url": "https://www.nist.gov/document/nist-cad-model-ftc-08",
+      "page_url": "https://www.nist.gov/document/nist-cad-model-ftc-08",
+      "license": "NIST public information/public domain unless marked otherwise",
+      "license_url": "https://www.nist.gov/copyrights-disclaimers",
+      "local_path": "training_data/gdt_external/raw/nist_pmi/nist_pmi_ftc_08.pdf",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_08-1.png",
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_08-2.png",
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_08-3.png",
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_08-4.png"
+      ],
+      "sha256": "db962fc2527457ef5226a1f9d0083b898e86f6622f63b91e9ffa42b1df6b30bf",
+      "bytes": 240361,
+      "notes": [
+        "NIST MBE PMI validation/conformance test-case drawing",
+        "Good source for feature control frames, datum features, datum targets, dimensions, and title blocks"
+      ]
+    },
+    {
+      "id": "nist_pmi_ftc_09",
+      "group": "nist_pmi",
+      "role": "full_drawing",
+      "title": "Fully Toleranced Test Case 9",
+      "source_url": "https://www.nist.gov/document/nist-cad-model-ftc-09",
+      "page_url": "https://www.nist.gov/document/nist-cad-model-ftc-09",
+      "license": "NIST public information/public domain unless marked otherwise",
+      "license_url": "https://www.nist.gov/copyrights-disclaimers",
+      "local_path": "training_data/gdt_external/raw/nist_pmi/nist_pmi_ftc_09.pdf",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_09-1.png",
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_09-2.png",
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_09-3.png",
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_09-4.png"
+      ],
+      "sha256": "148d43b816d8844b877baf948765896d58cb642d9b0b9c6a7e5f22853914f3ea",
+      "bytes": 314889,
+      "notes": [
+        "NIST MBE PMI validation/conformance test-case drawing",
+        "Good source for feature control frames, datum features, datum targets, dimensions, and title blocks"
+      ]
+    },
+    {
+      "id": "nist_pmi_ftc_10",
+      "group": "nist_pmi",
+      "role": "full_drawing",
+      "title": "Fully Toleranced Test Case 10",
+      "source_url": "https://www.nist.gov/document/nist-cad-model-ftc-10",
+      "page_url": "https://www.nist.gov/document/nist-cad-model-ftc-10",
+      "license": "NIST public information/public domain unless marked otherwise",
+      "license_url": "https://www.nist.gov/copyrights-disclaimers",
+      "local_path": "training_data/gdt_external/raw/nist_pmi/nist_pmi_ftc_10.pdf",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_10-1.png",
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_10-2.png",
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_10-3.png",
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_10-4.png",
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_10-5.png"
+      ],
+      "sha256": "fdb17aa687bde85db25899e4110588586e228e0a186ea160045095a3009be482",
+      "bytes": 369659,
+      "notes": [
+        "NIST MBE PMI validation/conformance test-case drawing",
+        "Good source for feature control frames, datum features, datum targets, dimensions, and title blocks"
+      ]
+    },
+    {
+      "id": "nist_pmi_ftc_11",
+      "group": "nist_pmi",
+      "role": "full_drawing",
+      "title": "Fully Toleranced Test Case 11",
+      "source_url": "https://www.nist.gov/document/nist-cad-model-ftc-11",
+      "page_url": "https://www.nist.gov/document/nist-cad-model-ftc-11",
+      "license": "NIST public information/public domain unless marked otherwise",
+      "license_url": "https://www.nist.gov/copyrights-disclaimers",
+      "local_path": "training_data/gdt_external/raw/nist_pmi/nist_pmi_ftc_11.pdf",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_11-1.png",
+        "training_data/gdt_external/rendered/nist_pmi/nist_pmi_ftc_11-2.png"
+      ],
+      "sha256": "f15690050edb2a673b92d31733be86fac207a16a8716b21f13ccd757a002392c",
+      "bytes": 69874,
+      "notes": [
+        "NIST MBE PMI validation/conformance test-case drawing",
+        "Good source for feature control frames, datum features, datum targets, dimensions, and title blocks"
+      ]
+    },
+    {
+      "id": "nist_am_test_artifact_engineering_drawing",
+      "group": "nist_am",
+      "role": "full_drawing",
+      "title": "NIST additive manufacturing test artifact engineering drawing",
+      "source_url": "https://www.nist.gov/document/engineeringdrawingpdf",
+      "page_url": "https://www.nist.gov/document/engineeringdrawingpdf",
+      "license": "NIST public information/public domain unless marked otherwise",
+      "license_url": "https://www.nist.gov/copyrights-disclaimers",
+      "local_path": "training_data/gdt_external/raw/nist_am/nist_am_test_artifact_engineering_drawing.pdf",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/nist_am/nist_am_test_artifact_engineering_drawing-1.png",
+        "training_data/gdt_external/rendered/nist_am/nist_am_test_artifact_engineering_drawing-2.png"
+      ],
+      "sha256": "97207b4e2ca11b4cb2b711a2b9665c6fe8fcd3011a334e572196690eaebea009",
+      "bytes": 69624,
+      "notes": [
+        "NIST public-domain additive-manufacturing test artifact drawing",
+        "Useful for full-sheet drawing segmentation with GD&T markings"
+      ]
+    },
+    {
+      "id": "commons_3-2-1_Rule",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "3-2-1 Rule",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/3/3a/3-2-1_Rule.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3A3-2-1_Rule.png",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/3-2-1_Rule.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/3-2-1_Rule.png"
+      ],
+      "sha256": "53e26bb23771a63e1660dc8a885679ce368801b81f6df05fa94f80e136d184c6",
+      "bytes": 84068,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_321regel",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "321regel",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/c/cd/321regel.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3A321regel.png",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/321regel.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/321regel.png"
+      ],
+      "sha256": "8520cdbb10613e1672613a29d1d6f47108a3c83c3e54038d8d68b2121681bbb9",
+      "bytes": 235366,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Acotaci\u00f3n-Model",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Acotaci\u00f3n-Model",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Acotaci%C3%B3n-Model.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AAcotaci%C3%B3n-Model.png",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Acotaci\u00f3n-Model.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Acotaci\u00f3n-Model.png"
+      ],
+      "sha256": "4b03a7e94a7319059c53b599dc5a888e24c17b190fbb5b0646f3f86c45540550",
+      "bytes": 7898,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_CotasRepetitivas",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "CotasRepetitivas",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/2/29/CotasRepetitivas.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ACotasRepetitivas.png",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/CotasRepetitivas.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/CotasRepetitivas.png"
+      ],
+      "sha256": "d0a4a80c67f2e76506b6b30b3554035e0d074d25ebce2c402de1cbdfad1992ca",
+      "bytes": 5724,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Cotation_GPS_independence",
+      "group": "wikimedia_commons",
+      "role": "drawing_reference",
+      "title": "Cotation GPS independence",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/b/bb/Cotation_GPS_independence.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ACotation_GPS_independence.svg",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Cotation_GPS_independence.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Cotation_GPS_independence.png"
+      ],
+      "sha256": "a66acc9e8ec7e96210082d095ac163118b27cac2bdd1324c89aba80d9f7710a5",
+      "bytes": 24323,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Cotation_gps_alignement_fleches",
+      "group": "wikimedia_commons",
+      "role": "drawing_reference",
+      "title": "Cotation gps alignement fleches",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Cotation_gps_alignement_fleches.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ACotation_gps_alignement_fleches.svg",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Cotation_gps_alignement_fleches.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Cotation_gps_alignement_fleches.png"
+      ],
+      "sha256": "e007abf5dc413fb3f286cfb3911624869423bacfabe8e2b85ae355b2508134a4",
+      "bytes": 49992,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Cotation_gps_alignement_fleches_alt",
+      "group": "wikimedia_commons",
+      "role": "drawing_reference",
+      "title": "Cotation gps alignement fleches alt",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/7/78/Cotation_gps_alignement_fleches_alt.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ACotation_gps_alignement_fleches_alt.svg",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Cotation_gps_alignement_fleches_alt.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Cotation_gps_alignement_fleches_alt.png"
+      ],
+      "sha256": "6f2d32b1c95643258f443ac4807714e62c0fb67ee50fb8a70659704b75240443",
+      "bytes": 57251,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Cotation_gps_exemple_alesage",
+      "group": "wikimedia_commons",
+      "role": "drawing_reference",
+      "title": "Cotation gps exemple alesage",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/5/53/Cotation_gps_exemple_alesage.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ACotation_gps_exemple_alesage.svg",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Cotation_gps_exemple_alesage.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Cotation_gps_exemple_alesage.png"
+      ],
+      "sha256": "791f92f79a495617d8f20bde65cfb0763406b4ce80263dc715c442c75af4971f",
+      "bytes": 39095,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Cotation_gps_exemple_alesage_association",
+      "group": "wikimedia_commons",
+      "role": "drawing_reference",
+      "title": "Cotation gps exemple alesage association",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Cotation_gps_exemple_alesage_association.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ACotation_gps_exemple_alesage_association.svg",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Cotation_gps_exemple_alesage_association.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Cotation_gps_exemple_alesage_association.png"
+      ],
+      "sha256": "dc017d907761b067dce2e12bb18fc4fc06789517c44178e8a605e6e5fdffd28a",
+      "bytes": 23585,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Cotation_gps_exemple_alesage_partition",
+      "group": "wikimedia_commons",
+      "role": "drawing_reference",
+      "title": "Cotation gps exemple alesage partition",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Cotation_gps_exemple_alesage_partition.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ACotation_gps_exemple_alesage_partition.svg",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Cotation_gps_exemple_alesage_partition.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Cotation_gps_exemple_alesage_partition.png"
+      ],
+      "sha256": "8e4129bb0159551730a0c057c7ed71dbcd5052a8d45d074d2ca7436c70b39f05",
+      "bytes": 43994,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Cotation_gps_position_percage_cotation_traditionnelle",
+      "group": "wikimedia_commons",
+      "role": "drawing_reference",
+      "title": "Cotation gps position percage cotation traditionnelle",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/1/13/Cotation_gps_position_percage_cotation_traditionnelle.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ACotation_gps_position_percage_cotation_traditionnelle.svg",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Cotation_gps_position_percage_cotation_traditionnelle.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Cotation_gps_position_percage_cotation_traditionnelle.png"
+      ],
+      "sha256": "ca70c5b068f64f60e9da4300d96734e203e3a295c5972e9de689d28175fdb6bf",
+      "bytes": 34389,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Dimension_tolerance-tech_drawing",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Dimension tolerance-tech drawing",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/0/0e/Dimension_tolerance-tech_drawing.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ADimension_tolerance-tech_drawing.png",
+      "license": "CC BY-SA 3.0",
+      "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Dimension_tolerance-tech_drawing.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Dimension_tolerance-tech_drawing.png"
+      ],
+      "sha256": "ed9f3e88bb1d9e58b744ead4c66871321418d3df78315511fb4c293bab6d765e",
+      "bytes": 2313,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Ecart_cercle_ideal_cercle_reel_mmt",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Ecart cercle ideal cercle reel mmt",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Ecart_cercle_ideal_cercle_reel_mmt.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AEcart_cercle_ideal_cercle_reel_mmt.svg",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Ecart_cercle_ideal_cercle_reel_mmt.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Ecart_cercle_ideal_cercle_reel_mmt.png"
+      ],
+      "sha256": "f1ee060e956e82cd923db95b4e0ca01720815535f1d169ee487b108aadd8a085",
+      "bytes": 184732,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Eixforat",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Eixforat",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/e/eb/Eixforat.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AEixforat.png",
+      "license": "Public domain",
+      "license_url": "",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Eixforat.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Eixforat.png"
+      ],
+      "sha256": "d1d99deaec9618a1adae95df56a3899a2d865ec96c9b3942e8096917824aa374",
+      "bytes": 722153,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Figa2",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Figa2",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/1/13/Figa2.gif",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AFiga2.gif",
+      "license": "Public domain",
+      "license_url": "",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Figa2.gif",
+      "rendered_paths": [],
+      "sha256": "386d39528a0d74302806f4d73b281246b168a734565f3bd44f27f6c2c05a8fc3",
+      "bytes": 49622,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Form-__Lagetoleranz_Zeichnungsangabe",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "Form-& Lagetoleranz Zeichnungsangabe",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/d/db/Form-%26_Lagetoleranz_Zeichnungsangabe.PNG",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AForm-%26_Lagetoleranz_Zeichnungsangabe.PNG",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Form-__Lagetoleranz_Zeichnungsangabe.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Form-__Lagetoleranz_Zeichnungsangabe.png"
+      ],
+      "sha256": "f61c763bdea802dec8d32d3f20fa8954235f9466b73cadb368ec19e33d3c5949",
+      "bytes": 31494,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_GD_T_Angularity",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "GD&T Angularity",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/c/c6/GD%26T_Angularity.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGD%26T_Angularity.svg",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/GD_T_Angularity.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/GD_T_Angularity.png"
+      ],
+      "sha256": "acdcb25b8eac36e750ee71ccf72f8db3050e0f233ca21f5c2f7dbf5b7faaef9f",
+      "bytes": 170,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_GD_T_Circular_runout",
+      "group": "wikimedia_commons",
+      "role": "symbol_reference",
+      "title": "GD&T Circular runout",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/e/e7/GD%26T_Circular_runout.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGD%26T_Circular_runout.svg",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/GD_T_Circular_runout.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/GD_T_Circular_runout.png"
+      ],
+      "sha256": "7ebfb914107699ad6dbc195c7587776065a51e3414b0619802fde36fa1e987ce",
+      "bytes": 603,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_GD_T_Circularity",
+      "group": "wikimedia_commons",
+      "role": "symbol_reference",
+      "title": "GD&T Circularity",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/3/39/GD%26T_Circularity.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGD%26T_Circularity.svg",
+      "license": "Public domain",
+      "license_url": "",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/GD_T_Circularity.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/GD_T_Circularity.png"
+      ],
+      "sha256": "8fd60867cbca3c666ddacdddb21861c35ee167071c6daa5742e6040640bbc173",
+      "bytes": 551,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_GD_T_Concentricity",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "GD&T Concentricity",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/b/b2/GD%26T_Concentricity.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGD%26T_Concentricity.svg",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/GD_T_Concentricity.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/GD_T_Concentricity.png"
+      ],
+      "sha256": "c92be6de5eebc815da963a0ee1b9741cc791f4d063d3b5457ec2048a3f9b69ff",
+      "bytes": 624,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_GD_T_Cylindricity",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "GD&T Cylindricity",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/a/a9/GD%26T_Cylindricity.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGD%26T_Cylindricity.svg",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/GD_T_Cylindricity.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/GD_T_Cylindricity.png"
+      ],
+      "sha256": "13bdeb9ba13db351c7eaf9851dc41ee8427028af57f90c07873d7cbc92395338",
+      "bytes": 681,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_GD_T_Flatness",
+      "group": "wikimedia_commons",
+      "role": "symbol_reference",
+      "title": "GD&T Flatness",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/f/fc/GD%26T_Flatness.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGD%26T_Flatness.svg",
+      "license": "Public domain",
+      "license_url": "",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/GD_T_Flatness.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/GD_T_Flatness.png"
+      ],
+      "sha256": "0a15eaf81361378379f86de969bcd29c33d79dceaca7900cf049bc3643a8233a",
+      "bytes": 521,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_GD_T_Parallelism",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "GD&T Parallelism",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/1/13/GD%26T_Parallelism.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGD%26T_Parallelism.svg",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/GD_T_Parallelism.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/GD_T_Parallelism.png"
+      ],
+      "sha256": "c417bafaeea9fc8ee0acd5ebf562e14d263a5c367d77fcad667509cc83cdd50b",
+      "bytes": 587,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_GD_T_Perpendicularity",
+      "group": "wikimedia_commons",
+      "role": "symbol_reference",
+      "title": "GD&T Perpendicularity",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/1/1f/GD%26T_Perpendicularity.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGD%26T_Perpendicularity.svg",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/GD_T_Perpendicularity.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/GD_T_Perpendicularity.png"
+      ],
+      "sha256": "dc653ff2a12fca2d37be6daf196bc6d38b03bb5df195e42122d1f782dd00a52c",
+      "bytes": 596,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_GD_T",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "GD&T",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/8/8e/GD%26T.PNG",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGD%26T.PNG",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/GD_T.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/GD_T.png"
+      ],
+      "sha256": "e5845e298820cbc147de39558390a7a297c9a1f1118083f263b8da5f5e21f62b",
+      "bytes": 18161,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_GD_T_Position",
+      "group": "wikimedia_commons",
+      "role": "symbol_reference",
+      "title": "GD&T Position",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/8/81/GD%26T_Position.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGD%26T_Position.svg",
+      "license": "Public domain",
+      "license_url": "",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/GD_T_Position.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/GD_T_Position.png"
+      ],
+      "sha256": "bb13fce73493668ba2bbaa142201fa538f1637ad3e1a6def2483f57932f8d9ae",
+      "bytes": 744,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_GD_T_Profileofaline",
+      "group": "wikimedia_commons",
+      "role": "symbol_reference",
+      "title": "GD&T Profileofaline",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/4/4d/GD%26T_Profileofaline.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGD%26T_Profileofaline.svg",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/GD_T_Profileofaline.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/GD_T_Profileofaline.png"
+      ],
+      "sha256": "49add1bf0bd8a6d5dd3a5ef599d732787cb0908bd2d08bfad9c756cf48793d63",
+      "bytes": 552,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_GD_T_Profileofasurface",
+      "group": "wikimedia_commons",
+      "role": "symbol_reference",
+      "title": "GD&T Profileofasurface",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/f/f8/GD%26T_Profileofasurface.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGD%26T_Profileofasurface.svg",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/GD_T_Profileofasurface.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/GD_T_Profileofasurface.png"
+      ],
+      "sha256": "8a57386aba2bb56d28652f81a42bff5f0ce207e8801b770e424ddb3aef551a52",
+      "bytes": 561,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_GD_T_Straightness",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "GD&T Straightness",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/8/85/GD%26T_Straightness.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGD%26T_Straightness.svg",
+      "license": "Public domain",
+      "license_url": "",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/GD_T_Straightness.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/GD_T_Straightness.png"
+      ],
+      "sha256": "46393da087ea2f73664b184f7d27ce89e169bc3318156855819ca5c16b7fb261",
+      "bytes": 522,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_GD_T_Symmetry",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "GD&T Symmetry",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/b/b0/GD%26T_Symmetry.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGD%26T_Symmetry.svg",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/GD_T_Symmetry.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/GD_T_Symmetry.png"
+      ],
+      "sha256": "e86574d3fec97bce00ac0c7fc8bb064d6be64888e29ab25651e616f67492143e",
+      "bytes": 698,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_GD_T_Totalrunout",
+      "group": "wikimedia_commons",
+      "role": "symbol_reference",
+      "title": "GD&T Totalrunout",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/8/8d/GD%26T_Totalrunout.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGD%26T_Totalrunout.svg",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/GD_T_Totalrunout.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/GD_T_Totalrunout.png"
+      ],
+      "sha256": "d6ef7fdd6269e6018d7e832312db5dd09d65378191031e996c45da6403493198",
+      "bytes": 959,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Gd_t_continuousfeature",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "Gd&t continuousfeature",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/8/87/Gd%26t_continuousfeature.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGd%26t_continuousfeature.svg",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Gd_t_continuousfeature.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Gd_t_continuousfeature.png"
+      ],
+      "sha256": "71d0df77dc92422c6f012336825f57575bf0755904d2fb7335e4ff56e4f14bdd",
+      "bytes": 807,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Gd_t_freestate",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "Gd&t freestate",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/a/ac/Gd%26t_freestate.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGd%26t_freestate.svg",
+      "license": "Public domain",
+      "license_url": "",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Gd_t_freestate.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Gd_t_freestate.png"
+      ],
+      "sha256": "33c4a9cd7691c7acd94f4423b3a35b341fba846028574e062eac8b3458ebb918",
+      "bytes": 381,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Gd_t_leastmaterialcondition",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "Gd&t leastmaterialcondition",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/5/57/Gd%26t_leastmaterialcondition.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGd%26t_leastmaterialcondition.svg",
+      "license": "Public domain",
+      "license_url": "",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Gd_t_leastmaterialcondition.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Gd_t_leastmaterialcondition.png"
+      ],
+      "sha256": "4f71ceac2be7c63f7d9a1274afeff0bf2871ed10f8f65799017ef4432e9b083f",
+      "bytes": 381,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Gd_t_maximummaterialcondition",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "Gd&t maximummaterialcondition",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Gd%26t_maximummaterialcondition.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGd%26t_maximummaterialcondition.svg",
+      "license": "Public domain",
+      "license_url": "",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Gd_t_maximummaterialcondition.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Gd_t_maximummaterialcondition.png"
+      ],
+      "sha256": "f3e01698cb016268eee9cdf47baa6f918d3b3a2e517c7e59cb239db5cf264307",
+      "bytes": 381,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Gd_t_projectedtolerancezone",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "Gd&t projectedtolerancezone",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/1/18/Gd%26t_projectedtolerancezone.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGd%26t_projectedtolerancezone.svg",
+      "license": "Public domain",
+      "license_url": "",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Gd_t_projectedtolerancezone.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Gd_t_projectedtolerancezone.png"
+      ],
+      "sha256": "37f661efe41b549ffb8993f610990e7746b99ace879ce0da35024e93c56731e8",
+      "bytes": 381,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Gd_t_regardlessoffeaturesize",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "Gd&t regardlessoffeaturesize",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/9/9b/Gd%26t_regardlessoffeaturesize.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGd%26t_regardlessoffeaturesize.svg",
+      "license": "Public domain",
+      "license_url": "",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Gd_t_regardlessoffeaturesize.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Gd_t_regardlessoffeaturesize.png"
+      ],
+      "sha256": "b19bf1103531f0726ee8393291bdb6fde5d1c428465f0e60ee24ecdf053c7f97",
+      "bytes": 381,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Gd_t_statisticaltolerance",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "Gd&t statisticaltolerance",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/2/21/Gd%26t_statisticaltolerance.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGd%26t_statisticaltolerance.svg",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Gd_t_statisticaltolerance.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Gd_t_statisticaltolerance.png"
+      ],
+      "sha256": "f8234a10f0b077cfe73ccba5171a4398cf31c4103cfb480f72c431a48fb8f02a",
+      "bytes": 832,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Gd_t_tangentplane",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "Gd&t tangentplane",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/a/a1/Gd%26t_tangentplane.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGd%26t_tangentplane.svg",
+      "license": "Public domain",
+      "license_url": "",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Gd_t_tangentplane.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Gd_t_tangentplane.png"
+      ],
+      "sha256": "1ddf57fd2e0da1565f57bdae411d204594ee17bf4a64e5c3719cd8c30c6d111d",
+      "bytes": 381,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Gd_t_unilateral",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "Gd&t unilateral",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/b/bf/Gd%26t_unilateral.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGd%26t_unilateral.svg",
+      "license": "Public domain",
+      "license_url": "",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Gd_t_unilateral.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Gd_t_unilateral.png"
+      ],
+      "sha256": "76b21a1021d5101689f7d663b997563e4b87ffe65fd27c64dcee02b67452c975",
+      "bytes": 381,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Geometric_Tolerancing_Example",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "Geometric Tolerancing Example",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/c/c3/Geometric_Tolerancing_Example.PNG",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGeometric_Tolerancing_Example.PNG",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Geometric_Tolerancing_Example.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Geometric_Tolerancing_Example.png"
+      ],
+      "sha256": "34ab94199a324c23c58aaa8040ee7d253f3cb6192b6c6f39fdefe9418f8b4d63",
+      "bytes": 20805,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Geometric_dimenioning_and_tolerancing-hole",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "Geometric dimenioning and tolerancing-hole",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/1/19/Geometric_dimenioning_and_tolerancing-hole.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGeometric_dimenioning_and_tolerancing-hole.png",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Geometric_dimenioning_and_tolerancing-hole.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Geometric_dimenioning_and_tolerancing-hole.png"
+      ],
+      "sha256": "966d06235d70e90a2c3ff27504053df8d75e0b9c0a80346adb789e5a3934ca76",
+      "bytes": 4117,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Geometric_dimenioning_and_tolerancing-hole",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "Geometric dimenioning and tolerancing-hole",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/f/f4/Geometric_dimenioning_and_tolerancing-hole.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGeometric_dimenioning_and_tolerancing-hole.svg",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Geometric_dimenioning_and_tolerancing-hole.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Geometric_dimenioning_and_tolerancing-hole.png"
+      ],
+      "sha256": "f955b73e3576a2a189a9f3f5f3f0c3043bafbe2549262c42890a5ed6b70f1ba5",
+      "bytes": 24327,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Groesse_der_Toleranzfelder",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "Groesse der Toleranzfelder",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/d/d2/Groesse_der_Toleranzfelder.gif",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AGroesse_der_Toleranzfelder.gif",
+      "license": "Public domain",
+      "license_url": "",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Groesse_der_Toleranzfelder.gif",
+      "rendered_paths": [],
+      "sha256": "dd8e138be3efa2bd420ef7d02f1c2acc471f583f18fab670ab1c5dc8801627bd",
+      "bytes": 6024,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_ISO_csap",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "ISO csap",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/1/1c/ISO_csap.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AISO_csap.svg",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/ISO_csap.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/ISO_csap.png"
+      ],
+      "sha256": "26a373580e9604d1851e534837fd0a227b8a128e37367aa19929a548d5d530f3",
+      "bytes": 85708,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Langloch",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Langloch",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/1/17/Langloch.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ALangloch.png",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Langloch.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Langloch.png"
+      ],
+      "sha256": "93461d353ca59554052448cbf9a61abea7c65ae89f108497e986fe564efe0329",
+      "bytes": 3259,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Limits_and_Fits",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Limits and Fits",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Limits_and_Fits.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ALimits_and_Fits.jpg",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Limits_and_Fits.jpg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Limits_and_Fits.jpg"
+      ],
+      "sha256": "eb383863523f16c8ddb9cfabdd7ffef3824fca54c911e2f6f970d9221b7046d2",
+      "bytes": 272545,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Mechanical_Tolerance_Definitions",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Mechanical Tolerance Definitions",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/4/49/Mechanical_Tolerance_Definitions.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AMechanical_Tolerance_Definitions.svg",
+      "license": "Public domain",
+      "license_url": "",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Mechanical_Tolerance_Definitions.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Mechanical_Tolerance_Definitions.png"
+      ],
+      "sha256": "960a467b4aa0227e9cf759f5d7f3f7345d2209661917d5864dc137cf424e314b",
+      "bytes": 55960,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Mechanical_Tolerance_Definitions_HU",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Mechanical Tolerance Definitions HU",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Mechanical_Tolerance_Definitions_HU.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AMechanical_Tolerance_Definitions_HU.svg",
+      "license": "Public domain",
+      "license_url": "",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Mechanical_Tolerance_Definitions_HU.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Mechanical_Tolerance_Definitions_HU.png"
+      ],
+      "sha256": "2c8ba6b305a6df8e0fe8d31c6fbd98bbf803cb410a2f9fd0a273b86599d586b3",
+      "bytes": 48124,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Mehrfachbezug",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Mehrfachbezug",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/f/ff/Mehrfachbezug.PNG",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AMehrfachbezug.PNG",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Mehrfachbezug.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Mehrfachbezug.png"
+      ],
+      "sha256": "2e9913ad3f0fbf531b3af30bdba9ec5e4f312342cea008c57d2646fcface6d95",
+      "bytes": 7290,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Nachylenie_I",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Nachylenie I",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Nachylenie_I.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ANachylenie_I.png",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Nachylenie_I.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Nachylenie_I.png"
+      ],
+      "sha256": "658f0523cc2cb9d469cfa1b00147eaa4e40ac454ad57ff38740ed3d38ea0b84a",
+      "bytes": 44306,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Nachylenie_II",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Nachylenie II",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/3/3b/Nachylenie_II.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ANachylenie_II.png",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Nachylenie_II.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Nachylenie_II.png"
+      ],
+      "sha256": "73e26de1ac3004079e923a83c3463e77bc5715428d7e91e8c3eae4a16c53ff24",
+      "bytes": 44690,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Nachylenie_III",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Nachylenie III",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/c/c1/Nachylenie_III.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ANachylenie_III.png",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Nachylenie_III.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Nachylenie_III.png"
+      ],
+      "sha256": "42aa541d55226b9eca40a48924fef63d4b8701837e18db7c27ede46c5b8762e8",
+      "bytes": 58238,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Pola_tolerancji",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Pola tolerancji",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/f/f9/Pola_tolerancji.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3APola_tolerancji.svg",
+      "license": "GFDL",
+      "license_url": "http://www.gnu.org/copyleft/fdl.html",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Pola_tolerancji.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Pola_tolerancji.png"
+      ],
+      "sha256": "e64a003c4a28b0c3b3a7e71dc50b162213162f0b3dbd5adcbe88d1218e84fac8",
+      "bytes": 17697,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Profil_linii",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Profil linii",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/4/46/Profil_linii.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AProfil_linii.png",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Profil_linii.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Profil_linii.png"
+      ],
+      "sha256": "39f0d68d57921e66b523731771403daf4b9d89fa53ff99ce5f7a55904fb7875f",
+      "bytes": 27077,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Profil_powierzchni",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Profil powierzchni",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/b/b1/Profil_powierzchni.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AProfil_powierzchni.png",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Profil_powierzchni.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Profil_powierzchni.png"
+      ],
+      "sha256": "2aa9f4bfbadb107ecaefef7a3ca9523f098a04f1544c0bf06fa1a13259eb2f0d",
+      "bytes": 24084,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Prostopadlosc_I",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Prostopadlosc I",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Prostopadlosc_I.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AProstopadlosc_I.png",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Prostopadlosc_I.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Prostopadlosc_I.png"
+      ],
+      "sha256": "33120a685bb9bf55d68829b0d7b0ee5beca196edf3345c5250bbc17cd8800c93",
+      "bytes": 17622,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Prostopadlosc_II",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Prostopadlosc II",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Prostopadlosc_II.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AProstopadlosc_II.png",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Prostopadlosc_II.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Prostopadlosc_II.png"
+      ],
+      "sha256": "8e3baa2f70e37c95dae8f6b818efe425c39bf567d2332be0a7d4033f2603e626",
+      "bytes": 26065,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Prostopadlosc_III",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Prostopadlosc III",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/a/ab/Prostopadlosc_III.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AProstopadlosc_III.png",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Prostopadlosc_III.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Prostopadlosc_III.png"
+      ],
+      "sha256": "a5da36f294b4b81114c2458f8124b6b9cc9ef93a7120a56c41d797bebdef69b2",
+      "bytes": 26754,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Rownoleg\u0142osc_II",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Rownoleg\u0142osc II",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/1/19/Rownoleg%C5%82osc_II.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ARownoleg%C5%82osc_II.png",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Rownoleg\u0142osc_II.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Rownoleg\u0142osc_II.png"
+      ],
+      "sha256": "49d5a64e041b46177e5aa648515d7c6c88f3d136a68e2eede5e4f6b35dd8a616",
+      "bytes": 28120,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Rownoleg\u0142osc_III",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Rownoleg\u0142osc III",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/1/10/Rownoleg%C5%82osc_III.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ARownoleg%C5%82osc_III.png",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Rownoleg\u0142osc_III.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Rownoleg\u0142osc_III.png"
+      ],
+      "sha256": "679969ff5b5c322ca1faea31e5098b372c84bff88b05fed6f4f9a44d02468dc9",
+      "bytes": 26299,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Schneckenwelle",
+      "group": "wikimedia_commons",
+      "role": "drawing_reference",
+      "title": "Schneckenwelle",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/9/96/Schneckenwelle.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ASchneckenwelle.png",
+      "license": "CC BY-SA 3.0",
+      "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Schneckenwelle.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Schneckenwelle.png"
+      ],
+      "sha256": "78d091c978a8bfc5eb765185ec23ba1c6c32867ceb883196934768fea423a813",
+      "bytes": 66441,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Surface_finish_specification",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Surface finish specification",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/3/34/Surface_finish_specification.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ASurface_finish_specification.svg",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Surface_finish_specification.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Surface_finish_specification.png"
+      ],
+      "sha256": "c497a587ddff6516709d2bc95fef23f8811ef8990f6affd6014e82b1169d2f0b",
+      "bytes": 27272,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Surface_finish_specification2",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Surface finish specification2",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/c/c1/Surface_finish_specification2.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ASurface_finish_specification2.svg",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Surface_finish_specification2.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Surface_finish_specification2.png"
+      ],
+      "sha256": "6e2f227d102f21da3aa2f789f78fcb83b25c8ed91bdc9546a25652a1f118ae56",
+      "bytes": 48173,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Technical_Drawing_Hole_01",
+      "group": "wikimedia_commons",
+      "role": "drawing_reference",
+      "title": "Technical Drawing Hole 01",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/6/67/Technical_Drawing_Hole_01.svg",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ATechnical_Drawing_Hole_01.svg",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Technical_Drawing_Hole_01.svg",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Technical_Drawing_Hole_01.png"
+      ],
+      "sha256": "1030a4529c61ba2e8523b6967e2bf7210722ef411a730177370a345148e96c23",
+      "bytes": 3734,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Technical_Drawing_Hole_02",
+      "group": "wikimedia_commons",
+      "role": "drawing_reference",
+      "title": "Technical Drawing Hole 02",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/f/f7/Technical_Drawing_Hole_02.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ATechnical_Drawing_Hole_02.png",
+      "license": "Public domain",
+      "license_url": "",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Technical_Drawing_Hole_02.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Technical_Drawing_Hole_02.png"
+      ],
+      "sha256": "63583e4219aa0ba039e147ac77f17d585c15c88649d8fd2a8abe7bef83ac9598",
+      "bytes": 5473,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Technical_Drawing_Hole_03",
+      "group": "wikimedia_commons",
+      "role": "drawing_reference",
+      "title": "Technical Drawing Hole 03",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/2/29/Technical_Drawing_Hole_03.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ATechnical_Drawing_Hole_03.png",
+      "license": "Public domain",
+      "license_url": "",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Technical_Drawing_Hole_03.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Technical_Drawing_Hole_03.png"
+      ],
+      "sha256": "33611cb879edd0618b6532eadbedb275a6d89ac19b8df5328a0b86839c5407df",
+      "bytes": 2065,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Technical_Drawing_Hole_04",
+      "group": "wikimedia_commons",
+      "role": "drawing_reference",
+      "title": "Technical Drawing Hole 04",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/5/50/Technical_Drawing_Hole_04.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ATechnical_Drawing_Hole_04.png",
+      "license": "Public domain",
+      "license_url": "",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Technical_Drawing_Hole_04.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Technical_Drawing_Hole_04.png"
+      ],
+      "sha256": "fc3f6a8b0c9235b331d9e9306a3ed811f01f25ab51cea85731a41591e46e60ab",
+      "bytes": 6091,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Theoretisch_genaues_Ma\u00df",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Theoretisch genaues Ma\u00df",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Theoretisch_genaues_Ma%C3%9F.PNG",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3ATheoretisch_genaues_Ma%C3%9F.PNG",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Theoretisch_genaues_Ma\u00df.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Theoretisch_genaues_Ma\u00df.png"
+      ],
+      "sha256": "d3799b59fe46240b0631d7237c59869ccb32a3be290da31105e0212c7c695b4b",
+      "bytes": 1909,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Toleranzfeld",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "Toleranzfeld",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/d/d4/Toleranzfeld.gif",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AToleranzfeld.gif",
+      "license": "Public domain",
+      "license_url": "",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Toleranzfeld.gif",
+      "rendered_paths": [],
+      "sha256": "8e235806d91463b222a0037ce8b73bcdd2d8b20119e25703020fd5a96cb36a9c",
+      "bytes": 21989,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Toleranzfeld",
+      "group": "wikimedia_commons",
+      "role": "callout_reference",
+      "title": "Toleranzfeld",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/8/8c/Toleranzfeld.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AToleranzfeld.png",
+      "license": "CC BY-SA 3.0",
+      "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Toleranzfeld.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Toleranzfeld.png"
+      ],
+      "sha256": "ec4b3571b52174aebe27f709ae2c1178c6528224b603f4fb88a4d286287e53b7",
+      "bytes": 11383,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    },
+    {
+      "id": "commons_Zna\u010dka_drsnosti_-_popis",
+      "group": "wikimedia_commons",
+      "role": "reference",
+      "title": "Zna\u010dka drsnosti - popis",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Zna%C4%8Dka_drsnosti_-_popis.png",
+      "page_url": "https://commons.wikimedia.org/wiki/File%3AZna%C4%8Dka_drsnosti_-_popis.png",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "local_path": "training_data/gdt_external/raw/wikimedia_commons/Zna\u010dka_drsnosti_-_popis.png",
+      "rendered_paths": [
+        "training_data/gdt_external/rendered/wikimedia_commons/Zna\u010dka_drsnosti_-_popis.png"
+      ],
+      "sha256": "2e8911147e19d8bd41c80662183d4fd89c5ce63a9dd0c35d623921a4588d21ba",
+      "bytes": 14001,
+      "notes": [
+        "Wikimedia Commons file from GD&T/geometric tolerancing categories",
+        "Use per-file license metadata in manifest before redistribution outside this project"
+      ]
+    }
+  ],
+  "reviewOnlySources": [
+    {
+      "name": "University of Illinois ME170 Engineering Drawing Notes",
+      "url": "https://courses.grainger.illinois.edu/me170/fa2019/Engineering_Drawing_Notes_B.pdf",
+      "reason": "Useful GD&T teaching drawings, but redistribution/license terms were not explicit in the search result."
+    },
+    {
+      "name": "GD&T Basics feature control frame/datum examples",
+      "url": "https://www.gdandtbasics.com/feature-control-frame/",
+      "reason": "High-quality examples for visual review; use as design reference unless permission is granted."
+    },
+    {
+      "name": "KEYENCE GD&T overview examples",
+      "url": "https://www.keyence.com/ss/products/measure-sys/gd-and-t/basic/tolerance-entry-frame.jsp",
+      "reason": "High-quality commercial reference examples; not downloaded into training data without permission."
+    },
+    {
+      "name": "NASA internship final report GD&T discussion",
+      "url": "https://ntrs.nasa.gov/api/citations/20180002822/downloads/20180002822.pdf",
+      "reason": "Public technical report with GD&T context, but it does not appear to be a dense drawing corpus."
+    }
+  ]
+}

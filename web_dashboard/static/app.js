@@ -644,7 +644,8 @@ function symbolSvg(symbol, value) {
 }
 
 function renderGdt() {
-  $("#gdtList").innerHTML = state.analysis.gdt
+  const gdtItems = [...(state.analysis.gdt || []), ...(state.analysis.visionCallouts || [])];
+  $("#gdtList").innerHTML = gdtItems
     .map(
       (item, index) => `
         <article class="gdt-row">
@@ -660,8 +661,8 @@ function renderGdt() {
         </article>`
     )
     .join("");
-  state.analysis.gdt.forEach((item, index) => {
-    renderCrop($(`#gdtCrop${index}`), item.crop, "gdt-original-crop", `${item.label} original crop`, item.confidence, {
+  gdtItems.forEach((item, index) => {
+    renderCrop($(`#gdtCrop${index}`), item.crop, "gdt-original-crop", `${item.label || item.id} original crop`, item.confidence, {
       fit: "contain",
     });
   });
