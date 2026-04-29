@@ -1,0 +1,122 @@
+image: training_data/gdt/threaded_cap.jpg
+notes:
+  - Dense threaded-cap drawing with two main projections and many callouts.
+  - The section view contains repeated thread representation lines that are part geometry, not callouts.
+  - Thread texture should be treated as a negative example for callout masking.
+projections:
+  - id: left_profile
+    label: left exterior profile projection
+    axis: left_profile
+    crop: {x: 0.176, y: 0.205, w: 0.254, h: 0.565}
+  - id: section_a_a
+    label: section A-A projection
+    axis: section
+    crop: {x: 0.634, y: 0.204, w: 0.236, h: 0.653}
+non_callout_regions:
+  - id: section-thread-texture
+    kind: thread_texture
+    crop: {x: 0.6243, y: 0.4271, w: 0.2605, h: 0.2320}
+    note: Repeated internal thread representation lines in section view; do not mask as callouts.
+callouts:
+  - id: left-01
+    view: left_profile
+    kind: linear_dimension
+    text: "7,71 +/- 0,15"
+    crop: {x: 0.154, y: 0.151, w: 0.170, h: 0.060}
+    note: Upper-left horizontal dimension with extension lines.
+  - id: left-02
+    view: left_profile
+    kind: datum_feature
+    text: A
+    crop: {x: 0.210, y: 0.307, w: 0.042, h: 0.108}
+    note: Datum A flag attached to upper face.
+  - id: left-03
+    view: left_profile
+    kind: feature_control_frame
+    text: perpendicularity 0.10 A
+    crop: {x: 0.000, y: 0.289, w: 0.160, h: 0.075}
+    note: GD&T frame left of exterior profile.
+  - id: left-04
+    view: left_profile
+    kind: datum_feature
+    text: B
+    crop: {x: 0.060, y: 0.427, w: 0.046, h: 0.078}
+    note: Datum B flag below the perpendicularity frame.
+  - id: left-05
+    view: left_profile
+    kind: feature_control_frame
+    text: profile 0.25
+    crop: {x: 0.016, y: 0.564, w: 0.147, h: 0.074}
+    note: Lower-left profile frame.
+  - id: left-06
+    view: left_profile
+    kind: stacked_gdt_and_dimension
+    text: "diameter 3.85 +/- 0,1; position 0.50 M A M B; concentricity 0.50000"
+    crop: {x: 0.413, y: 0.027, w: 0.264, h: 0.210}
+    note: Top center stack of one diameter dimension and two GD&T frames.
+  - id: left-07
+    view: left_profile
+    kind: section_marker
+    text: A-A
+    crop: {x: 0.292, y: 0.301, w: 0.083, h: 0.390}
+    note: Section A-A arrows and labels crossing the exterior projection.
+  - id: left-08
+    view: left_profile
+    kind: linear_dimension
+    text: "8,00 +0,10 -0,20"
+    crop: {x: 0.502, y: 0.268, w: 0.120, h: 0.160}
+    note: Right-side upper vertical dimension and value.
+  - id: left-09
+    view: left_profile
+    kind: linear_dimension
+    text: "18,13 +0,10 -0,20"
+    crop: {x: 0.412, y: 0.552, w: 0.205, h: 0.117}
+    note: Right-side lower vertical dimension and value.
+  - id: left-10
+    view: left_profile
+    kind: linear_dimension
+    text: "42,4 +/- 0,2"
+    crop: {x: 0.176, y: 0.755, w: 0.240, h: 0.070}
+    note: Bottom overall width dimension.
+  - id: section-01
+    view: section_a_a
+    kind: feature_control_frame
+    text: "flatness 0.25"
+    crop: {x: 0.839, y: 0.120, w: 0.112, h: 0.077}
+    note: Top-right flatness frame.
+  - id: section-02
+    view: section_a_a
+    kind: linear_dimension
+    text: "40,54 +/- 0,25"
+    crop: {x: 0.693, y: 0.264, w: 0.174, h: 0.055}
+    note: Top horizontal section width.
+  - id: section-03
+    view: section_a_a
+    kind: linear_dimension
+    text: "2,5 +/- 0,05"
+    crop: {x: 0.876, y: 0.369, w: 0.121, h: 0.073}
+    note: Right upper wall/step dimension.
+  - id: section-04
+    view: section_a_a
+    kind: linear_dimension
+    text: "1,25 +/- 0,05"
+    crop: {x: 0.676, y: 0.663, w: 0.138, h: 0.067}
+    note: Lower interior step dimension.
+  - id: section-05
+    view: section_a_a
+    kind: diameter_dimension
+    text: "diameter 37,0 +0,065 -0,015"
+    crop: {x: 0.674, y: 0.794, w: 0.230, h: 0.103}
+    note: Bottom diameter tolerance.
+  - id: section-06
+    view: section_a_a
+    kind: linear_dimension
+    text: "13,45 +/- 0,10"
+    crop: {x: 0.858, y: 0.719, w: 0.139, h: 0.089}
+    note: Right-side lower vertical dimension.
+  - id: section-07
+    view: section_a_a
+    kind: datum_feature
+    text: B
+    crop: {x: 0.855, y: 0.862, w: 0.073, h: 0.108}
+    note: Datum B flag at lower right of section view.

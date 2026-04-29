@@ -243,6 +243,65 @@ h2 {
   align-items: center;
 }
 
+.analysis-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: end;
+}
+
+.mode-toggle {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(74px, 1fr));
+  border: 1px solid var(--line-strong);
+  background: #fffefa;
+}
+
+.mode-button {
+  border: 0;
+  min-height: 38px;
+  padding: 0 12px;
+  font-weight: 900;
+}
+
+.mode-button + .mode-button {
+  border-left: 1px solid var(--line-strong);
+}
+
+.mode-button.is-active {
+  background: var(--blueprint);
+  color: var(--panel);
+}
+
+.model-select,
+.strategy-select {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line-strong);
+  background: #fffefa;
+  padding: 0 8px;
+}
+
+.model-select span,
+.strategy-select span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.model-select select,
+.strategy-select select {
+  min-height: 30px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 900;
+}
+
 .primary-action {
   padding: 0 20px;
   min-width: 120px;
@@ -252,6 +311,36 @@ h2 {
 .phase-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   margin: 14px 0;
+}
+
+.runtime-summary {
+  margin: 0 0 14px;
+}
+
+.runtime-row {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  background: #fffefa;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.runtime-row strong {
+  color: var(--blueprint);
+  white-space: nowrap;
+}
+
+.runtime-row span {
+  overflow-wrap: anywhere;
+}
+
+.runtime-row.is-error strong {
+  color: var(--signal);
 }
 
 .phase-card {
@@ -450,6 +539,21 @@ progress {
   min-height: 190px;
 }
 
+.crop-view.has-rectangle-tool canvas {
+  touch-action: none;
+}
+
+.draw-selection {
+  position: absolute;
+  display: none;
+  border: 2px solid var(--blueprint);
+  background:
+    linear-gradient(135deg, rgba(24, 77, 115, 0.16), rgba(45, 122, 87, 0.12));
+  box-shadow: 0 0 0 1px rgba(255, 253, 248, 0.8) inset;
+  pointer-events: none;
+  z-index: 3;
+}
+
 .projection-label {
   border-top: 1px solid var(--line);
   padding: 10px;
@@ -466,6 +570,21 @@ progress {
 
 .callout-grid {
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.gemma-callout-section {
+  grid-column: 1 / -1;
+  border-top: 2px solid var(--line-strong);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+
+.gemma-callout-section h3 {
+  margin: 0 0 10px;
+  color: var(--blueprint);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .empty-analysis {
@@ -585,10 +704,27 @@ progress {
   .topbar,
   .image-intake,
   .phase-grid,
+  .analysis-head,
   #borderSubpanel.is-active,
   .cad-layout,
   .gdt-row {
     grid-template-columns: 1fr;
+  }
+
+  .analysis-controls {
+    justify-content: stretch;
+  }
+
+  .mode-toggle,
+  .model-select,
+  .strategy-select,
+  .primary-action {
+    width: 100%;
+  }
+
+  .model-select select,
+  .strategy-select select {
+    flex: 1;
   }
 
   .topbar {
