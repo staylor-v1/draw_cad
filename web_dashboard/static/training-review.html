@@ -14,10 +14,11 @@
           <h1>Candidate Drawing Review</h1>
         </div>
         <div class="review-actions">
-          <button id="select-visible" type="button">Select Visible</button>
+          <button id="select-visible" type="button">Use Visible</button>
+          <button id="reject-visible" type="button">Reject Visible</button>
           <button id="clear-visible" type="button">Clear Visible</button>
-          <button id="copy-selected" type="button">Copy List</button>
-          <button id="save-selection" class="primary" type="button">Save Selection</button>
+          <button id="copy-selected" type="button">Copy Use List</button>
+          <button id="save-selection" class="primary" type="button">Save Review</button>
         </div>
       </header>
 
@@ -54,7 +55,9 @@
 
       <section class="status-strip">
         <div><strong id="visible-count">0</strong> visible</div>
-        <div><strong id="selected-count">0</strong> selected</div>
+        <div><strong id="selected-count">0</strong> use</div>
+        <div><strong id="rejected-count">0</strong> reject</div>
+        <div><strong id="duplicate-count">0</strong> duplicate</div>
         <div id="save-status">Not saved yet</div>
       </section>
 
@@ -63,10 +66,20 @@
 
     <template id="candidate-template">
       <article class="candidate-card">
-        <label class="candidate-check">
-          <input type="checkbox" />
-          <span></span>
-        </label>
+        <div class="candidate-disposition" aria-label="Candidate disposition">
+          <label class="candidate-check use-check">
+            <input type="checkbox" data-disposition="use" />
+            <span>Use</span>
+          </label>
+          <label class="candidate-check reject-check">
+            <input type="checkbox" data-disposition="reject" />
+            <span>Reject</span>
+          </label>
+          <label class="candidate-check duplicate-check">
+            <input type="checkbox" data-disposition="duplicate" />
+            <span>Duplicate</span>
+          </label>
+        </div>
         <div class="preview"></div>
         <div class="candidate-meta">
           <div class="candidate-title"></div>
@@ -85,6 +98,8 @@
           </div>
           <div class="dialog-actions">
             <button id="dialog-select" type="button">Use</button>
+            <button id="dialog-reject" type="button">Reject</button>
+            <button id="dialog-duplicate" type="button">Duplicate</button>
             <a id="dialog-open" class="open-link" target="_blank" rel="noreferrer">Open</a>
             <button class="icon-button" value="close" aria-label="Close detail view" title="Close">x</button>
           </div>

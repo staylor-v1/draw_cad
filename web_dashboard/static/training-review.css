@@ -78,6 +78,18 @@ button.primary {
   color: #ffffff;
 }
 
+button.danger {
+  border-color: #9a3a31;
+  background: #9a3a31;
+  color: #ffffff;
+}
+
+button.warning {
+  border-color: #8a641b;
+  background: #8a641b;
+  color: #ffffff;
+}
+
 .toolbar {
   display: grid;
   grid-template-columns: minmax(240px, 1fr) repeat(3, minmax(150px, 220px));
@@ -142,11 +154,28 @@ button.primary {
   box-shadow: 0 0 0 2px rgba(23, 98, 77, 0.16);
 }
 
-.candidate-check {
+.candidate-card.rejected {
+  border-color: #9a3a31;
+  box-shadow: 0 0 0 2px rgba(154, 58, 49, 0.16);
+}
+
+.candidate-card.duplicate {
+  border-color: #8a641b;
+  box-shadow: 0 0 0 2px rgba(138, 100, 27, 0.16);
+}
+
+.candidate-disposition {
   position: absolute;
   z-index: 2;
   top: 8px;
   left: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  max-width: calc(100% - 16px);
+}
+
+.candidate-check {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -166,6 +195,14 @@ button.primary {
   height: 16px;
   margin: 0;
   accent-color: #17624d;
+}
+
+.reject-check input {
+  accent-color: #9a3a31;
+}
+
+.duplicate-check input {
+  accent-color: #8a641b;
 }
 
 .preview {
@@ -245,6 +282,21 @@ button.primary {
 .tag.medium {
   background: #fff0cc;
   color: #76551a;
+}
+
+.tag.use {
+  background: #dff1eb;
+  color: #17624d;
+}
+
+.tag.reject {
+  background: #f8dfdc;
+  color: #9a3a31;
+}
+
+.tag.duplicate {
+  background: #fff0cc;
+  color: #8a641b;
 }
 
 .candidate-dialog {

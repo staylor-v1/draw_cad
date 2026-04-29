@@ -17,6 +17,10 @@ RAW_DIR = DATA_DIR / "raw_archives"
 OUT_DIR = DATA_DIR / "orthographic_2d_candidates"
 MANIFEST_PATH = DATA_DIR / "manifest.json"
 EXTRACTION_MANIFEST = DATA_DIR / "extraction_manifest.json"
+REVIEW_METADATA_PATH = DATA_DIR / "candidate_review_metadata.json"
+USE_LIST_PATH = DATA_DIR / "selected_training_candidates.txt"
+REJECT_LIST_PATH = DATA_DIR / "rejected_training_candidates.txt"
+DUPLICATE_LIST_PATH = DATA_DIR / "duplicate_training_candidates.txt"
 
 DRAWING_EXTENSIONS = {
     ".pdf",
@@ -49,11 +53,13 @@ SKIP_IMAGE_HINTS = {
 class ExtractedCandidate:
     source_archive: str
     model_slug: str
+    source_url: str | None
     original_member: str
     extracted_path: str
     extension: str
     size_bytes: int
     confidence: str
+    disposition: str
     notes: list[str]
 
 
@@ -73,6 +79,31 @@ def archive_slug(archive_name: str, manifest: dict) -> str:
     return archive_name.split(".snapshot.")[0]
 
 
+def source_url_by_slug(manifest: dict) -> dict[str, str]:
+    return {
+        model.get("slug"): model.get("url")
+        for model in manifest.get("models", [])
+        if model.get("slug") and model.get("url")
+    }
+
+
+def load_review_dispositions() -> dict[str, str]:
+    if not REVIEW_METADATA_PATH.exists():
+        return {}
+    try:
+        review = json.loads(REVIEW_METADATA_PATH.read_text())
+    except json.JSONDecodeError:
+        return {}
+    dispositions = review.get("dispositions")
+    if isinstance(dispositions, dict):
+        return {
+            path: disposition
+            for path, disposition in dispositions.items()
+            if disposition in {"use", "reject", "duplicate"}
+        }
+    return {}
+
+
 def candidate_confidence(member_name: str, extension: str) -> tuple[str, list[str]]:
     lower = member_name.lower()
     notes: list[str] = []
@@ -85,7 +116,12 @@ def candidate_confidence(member_name: str, extension: str) -> tuple[str, list[st
     return "medium", ["raster image requires visual review"]
 
 
-def extract_archive(archive_path: Path, manifest: dict) -> list[ExtractedCandidate]:
+def extract_archive(
+    archive_path: Path,
+    manifest: dict,
+    source_urls: dict[str, str],
+    review_dispositions: dict[str, str],
+) -> list[ExtractedCandidate]:
     model_slug = archive_slug(archive_path.name, manifest)
     extracted: list[ExtractedCandidate] = []
     with zipfile.ZipFile(archive_path) as archive:
@@ -106,15 +142,18 @@ def extract_archive(archive_path: Path, manifest: dict) -> list[ExtractedCandida
                 counter += 1
             with archive.open(info) as src, destination.open("wb") as dst:
                 shutil.copyfileobj(src, dst)
+            extracted_path = str(destination.relative_to(ROOT))
             extracted.append(
                 ExtractedCandidate(
                     source_archive=archive_path.name,
                     model_slug=model_slug,
+                    source_url=source_urls.get(model_slug),
                     original_member=info.filename,
-                    extracted_path=str(destination.relative_to(ROOT)),
+                    extracted_path=extracted_path,
                     extension=extension,
                     size_bytes=info.file_size,
                     confidence=confidence,
+                    disposition=review_dispositions.get(extracted_path, "unreviewed"),
                     notes=notes,
                 )
             )
@@ -123,6 +162,8 @@ def extract_archive(archive_path: Path, manifest: dict) -> list[ExtractedCandida
 
 def main() -> None:
     manifest = json.loads(MANIFEST_PATH.read_text()) if MANIFEST_PATH.exists() else {}
+    source_urls = source_url_by_slug(manifest)
+    review_dispositions = load_review_dispositions()
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     for old_candidate in OUT_DIR.iterdir():
         if old_candidate.is_file():
@@ -130,7 +171,10 @@ def main() -> None:
     candidates: list[ExtractedCandidate] = []
     archives = sorted(RAW_DIR.glob("*.zip"))
     for archive in archives:
-        candidates.extend(extract_archive(archive, manifest))
+        candidates.extend(extract_archive(archive, manifest, source_urls, review_dispositions))
+    use_paths = sorted(item.extracted_path for item in candidates if item.disposition == "use")
+    reject_paths = sorted(item.extracted_path for item in candidates if item.disposition == "reject")
+    duplicate_paths = sorted(item.extracted_path for item in candidates if item.disposition == "duplicate")
     summary = {
         "source_manifest": str(MANIFEST_PATH.relative_to(ROOT)),
         "raw_archive_dir": str(RAW_DIR.relative_to(ROOT)),
@@ -141,10 +185,17 @@ def main() -> None:
             level: sum(1 for item in candidates if item.confidence == level)
             for level in ["high", "medium", "low"]
         },
+        "disposition_counts": {
+            level: sum(1 for item in candidates if item.disposition == level)
+            for level in ["use", "reject", "duplicate", "unreviewed"]
+        },
         "candidates": [asdict(item) for item in candidates],
     }
     EXTRACTION_MANIFEST.write_text(json.dumps(summary, indent=2) + "\n")
-    print(json.dumps({k: summary[k] for k in ["archive_count", "candidate_count", "confidence_counts", "output_dir"]}, indent=2))
+    USE_LIST_PATH.write_text("\n".join(use_paths) + ("\n" if use_paths else ""))
+    REJECT_LIST_PATH.write_text("\n".join(reject_paths) + ("\n" if reject_paths else ""))
+    DUPLICATE_LIST_PATH.write_text("\n".join(duplicate_paths) + ("\n" if duplicate_paths else ""))
+    print(json.dumps({k: summary[k] for k in ["archive_count", "candidate_count", "confidence_counts", "disposition_counts", "output_dir"]}, indent=2))
 
 
 if __name__ == "__main__":

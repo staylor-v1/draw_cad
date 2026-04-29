@@ -9,6 +9,7 @@ const selectedCount = document.querySelector("#selected-count");
 const saveStatus = document.querySelector("#save-status");
 const saveButton = document.querySelector("#save-selection");
 const selectVisibleButton = document.querySelector("#select-visible");
+const rejectVisibleButton = document.querySelector("#reject-visible");
 const clearVisibleButton = document.querySelector("#clear-visible");
 const copyButton = document.querySelector("#copy-selected");
 const dialog = document.querySelector("#candidate-dialog");
@@ -18,11 +19,16 @@ const dialogPreview = document.querySelector("#dialog-preview");
 const dialogPath = document.querySelector("#dialog-path");
 const dialogOpen = document.querySelector("#dialog-open");
 const dialogSelect = document.querySelector("#dialog-select");
+const dialogReject = document.querySelector("#dialog-reject");
+const dialogDuplicate = document.querySelector("#dialog-duplicate");
+const rejectedCount = document.querySelector("#rejected-count");
+const duplicateCount = document.querySelector("#duplicate-count");
 
 let candidates = [];
 let visibleCandidates = [];
-let selected = new Set();
+let dispositions = new Map();
 let activeCandidate = null;
+const DISPOSITIONS = ["use", "reject", "duplicate"];
 
 function formatBytes(bytes) {
   if (!Number.isFinite(bytes)) return "";
@@ -54,8 +60,19 @@ function candidateMatches(candidate) {
 }
 
 function updateCounts() {
+  const counts = dispositionCounts();
   visibleCount.textContent = String(visibleCandidates.length);
-  selectedCount.textContent = String(selected.size);
+  selectedCount.textContent = String(counts.use);
+  rejectedCount.textContent = String(counts.reject);
+  duplicateCount.textContent = String(counts.duplicate);
+}
+
+function dispositionCounts() {
+  const counts = { use: 0, reject: 0, duplicate: 0 };
+  for (const value of dispositions.values()) {
+    if (value in counts) counts[value] += 1;
+  }
+  return counts;
 }
 
 function buildPreview(candidate) {
@@ -85,16 +102,38 @@ function buildPreview(candidate) {
 
 function syncDialogSelection() {
   if (!activeCandidate) return;
-  const isSelected = selected.has(activeCandidate.path);
-  dialogSelect.textContent = isSelected ? "Selected" : "Use";
-  dialogSelect.classList.toggle("primary", isSelected);
+  const disposition = dispositions.get(activeCandidate.path);
+  dialogSelect.textContent = disposition === "use" ? "Using" : "Use";
+  dialogReject.textContent = disposition === "reject" ? "Rejected" : "Reject";
+  dialogDuplicate.textContent = disposition === "duplicate" ? "Duplicate" : "Duplicate";
+  dialogSelect.classList.toggle("primary", disposition === "use");
+  dialogReject.classList.toggle("danger", disposition === "reject");
+  dialogDuplicate.classList.toggle("warning", disposition === "duplicate");
+}
+
+function setDisposition(path, disposition) {
+  if (dispositions.get(path) === disposition) dispositions.delete(path);
+  else dispositions.set(path, disposition);
+}
+
+function selectedPaths() {
+  return [...dispositions.entries()]
+    .filter(([, disposition]) => disposition === "use")
+    .map(([path]) => path)
+    .sort();
+}
+
+function dispositionObject() {
+  return Object.fromEntries([...dispositions.entries()].sort(([a], [b]) => a.localeCompare(b)));
 }
 
 function openCandidate(candidate) {
   activeCandidate = candidate;
   dialogTitle.textContent = candidate.name;
   dialogSource.textContent = `${candidate.modelSlug} | ${candidate.extension.toUpperCase()} | ${candidate.confidence}`;
-  dialogPath.textContent = candidate.path;
+  dialogPath.textContent = candidate.sourceUrl
+    ? `source=${candidate.sourceUrl} | file=${candidate.path}`
+    : candidate.path;
   dialogOpen.href = candidate.url;
   dialogPreview.replaceChildren(buildPreview(candidate).firstElementChild);
   syncDialogSelection();
@@ -107,17 +146,17 @@ function render() {
   visibleCandidates = candidates.filter(candidateMatches);
   for (const candidate of visibleCandidates) {
     const node = template.content.firstElementChild.cloneNode(true);
-    const checkbox = node.querySelector("input");
-    const checkLabel = node.querySelector(".candidate-check span");
+    const checkboxes = [...node.querySelectorAll("input[data-disposition]")];
     const preview = buildPreview(candidate);
     const title = node.querySelector(".candidate-title");
     const subtitle = node.querySelector(".candidate-subtitle");
     const tags = node.querySelector(".candidate-tags");
+    const disposition = dispositions.get(candidate.path);
 
     node.dataset.path = candidate.path;
-    checkbox.checked = selected.has(candidate.path);
-    node.classList.toggle("selected", checkbox.checked);
-    checkLabel.textContent = checkbox.checked ? "Selected" : "Use";
+    node.classList.toggle("selected", disposition === "use");
+    node.classList.toggle("rejected", disposition === "reject");
+    node.classList.toggle("duplicate", disposition === "duplicate");
     title.textContent = candidate.name;
     subtitle.textContent = `${candidate.modelSlug} | ${formatBytes(candidate.sizeBytes)}`;
 
@@ -125,19 +164,27 @@ function render() {
       makeTag(candidate.extension.toUpperCase()),
       makeTag(candidate.previewKind),
       makeTag(candidate.confidence, candidate.confidence),
+      makeTag(disposition || "unreviewed", disposition || ""),
     );
 
     node.querySelector(".preview").replaceWith(preview);
-    node.querySelector(".candidate-check").addEventListener("click", (event) => {
+    node.querySelector(".candidate-disposition").addEventListener("click", (event) => {
       event.stopPropagation();
     });
-    checkbox.addEventListener("change", () => {
-      if (checkbox.checked) selected.add(candidate.path);
-      else selected.delete(candidate.path);
-      node.classList.toggle("selected", checkbox.checked);
-      checkLabel.textContent = checkbox.checked ? "Selected" : "Use";
-      updateCounts();
+    for (const checkbox of checkboxes) {
+      checkbox.checked = disposition === checkbox.dataset.disposition;
+      checkbox.addEventListener("change", () => {
+        setDisposition(candidate.path, checkbox.dataset.disposition);
+        updateCounts();
+        saveStatus.textContent = "Unsaved changes";
+        render();
+      });
+    }
+    node.addEventListener("dblclick", (event) => {
+      if (event.target.closest("input, iframe")) return;
+      setDisposition(candidate.path, "use");
       saveStatus.textContent = "Unsaved changes";
+      render();
     });
     node.addEventListener("click", (event) => {
       if (event.target.closest("input, iframe")) return;
@@ -172,11 +219,11 @@ async function saveSelection() {
     const response = await fetch("/api/training-selection", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ selected: [...selected] }),
+      body: JSON.stringify({ dispositions: dispositionObject() }),
     });
     const payload = await response.json();
     if (!response.ok) throw new Error(payload.error || "Selection save failed");
-    saveStatus.textContent = `Saved ${payload.count} at ${payload.updatedAt}`;
+    saveStatus.textContent = `Saved ${payload.reviewedCount} reviewed at ${payload.updatedAt}`;
   } catch (error) {
     saveStatus.textContent = error.message;
   } finally {
@@ -185,9 +232,9 @@ async function saveSelection() {
 }
 
 async function copySelection() {
-  const text = [...selected].sort().join("\n");
+  const text = selectedPaths().join("\n");
   await navigator.clipboard.writeText(text);
-  saveStatus.textContent = `Copied ${selected.size} paths`;
+  saveStatus.textContent = `Copied ${selectedPaths().length} use paths`;
 }
 
 async function load() {
@@ -195,7 +242,8 @@ async function load() {
   const response = await fetch("/api/training-candidates");
   const payload = await response.json();
   candidates = payload.candidates || [];
-  selected = new Set(payload.selection?.selected || []);
+  const savedDispositions = payload.selection?.dispositions || {};
+  dispositions = new Map(Object.entries(savedDispositions));
   populateSources();
   saveStatus.textContent = payload.selection?.updatedAt
     ? `Loaded saved selection from ${payload.selection.updatedAt}`
@@ -208,13 +256,19 @@ for (const control of [searchInput, previewFilter, confidenceFilter, sourceFilte
 }
 
 selectVisibleButton.addEventListener("click", () => {
-  for (const candidate of visibleCandidates) selected.add(candidate.path);
+  for (const candidate of visibleCandidates) dispositions.set(candidate.path, "use");
+  saveStatus.textContent = "Unsaved changes";
+  render();
+});
+
+rejectVisibleButton.addEventListener("click", () => {
+  for (const candidate of visibleCandidates) dispositions.set(candidate.path, "reject");
   saveStatus.textContent = "Unsaved changes";
   render();
 });
 
 clearVisibleButton.addEventListener("click", () => {
-  for (const candidate of visibleCandidates) selected.delete(candidate.path);
+  for (const candidate of visibleCandidates) dispositions.delete(candidate.path);
   saveStatus.textContent = "Unsaved changes";
   render();
 });
@@ -223,8 +277,23 @@ saveButton.addEventListener("click", saveSelection);
 copyButton.addEventListener("click", copySelection);
 dialogSelect.addEventListener("click", () => {
   if (!activeCandidate) return;
-  if (selected.has(activeCandidate.path)) selected.delete(activeCandidate.path);
-  else selected.add(activeCandidate.path);
+  setDisposition(activeCandidate.path, "use");
+  syncDialogSelection();
+  saveStatus.textContent = "Unsaved changes";
+  render();
+});
+
+dialogReject.addEventListener("click", () => {
+  if (!activeCandidate) return;
+  setDisposition(activeCandidate.path, "reject");
+  syncDialogSelection();
+  saveStatus.textContent = "Unsaved changes";
+  render();
+});
+
+dialogDuplicate.addEventListener("click", () => {
+  if (!activeCandidate) return;
+  setDisposition(activeCandidate.path, "duplicate");
   syncDialogSelection();
   saveStatus.textContent = "Unsaved changes";
   render();
