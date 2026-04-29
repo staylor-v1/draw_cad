@@ -1,6 +1,7 @@
 # gemma4_agent
 
-`gemma4_agent` is a reusable subproject for a local Ollama-hosted Gemma 4 CAD roundtrip agent.
+`gemma4_agent` is a reusable subproject for a Gemma 4 CAD roundtrip agent that can run
+against either local Ollama or an OpenAI-compatible chat endpoint.
 
 See [`PLAN.md`](PLAN.md) for the GD&T agentic harness roadmap, including masking,
 annotation extraction, optional YOLO/Florence-2/Donut tools, view reasoning, feature
@@ -50,6 +51,25 @@ For a parseable orthographic SVG drawing, the agent can use deterministic candid
 ```bash
 .venv/bin/python -m gemma4_agent.cli roundtrip training_data/drawings_svg/56430_4f35ba2f_0002.svg
 ```
+
+## Run PI-style Iterative Improvement
+
+This runs a plan/implement/evaluate ("PI") loop over multiple drawings and stops once
+the target success-rate is reached or max iterations is hit.
+
+```bash
+.venv/bin/python -m gemma4_agent.cli improve \
+  training_data/gdt/flange1.png training_data/gdt/simple1.webp \
+  --max-iterations 4 \
+  --target-success-rate 0.85 \
+  --output-dir experiments/gemma4_agent/pi_loop
+```
+
+## OpenAI-Compatible Endpoint Mode
+
+Set `agent.api_compatibility: "openai"` and point `agent.base_url` to an
+OpenAI-compatible host (e.g. vLLM server URL ending before `/chat/completions`).
+Provide `OPENAI_API_KEY` or a `.openai_api_key` file in the repo root.
 
 ## Tool Instructions For Gemma
 
