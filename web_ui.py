@@ -32,6 +32,9 @@ GRABCAD_CANDIDATE_DIR = GRABCAD_REVIEW_DIR / "orthographic_2d_candidates"
 GRABCAD_EXTRACTION_MANIFEST = GRABCAD_REVIEW_DIR / "extraction_manifest.json"
 GRABCAD_SELECTION_JSON = GRABCAD_REVIEW_DIR / "selected_training_candidates.json"
 GRABCAD_SELECTION_TXT = GRABCAD_REVIEW_DIR / "selected_training_candidates.txt"
+GRABCAD_REVIEW_JSON = GRABCAD_REVIEW_DIR / "candidate_review_metadata.json"
+GRABCAD_REJECTED_TXT = GRABCAD_REVIEW_DIR / "rejected_training_candidates.txt"
+GRABCAD_DUPLICATE_TXT = GRABCAD_REVIEW_DIR / "duplicate_training_candidates.txt"
 GEMMA_MODELS = {"gemma4:26b", "gemma4:e4b"}
 ANALYSIS_STRATEGIES = {
     "tools_only",
@@ -178,21 +181,50 @@ class DashboardHandler(SimpleHTTPRequestHandler):
         except json.JSONDecodeError:
             self._send_json({"error": "Expected a JSON selection payload."}, HTTPStatus.BAD_REQUEST)
             return
+        dispositions = payload.get("dispositions")
         selected = payload.get("selected")
-        if not isinstance(selected, list):
-            self._send_json({"error": "Expected selected to be a list of candidate paths."}, HTTPStatus.BAD_REQUEST)
+        if dispositions is None and not isinstance(selected, list):
+            self._send_json(
+                {"error": "Expected dispositions or a selected list of candidate paths."},
+                HTTPStatus.BAD_REQUEST,
+            )
             return
-        known = {candidate["path"] for candidate in _load_training_candidates()}
-        cleaned = sorted({path for path in selected if isinstance(path, str) and path in known})
+        candidates = _load_training_candidates()
+        known = {candidate["path"]: candidate for candidate in candidates}
+        if isinstance(dispositions, dict):
+            cleaned_dispositions = {
+                path: value
+                for path, value in dispositions.items()
+                if isinstance(path, str) and path in known and value in {"use", "reject", "duplicate"}
+            }
+        else:
+            cleaned_dispositions = {
+                path: "use" for path in selected if isinstance(path, str) and path in known
+            }
+        records = [
+            _candidate_review_record(known[path], disposition)
+            for path, disposition in sorted(cleaned_dispositions.items())
+        ]
+        selected_paths = [record["path"] for record in records if record["disposition"] == "use"]
+        rejected_paths = [record["path"] for record in records if record["disposition"] == "reject"]
+        duplicate_paths = [record["path"] for record in records if record["disposition"] == "duplicate"]
         GRABCAD_REVIEW_DIR.mkdir(parents=True, exist_ok=True)
-        payload = {
-            "selected": cleaned,
-            "count": len(cleaned),
+        response_payload = {
+            "selected": selected_paths,
+            "rejected": rejected_paths,
+            "duplicates": duplicate_paths,
+            "dispositions": cleaned_dispositions,
+            "records": records,
+            "count": len(selected_paths),
+            "reviewedCount": len(records),
             "updatedAt": _utc_timestamp(),
         }
-        GRABCAD_SELECTION_JSON.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-        GRABCAD_SELECTION_TXT.write_text("\n".join(cleaned) + ("\n" if cleaned else ""), encoding="utf-8")
-        self._send_json(payload)
+        GRABCAD_SELECTION_JSON.write_text(json.dumps(response_payload, indent=2) + "\n", encoding="utf-8")
+        GRABCAD_REVIEW_JSON.write_text(json.dumps(response_payload, indent=2) + "\n", encoding="utf-8")
+        GRABCAD_SELECTION_TXT.write_text("\n".join(selected_paths) + ("\n" if selected_paths else ""), encoding="utf-8")
+        GRABCAD_REJECTED_TXT.write_text("\n".join(rejected_paths) + ("\n" if rejected_paths else ""), encoding="utf-8")
+        GRABCAD_DUPLICATE_TXT.write_text("\n".join(duplicate_paths) + ("\n" if duplicate_paths else ""), encoding="utf-8")
+        self._send_json(response_payload)
 
     def _send_json(self, payload: dict, status: HTTPStatus = HTTPStatus.OK) -> None:
         body = json.dumps(payload, indent=2).encode("utf-8")
@@ -236,6 +268,8 @@ def _load_training_candidates() -> list[dict]:
             manifest = json.loads(GRABCAD_EXTRACTION_MANIFEST.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
             manifest = {}
+    source_urls = _load_grabcad_source_urls()
+    dispositions = _load_training_selection().get("dispositions", {})
 
     manifest_candidates = manifest.get("candidates") or []
     if manifest_candidates:
@@ -253,12 +287,14 @@ def _load_training_candidates() -> list[dict]:
                     "url": f"/training-candidates/{local_path.name}",
                     "sourceArchive": item.get("source_archive"),
                     "modelSlug": item.get("model_slug"),
+                    "sourceUrl": item.get("source_url") or source_urls.get(item.get("model_slug", "")),
                     "originalMember": item.get("original_member"),
                     "extension": extension,
                     "sizeBytes": item.get("size_bytes", local_path.stat().st_size),
                     "confidence": item.get("confidence", "unrated"),
                     "notes": item.get("notes", []),
                     "previewKind": _candidate_preview_kind(extension),
+                    "disposition": dispositions.get(relative_path, "unreviewed"),
                 }
             )
         return sorted(candidates, key=lambda item: (item["modelSlug"] or "", item["name"]))
@@ -275,15 +311,32 @@ def _load_training_candidates() -> list[dict]:
                 "url": f"/training-candidates/{local_path.name}",
                 "sourceArchive": None,
                 "modelSlug": local_path.name.split("__", 1)[0],
+                "sourceUrl": source_urls.get(local_path.name.split("__", 1)[0]),
                 "originalMember": local_path.name,
                 "extension": extension,
                 "sizeBytes": local_path.stat().st_size,
                 "confidence": "unrated",
                 "notes": [],
                 "previewKind": _candidate_preview_kind(extension),
+                "disposition": dispositions.get(str(local_path.relative_to(ROOT)), "unreviewed"),
             }
         )
     return candidates
+
+
+def _load_grabcad_source_urls() -> dict[str, str]:
+    manifest_path = GRABCAD_REVIEW_DIR / "manifest.json"
+    if not manifest_path.exists():
+        return {}
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
+    return {
+        model.get("slug"): model.get("url")
+        for model in manifest.get("models", [])
+        if model.get("slug") and model.get("url")
+    }
 
 
 def _candidate_preview_kind(extension: str) -> str:
@@ -296,16 +349,70 @@ def _candidate_preview_kind(extension: str) -> str:
 
 def _load_training_selection() -> dict:
     if not GRABCAD_SELECTION_JSON.exists():
-        return {"selected": [], "count": 0, "updatedAt": None}
+        return {
+            "selected": [],
+            "rejected": [],
+            "duplicates": [],
+            "dispositions": {},
+            "records": [],
+            "count": 0,
+            "reviewedCount": 0,
+            "updatedAt": None,
+        }
     try:
         selection = json.loads(GRABCAD_SELECTION_JSON.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
-        return {"selected": [], "count": 0, "updatedAt": None}
+        return {
+            "selected": [],
+            "rejected": [],
+            "duplicates": [],
+            "dispositions": {},
+            "records": [],
+            "count": 0,
+            "reviewedCount": 0,
+            "updatedAt": None,
+        }
     selected = [path for path in selection.get("selected", []) if isinstance(path, str)]
+    rejected = [path for path in selection.get("rejected", []) if isinstance(path, str)]
+    duplicates = [path for path in selection.get("duplicates", []) if isinstance(path, str)]
+    raw_dispositions = selection.get("dispositions")
+    if isinstance(raw_dispositions, dict):
+        dispositions = {
+            path: value
+            for path, value in raw_dispositions.items()
+            if isinstance(path, str) and value in {"use", "reject", "duplicate"}
+        }
+    else:
+        dispositions = {path: "use" for path in selected}
+        dispositions.update({path: "reject" for path in rejected})
+        dispositions.update({path: "duplicate" for path in duplicates})
+    records = selection.get("records") if isinstance(selection.get("records"), list) else []
     return {
         "selected": selected,
+        "rejected": rejected,
+        "duplicates": duplicates,
+        "dispositions": dispositions,
+        "records": records,
         "count": len(selected),
+        "reviewedCount": len(dispositions),
         "updatedAt": selection.get("updatedAt"),
+    }
+
+
+def _candidate_review_record(candidate: dict, disposition: str) -> dict:
+    return {
+        "filename": candidate["name"],
+        "path": candidate["path"],
+        "sourceUrl": candidate.get("sourceUrl"),
+        "sourceArchive": candidate.get("sourceArchive"),
+        "modelSlug": candidate.get("modelSlug"),
+        "originalMember": candidate.get("originalMember"),
+        "extension": candidate.get("extension"),
+        "sizeBytes": candidate.get("sizeBytes"),
+        "confidence": candidate.get("confidence"),
+        "previewKind": candidate.get("previewKind"),
+        "disposition": disposition,
+        "notes": candidate.get("notes", []),
     }
 
 

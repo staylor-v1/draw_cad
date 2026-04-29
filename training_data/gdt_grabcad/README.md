@@ -9,6 +9,7 @@ Collected through a user-authenticated temporary Chrome session. GrabCAD project
 - Seeded source URLs: `seed_urls.txt`
 - Extracted 2D candidates: `orthographic_2d_candidates/`
 - Extraction manifest: `extraction_manifest.json`
+- Review metadata: `candidate_review_metadata.json`
 - Manual queue / source summary: `orthographic_download_queue.txt`
 
 The collector prioritizes 2D orthographic drawing assets such as PDF, DWG, DXF, IDW, SLDDRW, DRW, and raster drawing sheets. Full project archives may include 3D CAD files; downstream extraction should keep only drawing-sheet candidates for the GD&T segmentation corpus.
@@ -22,6 +23,23 @@ The collector prioritizes 2D orthographic drawing assets such as PDF, DWG, DXF, 
 - 12 candidates are medium-confidence raster drawings that need visual review.
 
 Pages with no visible 2D drawing filenames were left in the manifest but skipped for archive download. Some projects may still contain drawings hidden inside folders, so those are worth revisiting manually later if we want maximum coverage.
+
+## Review Dispositions
+
+The dashboard review helper at `/training-review` saves one disposition per candidate:
+
+- `use`: keep this file for model training.
+- `reject`: exclude this file; use it as negative feedback for future source/file filtering.
+- `duplicate`: exclude this file from training but keep it tied to the source as a duplicate example.
+- unreviewed files remain available but are not training-ready.
+
+Saved metadata includes filename, extracted path, source URL, source archive, original archive member, file extension, confidence, and disposition. The extractor preserves that metadata in `extraction_manifest.json` and writes path lists:
+
+- `selected_training_candidates.txt`
+- `rejected_training_candidates.txt`
+- `duplicate_training_candidates.txt`
+
+This gives future download/extraction passes concrete negative examples so image-heavy GrabCAD projects can be filtered more aggressively instead of treating every raster image as a useful drawing.
 
 ## Reproduction
 
