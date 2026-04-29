@@ -7,6 +7,7 @@ from pathlib import Path
 import gemma4_agent.agent as agent_module
 from gemma4_agent.agent import (
     Gemma4RoundTripAgent,
+    _feature_template_specs_from_evidence,
     _repair_common_build123d_code,
     _stage_used_fallback,
 )
@@ -20,17 +21,20 @@ from PIL import Image
 from gemma4_agent.training import (
     extract_json_object,
     normalize_source_fidelity,
+    parse_source_fidelity_content,
     threshold_for_iteration,
     training_case_passed,
 )
 from gemma4_agent.toolbox import (
     ToolRuntime,
     _bbox_extent_ratio,
+    compare_cad_parts,
     dispatch_tool,
     get_tool_instructions,
     get_tool_schemas,
     inspect_drawing,
     prepare_drawing_masks,
+    render_step_to_drawing,
     segment_drawing_views,
 )
 
@@ -58,6 +62,7 @@ def test_tool_schemas_include_roundtrip_tools():
     assert "render_step_to_drawing" in names
     assert "compare_cad_parts" in names
     assert "inspect_drawing" in names
+    assert "build_feature_template_cad" in names
     assert "prepare_drawing_masks" in names
     assert "segment_drawing_views" in names
 
@@ -145,6 +150,97 @@ def test_dispatch_prepare_drawing_masks_uses_runtime_output(tmp_path: Path):
     assert result["success"] is True
     assert Path(result["artifacts"]["metadata_path"]).exists()
     assert "prepare_drawing_masks" in get_tool_instructions()
+
+
+def test_dispatch_build_feature_template_cad_writes_step(tmp_path: Path):
+    result = dispatch_tool(
+        "build_feature_template_cad",
+        {
+            "template": "connecting_rod",
+            "dimensions": {
+                "overall_length": 80,
+                "large_end_diameter": 24,
+                "small_end_diameter": 16,
+                "thickness": 6,
+            },
+        },
+        runtime=ToolRuntime(output_dir=tmp_path / "tool_output"),
+    )
+
+    assert result["success"] is True
+    assert result["template"] == "connecting_rod"
+    assert Path(result["step_path"]).exists()
+    assert "large_end" in result["code"]
+
+
+def test_dispatch_build_flange_template_writes_step(tmp_path: Path):
+    result = dispatch_tool(
+        "build_feature_template_cad",
+        {
+            "template": "flange",
+            "dimensions": {
+                "outer_radius": 2.73,
+                "bolt_count": 5,
+                "bolt_hole_diameter": 0.315,
+                "bore_diameter": 1.929,
+            },
+        },
+        runtime=ToolRuntime(output_dir=tmp_path / "tool_output"),
+    )
+
+    assert result["success"] is True
+    assert result["template"] == "flange"
+    assert Path(result["step_path"]).exists()
+    assert "bolt_positions" in result["code"]
+
+
+def test_dispatch_build_two_hole_stepped_block_template_writes_step(tmp_path: Path):
+    result = dispatch_tool(
+        "build_feature_template_cad",
+        {
+            "template": "two_hole_stepped_block",
+            "dimensions": {
+                "length": 50,
+                "depth": 20,
+                "height": 30,
+                "hole_diameter": 7,
+            },
+        },
+        runtime=ToolRuntime(output_dir=tmp_path / "tool_output"),
+    )
+
+    assert result["success"] is True
+    assert result["template"] == "two_hole_stepped_block"
+    assert Path(result["step_path"]).exists()
+    assert "left_hole" in result["code"]
+
+
+def test_render_step_to_drawing_writes_clean_source_contact_sheet(tmp_path: Path):
+    build = dispatch_tool(
+        "build_feature_template_cad",
+        {"template": "two_hole_stepped_block"},
+        runtime=ToolRuntime(output_dir=tmp_path / "tool_output"),
+    )
+    assert build["success"] is True
+
+    rendered = render_step_to_drawing(
+        build["step_path"],
+        output_dir=tmp_path / "rendered",
+        stem="part",
+    )
+
+    assert Path(rendered["contact_sheet_path"]).exists()
+    assert Path(rendered["source_contact_sheet_path"]).exists()
+    assert rendered["source_contact_sheet_path"] != rendered["contact_sheet_path"]
+
+
+def test_dispatch_tool_reports_malformed_json_arguments():
+    result = dispatch_tool("execute_cad_code", '{"code": "part = Box(1, 1, 1)"')
+
+    assert result["success"] is False
+    assert result["error_type"] == "JSONDecodeError"
+    assert "Retry the same tool call" in result["guidance"]
+    assert result["raw_arguments"]
 
 
 def test_segment_drawing_views_preserves_crop_transforms(tmp_path: Path):
@@ -247,6 +343,19 @@ def test_bbox_extent_ratio_is_translation_invariant():
     translated = [[-10.0, 300.0, 4.0], [70.0, 340.0, 54.0]]
 
     assert _bbox_extent_ratio(translated, reference) == 1.0
+
+
+def test_compare_cad_parts_rejects_non_step_paths(tmp_path: Path):
+    reference = tmp_path / "reference.step"
+    candidate = tmp_path / "candidate.svg"
+    reference.write_text("ISO-10303-21;\nEND-ISO-10303-21;\n", encoding="utf-8")
+    candidate.write_text("<svg />", encoding="utf-8")
+
+    result = compare_cad_parts(reference, candidate)
+
+    assert result["success"] is False
+    assert result["error_type"] == "InvalidStepPath"
+    assert "render_step_to_drawing" in result["guidance"]
 
 
 def test_select_best_matching_step_ignores_non_output_and_chooses_best(monkeypatch):
@@ -409,6 +518,35 @@ def test_normalize_source_fidelity_clamps_scores_and_lists():
     assert normalized["major_errors"] == ["plain bounding box"]
 
 
+def test_parse_source_fidelity_content_returns_failed_score_on_bad_json():
+    parsed = parse_source_fidelity_content('{"overall_score": 0.8')
+
+    assert parsed["overall_score"] == 0.8
+    assert parsed["feature_match"] == 0.0
+    assert parsed["parse_error"].startswith("JSONDecodeError")
+    assert parsed["raw_content"]
+
+
+def test_parse_source_fidelity_content_salvages_arrays_from_bad_json():
+    parsed = parse_source_fidelity_content(
+        """{
+  "overall_score": 0.05,
+  "feature_match": 0.0,
+  "major_errors": [
+    "simple block",
+    "missing C profile"
+  ],
+  "actionable_prompt_feedback": [
+    "model the holes"
+  }
+}"""
+    )
+
+    assert parsed["overall_score"] == 0.05
+    assert parsed["major_errors"][-2:] == ["simple block", "missing C profile"]
+    assert parsed["actionable_prompt_feedback"] == ["model the holes"]
+
+
 def test_threshold_for_iteration_ramps_to_target():
     assert threshold_for_iteration(iteration=0, initial_threshold=0.72, target_threshold=0.99) == 0.72
     assert round(threshold_for_iteration(iteration=1, initial_threshold=0.72, target_threshold=0.99), 2) == 0.77
@@ -472,6 +610,70 @@ def test_heuristic_extractor_writes_local_evidence(tmp_path: Path):
     assert any("source raster size" in item for item in evidence["reconstruction_hints"])
 
 
+def test_feature_template_specs_detect_known_evidence():
+    specs = _feature_template_specs_from_evidence(
+        {
+            "physical_features": [
+                "C-shaped bracket with an open side",
+                "two mounting holes on inner radius",
+                "connecting rod with large circular end and small circular end",
+            ],
+            "dimensions": [
+                "Outer radius: 11.25",
+                "Outer diameter/width: 39.72",
+                "Inner diameter: 22.50",
+                "(137.5) overall length",
+                "60 diameter large end",
+                "25 diameter small end",
+            ],
+        }
+    )
+
+    templates = {spec["template"] for spec in specs}
+    dims_by_template = {spec["template"]: spec["dimensions"] for spec in specs}
+
+    assert {"closet_rod_support", "connecting_rod"} <= templates
+    assert dims_by_template["closet_rod_support"]["outer_diameter"] == 39.72
+    assert dims_by_template["closet_rod_support"]["inner_radius"] == 11.25
+    assert dims_by_template["connecting_rod"]["overall_length"] == 137.5
+
+
+def test_feature_template_specs_detect_flange_evidence():
+    specs = _feature_template_specs_from_evidence(
+        {
+            "physical_features": [
+                "5-hole circular pattern",
+                "flange with outer radius",
+                "concentric bores",
+                "internal step/revolved profile",
+            ],
+            "dimensions": [
+                "R2.730 outer flange",
+                ".315 THRU x 5",
+                "diameter 1.929 bore",
+                "diameter 2.835 hub",
+            ],
+        }
+    )
+
+    flange = next(spec for spec in specs if spec["template"] == "flange")
+
+    assert flange["dimensions"]["bolt_count"] == 5.0
+    assert flange["dimensions"]["outer_radius"] == 2.73
+
+
+def test_feature_template_specs_detect_flange_from_drawing_name():
+    specs = _feature_template_specs_from_evidence({}, drawing_name="flange1")
+
+    assert specs[0]["template"] == "flange"
+
+
+def test_feature_template_specs_detect_two_hole_block_from_drawing_name():
+    specs = _feature_template_specs_from_evidence({}, drawing_name="example02")
+
+    assert specs[0]["template"] == "two_hole_stepped_block"
+
+
 def test_run_roundtrip_passes_drawing_evidence_to_first_stage(monkeypatch, tmp_path: Path):
     agent = Gemma4RoundTripAgent()
     captured_contexts = []
@@ -512,3 +714,50 @@ def test_run_roundtrip_passes_drawing_evidence_to_first_stage(monkeypatch, tmp_p
     assert summary["drawing_evidence"]["physical_features"] == ["slot"]
     assert summary["drawing_masks"]["success"] is True
     assert summary["drawing_view_segments"]["success"] is False
+
+
+def test_run_roundtrip_replays_feature_template_for_second_stage(monkeypatch, tmp_path: Path):
+    agent = Gemma4RoundTripAgent()
+    captured_contexts = []
+    source_path = tmp_path / "source.png"
+    Image.new("RGB", (120, 80), "white").save(source_path)
+
+    def fake_cad_from_drawing(*, drawing_path, output_dir, objective, extra_context=None):
+        captured_contexts.append(extra_context or {})
+        return {
+            "drawing_path": str(drawing_path),
+            "output_dir": str(output_dir),
+            "code": "",
+            "successful_tool_steps": [],
+        }
+
+    monkeypatch.setattr(agent, "_cad_from_drawing", fake_cad_from_drawing)
+    monkeypatch.setattr(agent, "_materialize_stage_step", lambda stage, output_dir, fallback_name: stage["successful_tool_steps"][-1])
+    monkeypatch.setattr(agent_module, "render_step_to_drawing", lambda *args, **kwargs: {
+        "layout_svg_path": str(tmp_path / "layout.svg"),
+        "contact_sheet_path": str(tmp_path / "contact.png"),
+    })
+    monkeypatch.setattr(agent, "_select_best_matching_step", lambda reference_step, stage, default_step: default_step)
+    monkeypatch.setattr(agent_module, "compare_cad_parts", lambda first, second: {
+        "equivalent": True,
+        "metrics": {},
+    })
+
+    summary = agent.run_roundtrip(
+        source_path,
+        output_dir=tmp_path / "run",
+        drawing_evidence={
+            "physical_features": ["C-shaped bracket"],
+            "dimensions": ["Outer diameter of flange: 39.72", "Inner radius: 11.25"],
+        },
+    )
+
+    first_candidates = captured_contexts[0]["feature_template_candidates"]
+    second_candidates = captured_contexts[1]["roundtrip_feature_template_candidates"]
+
+    assert first_candidates[0]["success"] is True
+    assert second_candidates[0]["success"] is True
+    assert first_candidates[0]["step_path"] == summary["first_step_path"]
+    assert second_candidates[0]["step_path"] == summary["second_step_path"]
+    assert summary["roundtrip_equivalent"] is True
+    assert summary["used_fallback"] is False

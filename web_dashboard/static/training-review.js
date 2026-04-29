@@ -141,7 +141,13 @@ function openCandidate(candidate) {
   else dialog.setAttribute("open", "");
 }
 
-function render() {
+function restoreScrollPosition(x, y) {
+  window.scrollTo(x, y);
+  requestAnimationFrame(() => window.scrollTo(x, y));
+}
+
+function render({ preserveScroll = false } = {}) {
+  const scrollPosition = preserveScroll ? { x: window.scrollX, y: window.scrollY } : null;
   grid.replaceChildren();
   visibleCandidates = candidates.filter(candidateMatches);
   for (const candidate of visibleCandidates) {
@@ -177,14 +183,14 @@ function render() {
         setDisposition(candidate.path, checkbox.dataset.disposition);
         updateCounts();
         saveStatus.textContent = "Unsaved changes";
-        render();
+        render({ preserveScroll: true });
       });
     }
     node.addEventListener("dblclick", (event) => {
       if (event.target.closest("input, iframe")) return;
       setDisposition(candidate.path, "use");
       saveStatus.textContent = "Unsaved changes";
-      render();
+      render({ preserveScroll: true });
     });
     node.addEventListener("click", (event) => {
       if (event.target.closest("input, iframe")) return;
@@ -193,6 +199,7 @@ function render() {
     grid.appendChild(node);
   }
   updateCounts();
+  if (scrollPosition) restoreScrollPosition(scrollPosition.x, scrollPosition.y);
 }
 
 function makeTag(label, className = "") {
@@ -258,19 +265,19 @@ for (const control of [searchInput, previewFilter, confidenceFilter, sourceFilte
 selectVisibleButton.addEventListener("click", () => {
   for (const candidate of visibleCandidates) dispositions.set(candidate.path, "use");
   saveStatus.textContent = "Unsaved changes";
-  render();
+  render({ preserveScroll: true });
 });
 
 rejectVisibleButton.addEventListener("click", () => {
   for (const candidate of visibleCandidates) dispositions.set(candidate.path, "reject");
   saveStatus.textContent = "Unsaved changes";
-  render();
+  render({ preserveScroll: true });
 });
 
 clearVisibleButton.addEventListener("click", () => {
   for (const candidate of visibleCandidates) dispositions.delete(candidate.path);
   saveStatus.textContent = "Unsaved changes";
-  render();
+  render({ preserveScroll: true });
 });
 
 saveButton.addEventListener("click", saveSelection);
@@ -280,7 +287,7 @@ dialogSelect.addEventListener("click", () => {
   setDisposition(activeCandidate.path, "use");
   syncDialogSelection();
   saveStatus.textContent = "Unsaved changes";
-  render();
+  render({ preserveScroll: true });
 });
 
 dialogReject.addEventListener("click", () => {
@@ -288,7 +295,7 @@ dialogReject.addEventListener("click", () => {
   setDisposition(activeCandidate.path, "reject");
   syncDialogSelection();
   saveStatus.textContent = "Unsaved changes";
-  render();
+  render({ preserveScroll: true });
 });
 
 dialogDuplicate.addEventListener("click", () => {
@@ -296,7 +303,7 @@ dialogDuplicate.addEventListener("click", () => {
   setDisposition(activeCandidate.path, "duplicate");
   syncDialogSelection();
   saveStatus.textContent = "Unsaved changes";
-  render();
+  render({ preserveScroll: true });
 });
 
 dialog.addEventListener("click", (event) => {

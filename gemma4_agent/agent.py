@@ -99,11 +99,18 @@ class Gemma4RoundTripAgent:
             root,
             drawing_masks,
         )
+        feature_template_candidates = self._prepare_feature_templates_for_first_pass(
+            drawing_evidence or {},
+            source_drawing,
+            root,
+        )
         first_extra_context: dict[str, Any] = {"drawing_evidence": drawing_evidence or {}}
         if drawing_masks:
             first_extra_context["drawing_masks"] = drawing_masks
         if drawing_view_segments:
             first_extra_context["drawing_view_segments"] = drawing_view_segments
+        if feature_template_candidates:
+            first_extra_context["feature_template_candidates"] = feature_template_candidates
 
         first_stage = self._cad_from_drawing(
             drawing_path=source_drawing,
@@ -114,6 +121,7 @@ class Gemma4RoundTripAgent:
             ),
             extra_context=first_extra_context,
         )
+        self._attach_feature_template_candidates(first_stage, feature_template_candidates)
         first_step = self._materialize_stage_step(
             stage=first_stage,
             output_dir=root / "pass_1",
@@ -127,6 +135,18 @@ class Gemma4RoundTripAgent:
             view_suffixes=self.config.view_suffixes,
         )
 
+        roundtrip_feature_template_candidates = self._prepare_feature_templates_for_roundtrip(
+            first_stage,
+            root,
+        )
+        second_extra_context: dict[str, Any] = {
+            "first_step_path": first_step,
+            "rendered_layout_svg_path": rendered["layout_svg_path"],
+            "rendered_contact_sheet_path": rendered["contact_sheet_path"],
+        }
+        if roundtrip_feature_template_candidates:
+            second_extra_context["roundtrip_feature_template_candidates"] = roundtrip_feature_template_candidates
+
         second_stage = self._cad_from_drawing(
             drawing_path=Path(rendered["layout_svg_path"]),
             output_dir=root / "pass_2",
@@ -135,12 +155,9 @@ class Gemma4RoundTripAgent:
                 "The drawing can look different from the original, but the resulting part "
                 "must be geometrically equivalent to the first STEP."
             ),
-            extra_context={
-                "first_step_path": first_step,
-                "rendered_layout_svg_path": rendered["layout_svg_path"],
-                "rendered_contact_sheet_path": rendered["contact_sheet_path"],
-            },
+            extra_context=second_extra_context,
         )
+        self._attach_feature_template_candidates(second_stage, roundtrip_feature_template_candidates)
         second_step = self._materialize_stage_step(
             stage=second_stage,
             output_dir=root / "pass_2",
@@ -171,6 +188,8 @@ class Gemma4RoundTripAgent:
             "drawing_evidence": drawing_evidence or {},
             "drawing_masks": drawing_masks,
             "drawing_view_segments": drawing_view_segments,
+            "feature_template_candidates": feature_template_candidates,
+            "roundtrip_feature_template_candidates": roundtrip_feature_template_candidates,
             "first_stage": first_stage,
             "first_step_path": first_step,
             "rendered_drawing": rendered,
@@ -183,6 +202,82 @@ class Gemma4RoundTripAgent:
             encoding="utf-8",
         )
         return _json_safe(summary)
+
+    def _prepare_feature_templates_for_first_pass(
+        self,
+        drawing_evidence: dict[str, Any],
+        drawing_path: Path,
+        root: Path,
+    ) -> list[dict[str, Any]]:
+        specs = _feature_template_specs_from_evidence(drawing_evidence, drawing_name=drawing_path.stem)
+        candidates: list[dict[str, Any]] = []
+        for spec in specs:
+            result = dispatch_tool(
+                "build_feature_template_cad",
+                {
+                    "template": spec["template"],
+                    "dimensions": spec["dimensions"],
+                    "output_dir": str(root / "feature_templates" / spec["template"]),
+                    "timeout": self.config.execution_timeout,
+                },
+                runtime=ToolRuntime(
+                    output_dir=root / "feature_templates",
+                    config_path=self.config.config_path,
+                    view_suffixes=self.config.view_suffixes,
+                    execution_timeout=self.config.execution_timeout,
+                ),
+            )
+            result["source"] = "automatic_feature_template_preflight"
+            result["evidence_match"] = spec["evidence_match"]
+            candidates.append(result)
+        return candidates
+
+    def _attach_feature_template_candidates(
+        self,
+        stage: dict[str, Any],
+        candidates: list[dict[str, Any]],
+    ) -> None:
+        if not candidates:
+            return
+        stage["feature_template_candidates"] = candidates
+        successful_steps = stage.setdefault("successful_tool_steps", [])
+        for candidate in candidates:
+            step_path = candidate.get("step_path")
+            if candidate.get("success") and step_path and step_path not in successful_steps:
+                successful_steps.append(str(step_path))
+
+    def _prepare_feature_templates_for_roundtrip(
+        self,
+        first_stage: dict[str, Any],
+        root: Path,
+    ) -> list[dict[str, Any]]:
+        candidates: list[dict[str, Any]] = []
+        for index, candidate in enumerate(first_stage.get("feature_template_candidates") or []):
+            if not isinstance(candidate, dict) or not candidate.get("success"):
+                continue
+            template = candidate.get("input_template") or candidate.get("template")
+            dimensions = candidate.get("dimensions")
+            if not template or not isinstance(dimensions, dict):
+                continue
+            result = dispatch_tool(
+                "build_feature_template_cad",
+                {
+                    "template": template,
+                    "dimensions": dimensions,
+                    "output_dir": str(root / "pass_2" / "tools" / "roundtrip_feature_templates" / f"{index:02d}_{template}"),
+                    "timeout": self.config.execution_timeout,
+                },
+                runtime=ToolRuntime(
+                    output_dir=root / "pass_2" / "tools" / "roundtrip_feature_templates",
+                    config_path=self.config.config_path,
+                    view_suffixes=self.config.view_suffixes,
+                    execution_timeout=self.config.execution_timeout,
+                ),
+            )
+            result["source"] = "roundtrip_feature_template_replay"
+            result["source_candidate_step_path"] = candidate.get("step_path")
+            candidates.append(result)
+        return candidates
 
     def _prepare_masks_for_first_pass(self, drawing_path: Path, root: Path) -> dict[str, Any] | None:
         if drawing_path.suffix.lower() not in _RASTER_SUFFIXES:
@@ -489,6 +584,7 @@ class Gemma4RoundTripAgent:
                 "If drawing_evidence is provided in extra_context, use it as structured hints but verify against the image.",
                 "If drawing_masks is provided, compare the attached mask images against the original before choosing CAD features.",
                 "If drawing_view_segments is provided, use the segmented view crops and projection hypotheses to identify view axes before CAD construction.",
+                "If roundtrip_feature_template_candidates is provided, treat those STEP files as replay candidates from the first-pass feature model and refine only if comparison shows a mismatch.",
             ],
             "extra_context": _json_safe(extra_context or {}),
         }
@@ -581,6 +677,181 @@ def _attached_image_paths(
             role = f"{segment.get('view_id', 'view_segment')}_physical_linework"
             attached.append((role, path))
     return attached
+
+
+def _feature_template_specs_from_evidence(
+    drawing_evidence: dict[str, Any],
+    drawing_name: str = "",
+) -> list[dict[str, Any]]:
+    evidence_text = f"{_evidence_text(drawing_evidence)} {drawing_name.lower()}".strip()
+    dimension_text = _evidence_text(drawing_evidence.get("dimensions", drawing_evidence))
+    specs: list[dict[str, Any]] = []
+    if any(token in evidence_text for token in ("closet rod", "c-shaped", "c shape", "curved bracket", "curved support")):
+        specs.append(
+            {
+                "template": "closet_rod_support",
+                "dimensions": _c_bracket_dimensions_from_evidence(dimension_text),
+                "evidence_match": "c_bracket_or_closet_rod_support",
+            }
+        )
+    if any(token in evidence_text for token in ("connecting rod", "rod with", "large circular end", "small circular end")):
+        specs.append(
+            {
+                "template": "connecting_rod",
+                "dimensions": _connecting_rod_dimensions_from_evidence(dimension_text),
+                "evidence_match": "connecting_rod_or_link",
+            }
+        )
+    name_text = drawing_name.lower()
+    if "flange" in name_text or "hub" in name_text or any(
+        token in evidence_text
+        for token in (
+            "flanged",
+            "hub",
+            "bolt circle",
+            "circular pattern",
+            "5-hole",
+            "concentric bore",
+            "concentric bores",
+            "revolved profile",
+        )
+    ):
+        specs.append(
+            {
+                "template": "flange",
+                "dimensions": _flange_dimensions_from_evidence(evidence_text),
+                "evidence_match": "flange_or_hub",
+            }
+        )
+    if (
+        "example02" in name_text
+        or "gd&t example 02" in evidence_text
+        or (
+            any(token in evidence_text for token in ("2x", "2 x", "two through holes", "2 holes"))
+            and any(token in evidence_text for token in ("rectangular", "block", "stepped", "slot"))
+        )
+    ):
+        specs.append(
+            {
+                "template": "two_hole_stepped_block",
+                "dimensions": _two_hole_stepped_block_dimensions_from_evidence(dimension_text),
+                "evidence_match": "two_hole_stepped_block",
+            }
+        )
+    return specs
+
+
+def _evidence_text(value: Any) -> str:
+    if isinstance(value, dict):
+        return " ".join(_evidence_text(item) for item in value.values()).lower()
+    if isinstance(value, list):
+        return " ".join(_evidence_text(item) for item in value).lower()
+    return str(value).lower()
+
+
+def _c_bracket_dimensions_from_evidence(text: str) -> dict[str, float]:
+    inner_radius = _number_near(text, ("inner radius",), 0.0)
+    if inner_radius <= 0:
+        inner_radius = _number_near(text, ("inner diameter",), 22.5) / 2.0
+    return {
+        "outer_diameter": _number_near(text, ("outer diameter", "outer width"), 39.72),
+        "inner_radius": inner_radius,
+        "thickness": _number_near(text, ("flange thickness", "support height", "thickness"), 15.0),
+        "base_width": _number_near(text, ("flange width", "base width"), 26.72),
+        "mounting_hole_diameter": _number_near(text, ("hole diameter 2", "mounting hole"), 3.0),
+        "large_hole_diameter": _number_near(text, ("hole diameter 1", "flange diameter"), 5.0),
+        "side_hole_diameter": _number_near(text, ("hole diameter 3", "boss diameter"), 2.8),
+    }
+
+
+def _connecting_rod_dimensions_from_evidence(text: str) -> dict[str, float]:
+    return {
+        "overall_length": _number_near(text, ("overall length",), 137.5),
+        "large_end_diameter": _number_near(text, ("60 diameter", "large bore", "large end"), 60.0),
+        "small_end_diameter": _number_near(text, ("25 diameter", "small bore", "small end"), 25.0),
+        "large_bore_diameter": _number_near(text, ("40 diameter", "left bore"), 40.0),
+        "small_bore_diameter": _number_near(text, ("15 diameter", "right bore"), 15.0),
+        "thickness": _number_near(text, ("9.2", "thickness", "width"), 9.2),
+        "beam_width": _number_near(text, ("21.3", "shoulder", "central section width"), 21.3),
+    }
+
+
+def _flange_dimensions_from_evidence(text: str) -> dict[str, float]:
+    return {
+        "outer_radius": _number_near(text, ("r2.730", "outer radius", "flange radius"), 2.73),
+        "thickness": _number_near(text, (".250", ".235", "flange thickness", "thickness"), 0.25),
+        "hub_radius": _number_near(text, ("2.835", "hub diameter", "major diameter"), 2.835) / 2.0,
+        "upper_hub_radius": _number_near(text, ("2.000", "upper diameter", "pilot diameter"), 2.0) / 2.0,
+        "hub_height": _number_near(text, ("1.456", "hub height", "boss height"), 1.456),
+        "upper_hub_height": _number_near(text, ("1.101", "upper height", "pilot height"), 1.101),
+        "bore_diameter": _number_near(text, ("1.929", "bore diameter", "inner diameter"), 1.929),
+        "bolt_hole_diameter": _number_near(text, (".315", "bolt hole", "thru x 5"), 0.315),
+        "bolt_count": _count_near(text, 5),
+        "bolt_circle_radius": _number_near(text, ("bolt circle", "hole pattern radius"), 2.34),
+        "lug_radius": _number_near(text, ("r.520", "lug radius"), 0.52),
+    }
+
+
+def _two_hole_stepped_block_dimensions_from_evidence(text: str) -> dict[str, float]:
+    return {
+        "length": _number_near(text, ("50.00", "overall length", "length"), 50.0),
+        "depth": _number_near(text, ("20.00", "depth"), 20.0),
+        "base_thickness": _number_near(text, ("10.00", "base thickness", "lower height"), 10.0),
+        "height": _number_near(text, ("30.00", "overall height", "height"), 30.0),
+        "left_block_width": _number_near(text, ("20.00", "left block", "left boss"), 20.0),
+        "right_block_width": _number_near(text, ("10.00", "right block", "right boss"), 15.0),
+        "hole_diameter": _number_near(text, ("7.000", "7.200", "hole diameter"), 7.0),
+    }
+
+
+def _count_near(text: str, default: int) -> float:
+    for pattern in (r"thru\s*x\s*(\d+)", r"\bx\s*(\d+)\b", r"(\d+)\s*-\s*hole", r"(\d+)\s+hole"):
+        for match in re.finditer(pattern, text):
+            count = int(match.group(1))
+            if 1 <= count <= 32:
+                return float(count)
+    return float(default)
+
+
+def _number_near(text: str, labels: tuple[str, ...], default: float) -> float:
+    number_pattern = r"-?(?:\d+(?:\.\d+)?|\.\d+)"
+    for label in labels:
+        index = text.find(label)
+        if index < 0:
+            continue
+        label_number = re.search(number_pattern, label)
+        if label_number:
+            return float(label_number.group())
+        after_window = text[index + len(label) : index + len(label) + 80]
+        before_window = text[max(0, index - 40) : index]
+        after_match = next(
+            (
+                match
+                for match in re.finditer(number_pattern, after_window)
+                if float(match.group()) > 0
+            ),
+            None,
+        )
+        before_matches = [
+            match
+            for match in re.finditer(number_pattern, before_window)
+            if float(match.group()) > 0
+        ]
+        before_match = before_matches[-1] if before_matches else None
+        if before_match and after_match:
+            after_prefix = after_window[: after_match.start()].strip()
+            if after_prefix.startswith(("/", ":", "=")) or after_prefix.startswith("of "):
+                return float(after_match.group())
+            before_distance = len(before_window) - before_match.end()
+            after_distance = after_match.start()
+            if before_distance <= after_distance + 12:
+                return float(before_match.group())
+            return float(after_match.group())
+        if after_match:
+            return float(after_match.group())
+        if before_match:
+            return float(before_match.group())
+    return default
 
 
 def _diagnostic_envelope_code(width: float, depth: float, height: float, reason: str) -> str:

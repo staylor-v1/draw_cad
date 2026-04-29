@@ -272,7 +272,8 @@ def _run_iteration(
                 output_dir=case_dir,
                 drawing_evidence=drawing_evidence,
             )
-            contact_sheet = summary.get("rendered_drawing", {}).get("contact_sheet_path")
+            rendered_drawing = summary.get("rendered_drawing", {})
+            contact_sheet = rendered_drawing.get("source_contact_sheet_path") or rendered_drawing.get("contact_sheet_path")
             if not contact_sheet:
                 raise RuntimeError("Roundtrip did not produce a generated contact sheet")
             source_fidelity = judge_source_fidelity(

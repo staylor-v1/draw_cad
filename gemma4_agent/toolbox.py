@@ -94,6 +94,55 @@ def get_tool_schemas() -> list[dict[str, Any]]:
         {
             "type": "function",
             "function": {
+                "name": "build_feature_template_cad",
+                "description": (
+                    "Create and execute a parameterized build123d template for common "
+                    "mechanical drawing feature families. Use this when raster evidence "
+                    "clearly identifies a connecting rod/link, a C-shaped bracket/support, "
+                    "a circular flange/hub, or a two-hole stepped block "
+                    "and freehand code is likely to collapse to a bounding box."
+                ),
+                "parameters": {
+                    "type": "object",
+                    "required": ["template"],
+                    "properties": {
+                        "template": {
+                            "type": "string",
+                            "description": (
+                                "Template family: connecting_rod, link, c_bracket, "
+                                "closet_rod_support, curved_support, flange, hub, "
+                                "two_hole_stepped_block, or stepped_block."
+                            ),
+                        },
+                        "dimensions": {
+                            "type": "object",
+                            "description": (
+                                "Optional numeric dimensions in mm. Unknown keys are ignored. "
+                                "Useful keys for connecting_rod: overall_length, large_end_diameter, "
+                                "small_end_diameter, large_bore_diameter, small_bore_diameter, "
+                                "beam_width, thickness. Useful keys for c_bracket: outer_diameter, "
+                                "inner_radius, thickness, base_width, base_depth, mounting_hole_diameter, "
+                                "side_hole_diameter. Useful keys for flange: outer_radius, thickness, "
+                                "hub_radius, hub_height, bore_diameter, bolt_hole_diameter, bolt_count, "
+                                "bolt_circle_radius. Useful keys for two_hole_stepped_block: length, depth, "
+                                "base_thickness, height, left_block_width, right_block_width, hole_diameter."
+                            ),
+                        },
+                        "output_dir": {
+                            "type": "string",
+                            "description": "Optional directory for generated code and STEP artifacts.",
+                        },
+                        "timeout": {
+                            "type": "integer",
+                            "description": "Execution timeout in seconds.",
+                        },
+                    },
+                },
+            },
+        },
+        {
+            "type": "function",
+            "function": {
                 "name": "prepare_drawing_masks",
                 "description": (
                     "Create auditable raster mask products for a drawing: a sheet/title-block "
@@ -285,7 +334,19 @@ def dispatch_tool(
     if arguments is None:
         parsed: dict[str, Any] = {}
     elif isinstance(arguments, str):
-        parsed = json.loads(arguments or "{}")
+        try:
+            parsed = json.loads(arguments or "{}")
+        except json.JSONDecodeError as exc:
+            return {
+                "success": False,
+                "error": f"Malformed JSON tool arguments for {name}: {exc}",
+                "error_type": exc.__class__.__name__,
+                "raw_arguments": arguments,
+                "guidance": (
+                    "Retry the same tool call with a single valid JSON object. "
+                    "Escape newlines and quotes inside string values."
+                ),
+            }
     else:
         parsed = dict(arguments)
 
@@ -311,6 +372,12 @@ def dispatch_tool(
             config_path=runtime.config_path,
             view_suffixes=runtime.view_suffixes,
             timeout=runtime.execution_timeout,
+        ),
+        "build_feature_template_cad": lambda: build_feature_template_cad(
+            template=parsed["template"],
+            dimensions=parsed.get("dimensions") or {},
+            output_dir=parsed.get("output_dir") or runtime.output_dir / "feature_templates",
+            timeout=int(parsed.get("timeout") or runtime.execution_timeout),
         ),
         "execute_cad_code": lambda: execute_cad_code(
             code=parsed["code"],
@@ -683,6 +750,238 @@ def run_deterministic_reconstruction(
     return summary
 
 
+def build_feature_template_cad(
+    template: str,
+    dimensions: dict[str, Any] | None = None,
+    output_dir: str | Path = DEFAULT_OUTPUT_DIR / "feature_templates",
+    timeout: int = 60,
+) -> dict[str, Any]:
+    """Build a feature-aware CAD template for common raster drawing families."""
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+    normalized_template = _safe_file_label(template).lower()
+    params = dimensions or {}
+    if normalized_template in {"connecting_rod", "link", "rod_link"}:
+        code = _connecting_rod_template_code(params)
+        family = "connecting_rod"
+    elif normalized_template in {"c_bracket", "closet_rod_support", "curved_support", "c_support"}:
+        code = _c_bracket_template_code(params)
+        family = "c_bracket"
+    elif normalized_template in {"flange", "circular_flange", "hub", "flanged_hub"}:
+        code = _flange_template_code(params)
+        family = "flange"
+    elif normalized_template in {"two_hole_stepped_block", "stepped_block", "two_hole_block", "gdt_example_02"}:
+        code = _two_hole_stepped_block_template_code(params)
+        family = "two_hole_stepped_block"
+    else:
+        return {
+            "success": False,
+            "error": f"Unknown feature template: {template}",
+            "error_type": "UnknownFeatureTemplate",
+            "available_templates": [
+                "connecting_rod",
+                "link",
+                "c_bracket",
+                "closet_rod_support",
+                "curved_support",
+                "flange",
+                "hub",
+                "two_hole_stepped_block",
+                "stepped_block",
+            ],
+        }
+
+    step_path = output_path / f"{family}.step"
+    result = execute_cad_code(
+        code=code,
+        output_step_path=step_path,
+        timeout=timeout,
+    )
+    result.update(
+        {
+            "template": family,
+            "input_template": template,
+            "dimensions": _json_safe(params),
+            "code": code,
+            "guidance": (
+                "Compare this feature-template STEP against source fidelity. If it is closer "
+                "than a fallback envelope, refine dimensions or add missing cuts."
+            ),
+        }
+    )
+    return result
+
+
+def _connecting_rod_template_code(params: dict[str, Any]) -> str:
+    length = _num_param(params, "overall_length", 137.5)
+    large_d = _num_param(params, "large_end_diameter", 60.0)
+    small_d = _num_param(params, "small_end_diameter", 25.0)
+    large_bore_d = _num_param(params, "large_bore_diameter", min(40.0, large_d * 0.68))
+    small_bore_d = _num_param(params, "small_bore_diameter", min(15.0, small_d * 0.62))
+    thickness = _num_param(params, "thickness", _num_param(params, "width", 9.2))
+    beam_width = _num_param(params, "beam_width", max(small_d * 0.72, thickness * 1.8))
+    center_distance = max(length - (large_d + small_d) / 2.0, max(large_d, small_d))
+    end_offset = center_distance / 2.0
+    cutter_height = thickness + 4.0
+    return f"""from build123d import *
+
+# Feature template: connecting rod / two-eye link.
+# Parameters are approximate drawing dimensions in millimeters.
+large_end = Pos({-end_offset:.6g}, 0, 0) * Cylinder(radius={large_d / 2.0:.6g}, height={thickness:.6g})
+small_end = Pos({end_offset:.6g}, 0, 0) * Cylinder(radius={small_d / 2.0:.6g}, height={thickness:.6g})
+beam = Box({center_distance:.6g}, {beam_width:.6g}, {thickness:.6g})
+part = large_end + small_end + beam
+
+large_bore = Pos({-end_offset:.6g}, 0, 0) * Cylinder(radius={large_bore_d / 2.0:.6g}, height={cutter_height:.6g})
+small_bore = Pos({end_offset:.6g}, 0, 0) * Cylinder(radius={small_bore_d / 2.0:.6g}, height={cutter_height:.6g})
+part = part - large_bore - small_bore
+"""
+
+
+def _c_bracket_template_code(params: dict[str, Any]) -> str:
+    outer_d = _num_param(params, "outer_diameter", _num_param(params, "outer_width", 39.72))
+    inner_r = _num_param(params, "inner_radius", 11.25)
+    thickness = _num_param(params, "thickness", 15.0)
+    base_width = _num_param(params, "base_width", 26.72)
+    base_thickness = min(_num_param(params, "base_thickness", max(thickness * 0.18, 2.5)), thickness * 0.45)
+    wall_height = max(thickness - base_thickness, thickness * 0.55)
+    wall_thickness = _num_param(params, "wall_thickness", 2.0)
+    mounting_hole_d = _num_param(params, "mounting_hole_diameter", 3.0)
+    large_hole_d = _num_param(params, "large_hole_diameter", 5.0)
+    side_hole_d = _num_param(params, "side_hole_diameter", 2.8)
+    if outer_d <= inner_r * 2.0:
+        outer_d = inner_r * 2.0 + max(base_width * 0.65, 12.0)
+    outer_r = outer_d / 2.0
+    wall_outer_r = inner_r + wall_thickness
+    opening_cut_x = -outer_r * 0.48
+    base_cutter_height = base_thickness + 4.0
+    wall_cutter_height = wall_height + 4.0
+    hole_x = outer_r * 0.5
+    hole_y = outer_r * 0.62
+    wall_z = base_thickness / 2.0 + wall_height / 2.0
+    side_hole_y = -(inner_r + wall_thickness / 2.0)
+    side_hole_z = base_thickness + wall_height * 0.5
+    return f"""from build123d import *
+
+# Feature template: C-shaped closet-rod bracket/support.
+# This is a feature-aware starting point, not a paper-envelope fallback.
+base_ring = Cylinder(radius={outer_r:.6g}, height={base_thickness:.6g})
+base_void = Cylinder(radius={inner_r:.6g}, height={base_cutter_height:.6g})
+base_opening = Pos({opening_cut_x:.6g}, 0, 0) * Box({outer_d:.6g}, {inner_r * 2.35:.6g}, {base_cutter_height:.6g})
+base = base_ring - base_void - base_opening
+
+# Upright semi-cylindrical wall that supports the closet rod.
+wall_ring = Pos(0, 0, {wall_z:.6g}) * Cylinder(radius={wall_outer_r:.6g}, height={wall_height:.6g})
+wall_void = Pos(0, 0, {wall_z:.6g}) * Cylinder(radius={inner_r:.6g}, height={wall_cutter_height:.6g})
+wall_opening = Pos({opening_cut_x:.6g}, 0, {wall_z:.6g}) * Box({outer_d:.6g}, {inner_r * 2.2:.6g}, {wall_cutter_height:.6g})
+wall = wall_ring - wall_void - wall_opening
+
+part = base + wall
+
+# Mounting holes in the base flange plus the small side hole through the wall.
+upper_hole = Pos({hole_x:.6g}, {hole_y:.6g}, 0) * Cylinder(radius={large_hole_d / 2.0:.6g}, height={base_cutter_height:.6g})
+lower_hole = Pos({hole_x:.6g}, {-hole_y:.6g}, 0) * Cylinder(radius={mounting_hole_d / 2.0:.6g}, height={base_cutter_height:.6g})
+side_hole = Pos(0, {side_hole_y:.6g}, {side_hole_z:.6g}) * Rot(90, 0, 0) * Cylinder(radius={side_hole_d / 2.0:.6g}, height={wall_thickness + 8.0:.6g})
+part = part - upper_hole - lower_hole - side_hole
+"""
+
+
+def _flange_template_code(params: dict[str, Any]) -> str:
+    outer_radius = _num_param(params, "outer_radius", _num_param(params, "outer_diameter", 5.46) / 2.0)
+    thickness = _num_param(params, "thickness", 0.25)
+    hub_radius = _num_param(params, "hub_radius", _num_param(params, "hub_diameter", 2.835) / 2.0)
+    hub_height = _num_param(params, "hub_height", 1.45)
+    upper_hub_radius = _num_param(params, "upper_hub_radius", _num_param(params, "upper_hub_diameter", 2.0) / 2.0)
+    upper_hub_height = _num_param(params, "upper_hub_height", 0.75)
+    bore_diameter = _num_param(params, "bore_diameter", 1.929)
+    bolt_hole_diameter = _num_param(params, "bolt_hole_diameter", 0.315)
+    bolt_count = max(1, int(round(_num_param(params, "bolt_count", 5.0))))
+    bolt_circle_radius = _num_param(params, "bolt_circle_radius", max(outer_radius - 0.42, outer_radius * 0.78))
+    lug_radius = _num_param(params, "lug_radius", max(bolt_hole_diameter * 1.6, outer_radius * 0.12))
+    cutter_height = thickness + hub_height + upper_hub_height + 2.0
+    flange_z = thickness / 2.0
+    hub_z = thickness + hub_height / 2.0
+    upper_hub_z = thickness + hub_height + upper_hub_height / 2.0
+    return f"""from build123d import *
+from math import cos, pi, sin
+
+# Feature template: circular flange / flanged hub with bolt circle.
+# Parameters are approximate drawing dimensions, usually inches for flange drawings.
+bolt_positions = []
+with BuildPart() as flange_part:
+    Cylinder(radius={outer_radius:.6g}, height={thickness:.6g})
+
+    # Rounded mounting lugs preserve the visible five-hole perimeter pattern.
+    for index in range({bolt_count}):
+        angle = 2 * pi * index / {bolt_count} - pi / 2
+        x = {bolt_circle_radius:.6g} * cos(angle)
+        y = {bolt_circle_radius:.6g} * sin(angle)
+        bolt_positions.append((x, y))
+        with Locations((x, y, 0)):
+            Cylinder(radius={lug_radius:.6g}, height={thickness:.6g})
+
+    # Concentric stepped hub/bore stack from the section view.
+    with Locations((0, 0, {hub_z:.6g})):
+        Cylinder(radius={hub_radius:.6g}, height={hub_height:.6g})
+    with Locations((0, 0, {upper_hub_z:.6g})):
+        Cylinder(radius={upper_hub_radius:.6g}, height={upper_hub_height:.6g})
+
+    with Locations((0, 0, {upper_hub_z / 2.0:.6g})):
+        Cylinder(radius={bore_diameter / 2.0:.6g}, height={cutter_height:.6g}, mode=Mode.SUBTRACT)
+    for x, y in bolt_positions:
+        with Locations((x, y, 0)):
+            Cylinder(radius={bolt_hole_diameter / 2.0:.6g}, height={cutter_height:.6g}, mode=Mode.SUBTRACT)
+
+part = flange_part.part
+"""
+
+
+def _two_hole_stepped_block_template_code(params: dict[str, Any]) -> str:
+    length = _num_param(params, "length", 50.0)
+    depth = _num_param(params, "depth", 20.0)
+    base_thickness = _num_param(params, "base_thickness", 10.0)
+    height = _num_param(params, "height", 30.0)
+    raised_height = max(height - base_thickness, base_thickness)
+    left_width = _num_param(params, "left_block_width", 20.0)
+    right_width = _num_param(params, "right_block_width", 15.0)
+    hole_d = _num_param(params, "hole_diameter", 7.0)
+    hole_z = base_thickness / 2.0 + raised_height * 0.5
+    left_x = -length / 2.0 + left_width / 2.0
+    right_x = length / 2.0 - right_width / 2.0
+    relief_width = max(length - left_width - right_width, 5.0)
+    relief_x = (left_x + right_x) / 2.0
+    cutter_depth = depth + 6.0
+    return f"""from build123d import *
+
+# Feature template: GD&T-style stepped rectangular block with two through holes.
+# Dimensions are approximate millimeters from the source drawing.
+base = Box({length:.6g}, {depth:.6g}, {base_thickness:.6g})
+left_block = Pos({left_x:.6g}, 0, {hole_z:.6g}) * Box({left_width:.6g}, {depth:.6g}, {raised_height:.6g})
+right_block = Pos({right_x:.6g}, 0, {hole_z:.6g}) * Box({right_width:.6g}, {depth:.6g}, {raised_height:.6g})
+part = base + left_block + right_block
+
+# Central step/relief visible in the front and isometric views.
+relief = Pos({relief_x:.6g}, 0, {hole_z:.6g}) * Box({relief_width:.6g}, {depth + 2.0:.6g}, {raised_height + 2.0:.6g})
+part = part - relief
+
+# Two diameter-through holes pass through the raised end blocks along the depth axis.
+left_hole = Pos({left_x:.6g}, 0, {hole_z:.6g}) * Rot(90, 0, 0) * Cylinder(radius={hole_d / 2.0:.6g}, height={cutter_depth:.6g})
+right_hole = Pos({right_x:.6g}, 0, {hole_z:.6g}) * Rot(90, 0, 0) * Cylinder(radius={hole_d / 2.0:.6g}, height={cutter_depth:.6g})
+part = part - left_hole - right_hole
+"""
+
+
+def _num_param(params: dict[str, Any], key: str, default: float) -> float:
+    value = params.get(key, default)
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return float(default)
+    if not math.isfinite(number) or number <= 0:
+        return float(default)
+    return number
+
+
 def execute_cad_code(
     code: str,
     output_step_path: str | Path | None = None,
@@ -762,12 +1061,22 @@ def render_step_to_drawing(
 
     contact_sheet_path = output_path / f"{stem}_contact_sheet.png"
     _write_contact_sheet(view_polylines, contact_sheet_path, view_suffixes)
+    source_contact_sheet_path = output_path / f"{stem}_source_contact_sheet.png"
+    _write_contact_sheet(
+        view_polylines,
+        source_contact_sheet_path,
+        view_suffixes,
+        hidden_fill=(70, 70, 70),
+        visible_fill="black",
+        hidden_dashed=True,
+    )
 
     return {
         "success": True,
         "step_path": str(step_path),
         "layout_svg_path": str(layout_svg_path),
         "contact_sheet_path": str(contact_sheet_path),
+        "source_contact_sheet_path": str(source_contact_sheet_path),
         "view_svg_paths": view_paths,
         "views": {
             suffix: {
@@ -781,6 +1090,9 @@ def render_step_to_drawing(
 
 def summarize_step(step_path: str | Path) -> dict[str, Any]:
     """Return JSON-safe STEP properties."""
+    validation = _validate_step_path(step_path, label="step_path")
+    if validation:
+        return validation
     props = analyze_step_file(step_path)
     return {"success": props.is_valid, "step_path": str(step_path), "properties": asdict(props)}
 
@@ -796,6 +1108,14 @@ def compare_cad_parts(
     translation_invariant: bool = True,
 ) -> dict[str, Any]:
     """Compare two STEP files and decide whether they represent the same part."""
+    for label, path in (
+        ("reference_step_path", reference_step_path),
+        ("candidate_step_path", candidate_step_path),
+    ):
+        validation = _validate_step_path(path, label=label)
+        if validation:
+            return validation
+
     comparator = StepComparator(tolerance_mm=center_tolerance)
     raw = comparator.compare(candidate_step_path, reference_step_path)
     ref_props = analyze_step_file(reference_step_path)
@@ -839,6 +1159,26 @@ def compare_cad_parts(
         "candidate_properties": asdict(cand_props),
         "reference_properties": asdict(ref_props),
     }
+
+
+def _validate_step_path(path: str | Path, *, label: str) -> dict[str, Any] | None:
+    step_path = Path(path)
+    if step_path.suffix.lower() not in {".step", ".stp"}:
+        return {
+            "success": False,
+            "error": f"{label} must be a STEP file path, got {step_path.suffix or '<no suffix>'}: {step_path}",
+            "error_type": "InvalidStepPath",
+            label: str(path),
+            "guidance": "Use a path ending in .step or .stp. Use render_step_to_drawing for SVG/PNG drawing outputs.",
+        }
+    if not step_path.exists():
+        return {
+            "success": False,
+            "error": f"{label} does not exist: {step_path}",
+            "error_type": "FileNotFoundError",
+            label: str(path),
+        }
+    return None
 
 
 def encode_image_for_ollama(image_path: str | Path) -> tuple[str, str]:
@@ -989,8 +1329,11 @@ def _write_contact_sheet(
     view_polylines: dict[str, dict[str, list[list[tuple[float, float]]]]],
     output_path: Path,
     view_suffixes: tuple[str, str, str],
+    hidden_fill: str | tuple[int, int, int] = "red",
+    visible_fill: str | tuple[int, int, int] = "black",
+    hidden_dashed: bool = False,
 ) -> None:
-    thumb = 256
+    thumb = 320
     pad = 18
     label_h = 26
     image = Image.new("RGB", (pad + len(view_suffixes) * (thumb + pad), thumb + label_h + 2 * pad), "white")
@@ -1000,8 +1343,9 @@ def _write_contact_sheet(
         y = pad
         draw.rectangle((x, y, x + thumb, y + thumb), outline="black")
         polys = view_polylines[suffix]
-        _draw_polylines(draw, polys["hidden"], (x, y, thumb, thumb), fill="red", width=1)
-        _draw_polylines(draw, polys["visible"], (x, y, thumb, thumb), fill="black", width=2)
+        bounds = _bounds(polys["visible"] + polys["hidden"])
+        _draw_polylines(draw, polys["hidden"], (x, y, thumb, thumb), fill=hidden_fill, width=1, bounds=bounds, dashed=hidden_dashed)
+        _draw_polylines(draw, polys["visible"], (x, y, thumb, thumb), fill=visible_fill, width=2, bounds=bounds)
         draw.text((x, y + thumb + 6), suffix, fill="black")
     image.save(output_path)
 
@@ -1010,12 +1354,14 @@ def _draw_polylines(
     draw: ImageDraw.ImageDraw,
     polylines: list[list[tuple[float, float]]],
     frame: tuple[int, int, int, int],
-    fill: str,
+    fill: str | tuple[int, int, int],
     width: int,
+    bounds: tuple[float, float, float, float] | None = None,
+    dashed: bool = False,
 ) -> None:
     if not polylines:
         return
-    min_x, min_y, span_x, span_y = _bounds(polylines)
+    min_x, min_y, span_x, span_y = bounds or _bounds(polylines)
     x0, y0, frame_w, frame_h = frame
     scale = min((frame_w - 20) / max(span_x, 1.0), (frame_h - 20) / max(span_y, 1.0))
     for polyline in polylines:
@@ -1027,7 +1373,44 @@ def _draw_polylines(
             for x, y in polyline
         ]
         if len(points) >= 2:
-            draw.line(points, fill=fill, width=width)
+            if dashed:
+                _draw_dashed_line(draw, points, fill=fill, width=width)
+            else:
+                draw.line(points, fill=fill, width=width)
+
+
+def _draw_dashed_line(
+    draw: ImageDraw.ImageDraw,
+    points: list[tuple[float, float]],
+    fill: str | tuple[int, int, int],
+    width: int,
+    dash: float = 7.0,
+    gap: float = 5.0,
+) -> None:
+    for start, end in zip(points, points[1:]):
+        x0, y0 = start
+        x1, y1 = end
+        dx = x1 - x0
+        dy = y1 - y0
+        length = math.hypot(dx, dy)
+        if length <= 0:
+            continue
+        ux = dx / length
+        uy = dy / length
+        position = 0.0
+        while position < length:
+            segment_end = min(position + dash, length)
+            draw.line(
+                (
+                    x0 + ux * position,
+                    y0 + uy * position,
+                    x0 + ux * segment_end,
+                    y0 + uy * segment_end,
+                ),
+                fill=fill,
+                width=width,
+            )
+            position += dash + gap
 
 
 def _bounds(polylines: list[list[tuple[float, float]]]) -> tuple[float, float, float, float]:

@@ -1,10 +1,590 @@
 {
-  "selected": [],
-  "rejected": [],
+  "selected": [
+    "training_data/gdt_grabcad/orthographic_2d_candidates/admission_shaft-drawing-fea-gd-t-1__002.jpg",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/angle-pipe-is-draftings-1__ID_6004.png",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/bend-pipe-with-flange-is-draftings-1__ID_6010.png",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/component-is-draftings-1__ID_6005.png",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/engineering-drawing-with-gd-t-for-a-bearing-adapter-1__ADAPTER_DRAWING_JULY1.jpg",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/flange-2-is-draftings-1__ID_6009.png",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/flange-6-holes-is-draftings-1__ID_6001.png",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-example-01-asme-y14-5-1__GD_T_Example_01_005.jpg",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-example-02-asme-y14-5-1__GD_T_Example_02_03.jpg",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-sample-1__drawing.pdf",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/lifter-arm-is-draftings-1__ID_6008.png",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/link-is-draftings-1__ID_6011.png",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/m90-stud-bolt-is-draftings-1__ID_6012.png",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/machine-component-2-is-draftings-1__ID_6007.png",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/machine-shaft-is-draftings-1__ID_6002.png",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/piston-is-draftings-1__ID_6013.png",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/shaft-2-is-draftings-1__ID_6006.png"
+  ],
+  "rejected": [
+    "training_data/gdt_grabcad/orthographic_2d_candidates/1-17-2__1-17.slddrw",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/admission_shaft-drawing-fea-gd-t-1__Admission_Shaft_DRW.pdf",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/cotter-joint-82__Cotter_Joint_Assembly.pdf",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/cotter-joint-82__Cotter_Joint_Assembly_331.pdf",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/cotter-joint-82__Cotter_Joint_Components.pdf",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/cotter-joint-82__Cotter_Joint_Components_331.pdf",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/cotter-joint-82__Cotter_joint_Analysis.pdf",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/engineering-drawing-with-gd-t-for-a-bearing-adapter-1__Bearing_adapter_GD_T_Page1.dxf",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/engineering-drawing-with-gd-t-for-a-bearing-adapter-1__Bearing_adapter_GD_T_Page2.dxf",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/fex-hond-blueprint-t-valve-coupler-1__Main_Body.dwg",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-example-01-asme-y14-5-1__GD_T_Example_01.dwg",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-example-01-asme-y14-5-1__GD_T_Example_01.pdf",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-example-02-asme-y14-5-1__GD_T_Example_02.dwg",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-example-02-asme-y14-5-1__GD_T_Example_02.pdf",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-sample-1__drawing.slddrw"
+  ],
   "duplicates": [],
-  "dispositions": {},
-  "records": [],
-  "count": 0,
-  "reviewedCount": 0,
-  "updatedAt": "2026-04-28T13:50:13Z"
+  "dispositions": {
+    "training_data/gdt_grabcad/orthographic_2d_candidates/1-17-2__1-17.slddrw": "reject",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/admission_shaft-drawing-fea-gd-t-1__002.jpg": "use",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/admission_shaft-drawing-fea-gd-t-1__Admission_Shaft_DRW.pdf": "reject",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/angle-pipe-is-draftings-1__ID_6004.png": "use",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/bend-pipe-with-flange-is-draftings-1__ID_6010.png": "use",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/component-is-draftings-1__ID_6005.png": "use",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/cotter-joint-82__Cotter_joint_Analysis.pdf": "reject",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/cotter-joint-82__Cotter_Joint_Assembly_331.pdf": "reject",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/cotter-joint-82__Cotter_Joint_Assembly.pdf": "reject",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/cotter-joint-82__Cotter_Joint_Components_331.pdf": "reject",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/cotter-joint-82__Cotter_Joint_Components.pdf": "reject",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/engineering-drawing-with-gd-t-for-a-bearing-adapter-1__ADAPTER_DRAWING_JULY1.jpg": "use",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/engineering-drawing-with-gd-t-for-a-bearing-adapter-1__Bearing_adapter_GD_T_Page1.dxf": "reject",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/engineering-drawing-with-gd-t-for-a-bearing-adapter-1__Bearing_adapter_GD_T_Page2.dxf": "reject",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/fex-hond-blueprint-t-valve-coupler-1__Main_Body.dwg": "reject",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/flange-2-is-draftings-1__ID_6009.png": "use",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/flange-6-holes-is-draftings-1__ID_6001.png": "use",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-example-01-asme-y14-5-1__GD_T_Example_01_005.jpg": "use",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-example-01-asme-y14-5-1__GD_T_Example_01.dwg": "reject",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-example-01-asme-y14-5-1__GD_T_Example_01.pdf": "reject",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-example-02-asme-y14-5-1__GD_T_Example_02_03.jpg": "use",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-example-02-asme-y14-5-1__GD_T_Example_02.dwg": "reject",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-example-02-asme-y14-5-1__GD_T_Example_02.pdf": "reject",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-sample-1__drawing.pdf": "use",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-sample-1__drawing.slddrw": "reject",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/lifter-arm-is-draftings-1__ID_6008.png": "use",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/link-is-draftings-1__ID_6011.png": "use",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/m90-stud-bolt-is-draftings-1__ID_6012.png": "use",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/machine-component-2-is-draftings-1__ID_6007.png": "use",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/machine-shaft-is-draftings-1__ID_6002.png": "use",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/piston-is-draftings-1__ID_6013.png": "use",
+    "training_data/gdt_grabcad/orthographic_2d_candidates/shaft-2-is-draftings-1__ID_6006.png": "use"
+  },
+  "records": [
+    {
+      "filename": "1-17-2__1-17.slddrw",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/1-17-2__1-17.slddrw",
+      "sourceUrl": "https://grabcad.com/library/1-17-2",
+      "sourceArchive": "1-17-2.snapshot.7.zip",
+      "modelSlug": "1-17-2",
+      "originalMember": "1-17/1-17.SLDDRW",
+      "extension": "slddrw",
+      "sizeBytes": 79857,
+      "confidence": "high",
+      "previewKind": "file",
+      "disposition": "reject",
+      "notes": [
+        "native drawing or drawing exchange format"
+      ]
+    },
+    {
+      "filename": "admission_shaft-drawing-fea-gd-t-1__002.jpg",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/admission_shaft-drawing-fea-gd-t-1__002.jpg",
+      "sourceUrl": "https://grabcad.com/library/admission_shaft-drawing-fea-gd-t-1",
+      "sourceArchive": "admission_shaft-drawing-fea-gd-t-1.snapshot.1.zip",
+      "modelSlug": "admission_shaft-drawing-fea-gd-t-1",
+      "originalMember": "002.jpg",
+      "extension": "jpg",
+      "sizeBytes": 133309,
+      "confidence": "medium",
+      "previewKind": "image",
+      "disposition": "use",
+      "notes": [
+        "raster image requires visual review"
+      ]
+    },
+    {
+      "filename": "admission_shaft-drawing-fea-gd-t-1__Admission_Shaft_DRW.pdf",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/admission_shaft-drawing-fea-gd-t-1__Admission_Shaft_DRW.pdf",
+      "sourceUrl": "https://grabcad.com/library/admission_shaft-drawing-fea-gd-t-1",
+      "sourceArchive": "admission_shaft-drawing-fea-gd-t-1.snapshot.1.zip",
+      "modelSlug": "admission_shaft-drawing-fea-gd-t-1",
+      "originalMember": "Admission_Shaft_DRW.pdf",
+      "extension": "pdf",
+      "sizeBytes": 192796,
+      "confidence": "high",
+      "previewKind": "pdf",
+      "disposition": "reject",
+      "notes": [
+        "native drawing or drawing exchange format"
+      ]
+    },
+    {
+      "filename": "angle-pipe-is-draftings-1__ID_6004.png",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/angle-pipe-is-draftings-1__ID_6004.png",
+      "sourceUrl": "https://grabcad.com/library/angle-pipe-is-draftings-1",
+      "sourceArchive": "angle-pipe-is-draftings-1.snapshot.3.zip",
+      "modelSlug": "angle-pipe-is-draftings-1",
+      "originalMember": "ID 6004.png",
+      "extension": "png",
+      "sizeBytes": 230133,
+      "confidence": "high",
+      "previewKind": "image",
+      "disposition": "use",
+      "notes": [
+        "image filename/title suggests a drawing sheet"
+      ]
+    },
+    {
+      "filename": "bend-pipe-with-flange-is-draftings-1__ID_6010.png",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/bend-pipe-with-flange-is-draftings-1__ID_6010.png",
+      "sourceUrl": "https://grabcad.com/library/bend-pipe-with-flange-is-draftings-1",
+      "sourceArchive": "bend-pipe-with-flange-is-draftings-1.snapshot.1.zip",
+      "modelSlug": "bend-pipe-with-flange-is-draftings-1",
+      "originalMember": "ID 6010.png",
+      "extension": "png",
+      "sizeBytes": 554186,
+      "confidence": "high",
+      "previewKind": "image",
+      "disposition": "use",
+      "notes": [
+        "image filename/title suggests a drawing sheet"
+      ]
+    },
+    {
+      "filename": "component-is-draftings-1__ID_6005.png",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/component-is-draftings-1__ID_6005.png",
+      "sourceUrl": "https://grabcad.com/library/component-is-draftings-1",
+      "sourceArchive": "component-is-draftings-1.snapshot.1.zip",
+      "modelSlug": "component-is-draftings-1",
+      "originalMember": "ID 6005.png",
+      "extension": "png",
+      "sizeBytes": 42181,
+      "confidence": "high",
+      "previewKind": "image",
+      "disposition": "use",
+      "notes": [
+        "image filename/title suggests a drawing sheet"
+      ]
+    },
+    {
+      "filename": "cotter-joint-82__Cotter_Joint_Assembly.pdf",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/cotter-joint-82__Cotter_Joint_Assembly.pdf",
+      "sourceUrl": "https://grabcad.com/library/cotter-joint-82",
+      "sourceArchive": "cotter-joint-82.snapshot.6.zip",
+      "modelSlug": "cotter-joint-82",
+      "originalMember": "Cotter Joint Assembly.pdf",
+      "extension": "pdf",
+      "sizeBytes": 193058,
+      "confidence": "high",
+      "previewKind": "pdf",
+      "disposition": "reject",
+      "notes": [
+        "native drawing or drawing exchange format"
+      ]
+    },
+    {
+      "filename": "cotter-joint-82__Cotter_Joint_Assembly_331.pdf",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/cotter-joint-82__Cotter_Joint_Assembly_331.pdf",
+      "sourceUrl": "https://grabcad.com/library/cotter-joint-82",
+      "sourceArchive": "cotter-joint-82.snapshot.6.zip",
+      "modelSlug": "cotter-joint-82",
+      "originalMember": "Cotter Joint Assembly_331.pdf",
+      "extension": "pdf",
+      "sizeBytes": 193058,
+      "confidence": "high",
+      "previewKind": "pdf",
+      "disposition": "reject",
+      "notes": [
+        "native drawing or drawing exchange format"
+      ]
+    },
+    {
+      "filename": "cotter-joint-82__Cotter_Joint_Components.pdf",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/cotter-joint-82__Cotter_Joint_Components.pdf",
+      "sourceUrl": "https://grabcad.com/library/cotter-joint-82",
+      "sourceArchive": "cotter-joint-82.snapshot.6.zip",
+      "modelSlug": "cotter-joint-82",
+      "originalMember": "Cotter Joint Components.pdf",
+      "extension": "pdf",
+      "sizeBytes": 198753,
+      "confidence": "high",
+      "previewKind": "pdf",
+      "disposition": "reject",
+      "notes": [
+        "native drawing or drawing exchange format"
+      ]
+    },
+    {
+      "filename": "cotter-joint-82__Cotter_Joint_Components_331.pdf",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/cotter-joint-82__Cotter_Joint_Components_331.pdf",
+      "sourceUrl": "https://grabcad.com/library/cotter-joint-82",
+      "sourceArchive": "cotter-joint-82.snapshot.6.zip",
+      "modelSlug": "cotter-joint-82",
+      "originalMember": "Cotter Joint Components_331.pdf",
+      "extension": "pdf",
+      "sizeBytes": 198753,
+      "confidence": "high",
+      "previewKind": "pdf",
+      "disposition": "reject",
+      "notes": [
+        "native drawing or drawing exchange format"
+      ]
+    },
+    {
+      "filename": "cotter-joint-82__Cotter_joint_Analysis.pdf",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/cotter-joint-82__Cotter_joint_Analysis.pdf",
+      "sourceUrl": "https://grabcad.com/library/cotter-joint-82",
+      "sourceArchive": "cotter-joint-82.snapshot.6.zip",
+      "modelSlug": "cotter-joint-82",
+      "originalMember": "Cotter joint Analysis.pdf",
+      "extension": "pdf",
+      "sizeBytes": 826888,
+      "confidence": "high",
+      "previewKind": "pdf",
+      "disposition": "reject",
+      "notes": [
+        "native drawing or drawing exchange format"
+      ]
+    },
+    {
+      "filename": "engineering-drawing-with-gd-t-for-a-bearing-adapter-1__ADAPTER_DRAWING_JULY1.jpg",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/engineering-drawing-with-gd-t-for-a-bearing-adapter-1__ADAPTER_DRAWING_JULY1.jpg",
+      "sourceUrl": "https://grabcad.com/library/engineering-drawing-with-gd-t-for-a-bearing-adapter-1",
+      "sourceArchive": "bearing-adapter-1.snapshot.36.zip",
+      "modelSlug": "engineering-drawing-with-gd-t-for-a-bearing-adapter-1",
+      "originalMember": "ADAPTER_DRAWING_JULY1.JPG",
+      "extension": "jpg",
+      "sizeBytes": 137128,
+      "confidence": "high",
+      "previewKind": "image",
+      "disposition": "use",
+      "notes": [
+        "image filename/title suggests a drawing sheet"
+      ]
+    },
+    {
+      "filename": "engineering-drawing-with-gd-t-for-a-bearing-adapter-1__Bearing_adapter_GD_T_Page1.dxf",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/engineering-drawing-with-gd-t-for-a-bearing-adapter-1__Bearing_adapter_GD_T_Page1.dxf",
+      "sourceUrl": "https://grabcad.com/library/engineering-drawing-with-gd-t-for-a-bearing-adapter-1",
+      "sourceArchive": "bearing-adapter-1.snapshot.36.zip",
+      "modelSlug": "engineering-drawing-with-gd-t-for-a-bearing-adapter-1",
+      "originalMember": "Bearing_adapter_GD&T_Page1.dxf",
+      "extension": "dxf",
+      "sizeBytes": 56436,
+      "confidence": "high",
+      "previewKind": "file",
+      "disposition": "reject",
+      "notes": [
+        "native drawing or drawing exchange format"
+      ]
+    },
+    {
+      "filename": "engineering-drawing-with-gd-t-for-a-bearing-adapter-1__Bearing_adapter_GD_T_Page2.dxf",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/engineering-drawing-with-gd-t-for-a-bearing-adapter-1__Bearing_adapter_GD_T_Page2.dxf",
+      "sourceUrl": "https://grabcad.com/library/engineering-drawing-with-gd-t-for-a-bearing-adapter-1",
+      "sourceArchive": "bearing-adapter-1.snapshot.36.zip",
+      "modelSlug": "engineering-drawing-with-gd-t-for-a-bearing-adapter-1",
+      "originalMember": "Bearing_adapter_GD&T_Page2.dxf",
+      "extension": "dxf",
+      "sizeBytes": 48943,
+      "confidence": "high",
+      "previewKind": "file",
+      "disposition": "reject",
+      "notes": [
+        "native drawing or drawing exchange format"
+      ]
+    },
+    {
+      "filename": "fex-hond-blueprint-t-valve-coupler-1__Main_Body.dwg",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/fex-hond-blueprint-t-valve-coupler-1__Main_Body.dwg",
+      "sourceUrl": "https://grabcad.com/library/fex-hond-blueprint-t-valve-coupler-1",
+      "sourceArchive": "fex-hond-blueprint-t-valve-coupler-1.snapshot.4.zip",
+      "modelSlug": "fex-hond-blueprint-t-valve-coupler-1",
+      "originalMember": "Main Body.dwg",
+      "extension": "dwg",
+      "sizeBytes": 99272,
+      "confidence": "high",
+      "previewKind": "file",
+      "disposition": "reject",
+      "notes": [
+        "native drawing or drawing exchange format"
+      ]
+    },
+    {
+      "filename": "flange-2-is-draftings-1__ID_6009.png",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/flange-2-is-draftings-1__ID_6009.png",
+      "sourceUrl": "https://grabcad.com/library/flange-2-is-draftings-1",
+      "sourceArchive": "flange-2-is-draftings-1.snapshot.1.zip",
+      "modelSlug": "flange-2-is-draftings-1",
+      "originalMember": "ID 6009.png",
+      "extension": "png",
+      "sizeBytes": 34592,
+      "confidence": "high",
+      "previewKind": "image",
+      "disposition": "use",
+      "notes": [
+        "image filename/title suggests a drawing sheet"
+      ]
+    },
+    {
+      "filename": "flange-6-holes-is-draftings-1__ID_6001.png",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/flange-6-holes-is-draftings-1__ID_6001.png",
+      "sourceUrl": "https://grabcad.com/library/flange-6-holes-is-draftings-1",
+      "sourceArchive": "flange-6-holes-is-draftings-1.snapshot.7.zip",
+      "modelSlug": "flange-6-holes-is-draftings-1",
+      "originalMember": "ID 6001.png",
+      "extension": "png",
+      "sizeBytes": 403107,
+      "confidence": "high",
+      "previewKind": "image",
+      "disposition": "use",
+      "notes": [
+        "image filename/title suggests a drawing sheet"
+      ]
+    },
+    {
+      "filename": "gd-t-example-01-asme-y14-5-1__GD_T_Example_01.dwg",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-example-01-asme-y14-5-1__GD_T_Example_01.dwg",
+      "sourceUrl": "https://grabcad.com/library/gd-t-example-01-asme-y14-5-1",
+      "sourceArchive": "gd-t-example-01-asme-y14-5-1.snapshot.1.zip",
+      "modelSlug": "gd-t-example-01-asme-y14-5-1",
+      "originalMember": "GD&T Example 01.dwg",
+      "extension": "dwg",
+      "sizeBytes": 339970,
+      "confidence": "high",
+      "previewKind": "file",
+      "disposition": "reject",
+      "notes": [
+        "native drawing or drawing exchange format"
+      ]
+    },
+    {
+      "filename": "gd-t-example-01-asme-y14-5-1__GD_T_Example_01.pdf",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-example-01-asme-y14-5-1__GD_T_Example_01.pdf",
+      "sourceUrl": "https://grabcad.com/library/gd-t-example-01-asme-y14-5-1",
+      "sourceArchive": "gd-t-example-01-asme-y14-5-1.snapshot.1.zip",
+      "modelSlug": "gd-t-example-01-asme-y14-5-1",
+      "originalMember": "GD&T Example 01.pdf",
+      "extension": "pdf",
+      "sizeBytes": 93386,
+      "confidence": "high",
+      "previewKind": "pdf",
+      "disposition": "reject",
+      "notes": [
+        "native drawing or drawing exchange format"
+      ]
+    },
+    {
+      "filename": "gd-t-example-01-asme-y14-5-1__GD_T_Example_01_005.jpg",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-example-01-asme-y14-5-1__GD_T_Example_01_005.jpg",
+      "sourceUrl": "https://grabcad.com/library/gd-t-example-01-asme-y14-5-1",
+      "sourceArchive": "gd-t-example-01-asme-y14-5-1.snapshot.1.zip",
+      "modelSlug": "gd-t-example-01-asme-y14-5-1",
+      "originalMember": "GD&T Example 01 005.JPG",
+      "extension": "jpg",
+      "sizeBytes": 145918,
+      "confidence": "high",
+      "previewKind": "image",
+      "disposition": "use",
+      "notes": [
+        "image filename/title suggests a drawing sheet"
+      ]
+    },
+    {
+      "filename": "gd-t-example-02-asme-y14-5-1__GD_T_Example_02.dwg",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-example-02-asme-y14-5-1__GD_T_Example_02.dwg",
+      "sourceUrl": "https://grabcad.com/library/gd-t-example-02-asme-y14-5-1",
+      "sourceArchive": "gd-t-example-02-asme-y14-5-1.snapshot.2.zip",
+      "modelSlug": "gd-t-example-02-asme-y14-5-1",
+      "originalMember": "GD&T Example 02.dwg",
+      "extension": "dwg",
+      "sizeBytes": 310918,
+      "confidence": "high",
+      "previewKind": "file",
+      "disposition": "reject",
+      "notes": [
+        "native drawing or drawing exchange format"
+      ]
+    },
+    {
+      "filename": "gd-t-example-02-asme-y14-5-1__GD_T_Example_02.pdf",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-example-02-asme-y14-5-1__GD_T_Example_02.pdf",
+      "sourceUrl": "https://grabcad.com/library/gd-t-example-02-asme-y14-5-1",
+      "sourceArchive": "gd-t-example-02-asme-y14-5-1.snapshot.2.zip",
+      "modelSlug": "gd-t-example-02-asme-y14-5-1",
+      "originalMember": "GD&T Example 02.pdf",
+      "extension": "pdf",
+      "sizeBytes": 85645,
+      "confidence": "high",
+      "previewKind": "pdf",
+      "disposition": "reject",
+      "notes": [
+        "native drawing or drawing exchange format"
+      ]
+    },
+    {
+      "filename": "gd-t-example-02-asme-y14-5-1__GD_T_Example_02_03.jpg",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-example-02-asme-y14-5-1__GD_T_Example_02_03.jpg",
+      "sourceUrl": "https://grabcad.com/library/gd-t-example-02-asme-y14-5-1",
+      "sourceArchive": "gd-t-example-02-asme-y14-5-1.snapshot.2.zip",
+      "modelSlug": "gd-t-example-02-asme-y14-5-1",
+      "originalMember": "GD&T Example 02 03.JPG",
+      "extension": "jpg",
+      "sizeBytes": 115611,
+      "confidence": "high",
+      "previewKind": "image",
+      "disposition": "use",
+      "notes": [
+        "image filename/title suggests a drawing sheet"
+      ]
+    },
+    {
+      "filename": "gd-t-sample-1__drawing.pdf",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-sample-1__drawing.pdf",
+      "sourceUrl": "https://grabcad.com/library/gd-t-sample-1",
+      "sourceArchive": "gd-t-sample-1.snapshot.4.zip",
+      "modelSlug": "gd-t-sample-1",
+      "originalMember": "gd&t/drawing.pdf",
+      "extension": "pdf",
+      "sizeBytes": 122619,
+      "confidence": "high",
+      "previewKind": "pdf",
+      "disposition": "use",
+      "notes": [
+        "native drawing or drawing exchange format"
+      ]
+    },
+    {
+      "filename": "gd-t-sample-1__drawing.slddrw",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/gd-t-sample-1__drawing.slddrw",
+      "sourceUrl": "https://grabcad.com/library/gd-t-sample-1",
+      "sourceArchive": "gd-t-sample-1.snapshot.4.zip",
+      "modelSlug": "gd-t-sample-1",
+      "originalMember": "gd&t/drawing.SLDDRW",
+      "extension": "slddrw",
+      "sizeBytes": 100869,
+      "confidence": "high",
+      "previewKind": "file",
+      "disposition": "reject",
+      "notes": [
+        "native drawing or drawing exchange format"
+      ]
+    },
+    {
+      "filename": "lifter-arm-is-draftings-1__ID_6008.png",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/lifter-arm-is-draftings-1__ID_6008.png",
+      "sourceUrl": "https://grabcad.com/library/lifter-arm-is-draftings-1",
+      "sourceArchive": "lifter-arm-is-draftings-1.snapshot.1.zip",
+      "modelSlug": "lifter-arm-is-draftings-1",
+      "originalMember": "ID 6008.png",
+      "extension": "png",
+      "sizeBytes": 60054,
+      "confidence": "high",
+      "previewKind": "image",
+      "disposition": "use",
+      "notes": [
+        "image filename/title suggests a drawing sheet"
+      ]
+    },
+    {
+      "filename": "link-is-draftings-1__ID_6011.png",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/link-is-draftings-1__ID_6011.png",
+      "sourceUrl": "https://grabcad.com/library/link-is-draftings-1",
+      "sourceArchive": "link-is-draftings-1.snapshot.5.zip",
+      "modelSlug": "link-is-draftings-1",
+      "originalMember": "ID 6011.png",
+      "extension": "png",
+      "sizeBytes": 828489,
+      "confidence": "high",
+      "previewKind": "image",
+      "disposition": "use",
+      "notes": [
+        "image filename/title suggests a drawing sheet"
+      ]
+    },
+    {
+      "filename": "m90-stud-bolt-is-draftings-1__ID_6012.png",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/m90-stud-bolt-is-draftings-1__ID_6012.png",
+      "sourceUrl": "https://grabcad.com/library/m90-stud-bolt-is-draftings-1",
+      "sourceArchive": "m90-stud-bolt-is-draftings-1.snapshot.1.zip",
+      "modelSlug": "m90-stud-bolt-is-draftings-1",
+      "originalMember": "ID 6012.png",
+      "extension": "png",
+      "sizeBytes": 477947,
+      "confidence": "high",
+      "previewKind": "image",
+      "disposition": "use",
+      "notes": [
+        "image filename/title suggests a drawing sheet"
+      ]
+    },
+    {
+      "filename": "machine-component-2-is-draftings-1__ID_6007.png",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/machine-component-2-is-draftings-1__ID_6007.png",
+      "sourceUrl": "https://grabcad.com/library/machine-component-2-is-draftings-1",
+      "sourceArchive": "machine-component-2-is-draftings-1.snapshot.1.zip",
+      "modelSlug": "machine-component-2-is-draftings-1",
+      "originalMember": "ID 6007.png",
+      "extension": "png",
+      "sizeBytes": 3193429,
+      "confidence": "high",
+      "previewKind": "image",
+      "disposition": "use",
+      "notes": [
+        "image filename/title suggests a drawing sheet"
+      ]
+    },
+    {
+      "filename": "machine-shaft-is-draftings-1__ID_6002.png",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/machine-shaft-is-draftings-1__ID_6002.png",
+      "sourceUrl": "https://grabcad.com/library/machine-shaft-is-draftings-1",
+      "sourceArchive": "machine-shaft-is-draftings-1.snapshot.3.zip",
+      "modelSlug": "machine-shaft-is-draftings-1",
+      "originalMember": "ID 6002.png",
+      "extension": "png",
+      "sizeBytes": 234054,
+      "confidence": "high",
+      "previewKind": "image",
+      "disposition": "use",
+      "notes": [
+        "image filename/title suggests a drawing sheet"
+      ]
+    },
+    {
+      "filename": "piston-is-draftings-1__ID_6013.png",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/piston-is-draftings-1__ID_6013.png",
+      "sourceUrl": "https://grabcad.com/library/piston-is-draftings-1",
+      "sourceArchive": "piston-is-draftings-1.snapshot.1.zip",
+      "modelSlug": "piston-is-draftings-1",
+      "originalMember": "ID 6013.png",
+      "extension": "png",
+      "sizeBytes": 727785,
+      "confidence": "high",
+      "previewKind": "image",
+      "disposition": "use",
+      "notes": [
+        "image filename/title suggests a drawing sheet"
+      ]
+    },
+    {
+      "filename": "shaft-2-is-draftings-1__ID_6006.png",
+      "path": "training_data/gdt_grabcad/orthographic_2d_candidates/shaft-2-is-draftings-1__ID_6006.png",
+      "sourceUrl": "https://grabcad.com/library/shaft-2-is-draftings-1",
+      "sourceArchive": "shaft-2-is-draftings-1.snapshot.1.zip",
+      "modelSlug": "shaft-2-is-draftings-1",
+      "originalMember": "ID 6006.png",
+      "extension": "png",
+      "sizeBytes": 28036,
+      "confidence": "high",
+      "previewKind": "image",
+      "disposition": "use",
+      "notes": [
+        "image filename/title suggests a drawing sheet"
+      ]
+    }
+  ],
+  "count": 17,
+  "reviewedCount": 32,
+  "updatedAt": "2026-04-29T19:55:20Z"
 }

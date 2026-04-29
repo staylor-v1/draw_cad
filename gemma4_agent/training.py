@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -99,12 +100,30 @@ def judge_source_fidelity(
         data = response.json()
 
     content = data.get("message", {}).get("content", "")
-    parsed = normalize_source_fidelity(extract_json_object(content))
-    parsed["raw_content"] = content
+    parsed = parse_source_fidelity_content(content)
     parsed["image_mime_types"] = {
         "original": original_mime,
         "generated": generated_mime,
     }
+    return parsed
+
+
+def parse_source_fidelity_content(content: str) -> dict[str, Any]:
+    """Parse a judge response, returning a conservative failed score on malformed JSON."""
+    try:
+        parsed = normalize_source_fidelity(extract_json_object(content))
+    except Exception as exc:
+        parsed = normalize_source_fidelity(_fallback_source_fidelity_from_text(content))
+        parsed["major_errors"].insert(
+            0,
+            f"Source-fidelity judge returned malformed JSON: {exc.__class__.__name__}: {exc}",
+        )
+        if not parsed["actionable_prompt_feedback"]:
+            parsed["actionable_prompt_feedback"].append(
+                "Retry source-fidelity judgment with strict JSON only."
+            )
+        parsed["parse_error"] = f"{exc.__class__.__name__}: {exc}"
+    parsed["raw_content"] = content
     return parsed
 
 
@@ -122,6 +141,35 @@ def normalize_source_fidelity(value: dict[str, Any]) -> dict[str, Any]:
         else:
             normalized[key] = []
     return normalized
+
+
+def _fallback_source_fidelity_from_text(content: str) -> dict[str, Any]:
+    """Best-effort recovery for mostly-JSON judge responses with truncated arrays."""
+    recovered: dict[str, Any] = {}
+    for key in SOURCE_FIDELITY_KEYS:
+        match = re.search(rf'"{re.escape(key)}"\s*:\s*(-?\d+(?:\.\d+)?)', content)
+        if match:
+            recovered[key] = match.group(1)
+    for key in ("major_errors", "missing_features", "spurious_geometry", "actionable_prompt_feedback"):
+        recovered[key] = _fallback_string_array(content, key)
+    return recovered
+
+
+def _fallback_string_array(content: str, key: str) -> list[str]:
+    key_match = re.search(rf'"{re.escape(key)}"\s*:\s*\[', content)
+    if not key_match:
+        return []
+    start = key_match.end()
+    next_key = re.search(r'\n\s*"[A-Za-z_][A-Za-z0-9_]+"\s*:', content[start:])
+    end = start + next_key.start() if next_key else len(content)
+    segment = content[start:end]
+    items: list[str] = []
+    for match in re.finditer(r'"((?:\\.|[^"\\])*)"', segment):
+        try:
+            items.append(str(json.loads(f'"{match.group(1)}"')))
+        except json.JSONDecodeError:
+            items.append(match.group(1))
+    return items
 
 
 def extract_json_object(text: str) -> dict[str, Any]:
