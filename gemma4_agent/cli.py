@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from gemma4_agent.agent import Gemma4RoundTripAgent, Gemma4RoundTripConfig
+from gemma4_agent.pi_loop import PiLoopConfig, run_pi_loop
 from gemma4_agent.toolbox import (
     compare_cad_parts,
     get_tool_instructions,
@@ -36,6 +37,11 @@ def main() -> None:
     compare = subparsers.add_parser("compare", help="Compare two STEP parts")
     compare.add_argument("reference_step")
     compare.add_argument("candidate_step")
+    improve = subparsers.add_parser("improve", help="Run PI-style iterative improvement loop")
+    improve.add_argument("drawings", nargs="+", help="Input drawing paths")
+    improve.add_argument("--output-dir", default="experiments/gemma4_agent/pi_loop")
+    improve.add_argument("--max-iterations", type=int, default=3)
+    improve.add_argument("--target-success-rate", type=float, default=0.8)
 
     args = parser.parse_args()
 
@@ -61,6 +67,19 @@ def main() -> None:
         config = Gemma4RoundTripConfig(**{**config.__dict__, "base_url": args.base_url})
 
     agent = Gemma4RoundTripAgent(config)
+    if args.command == "improve":
+        loop_result = run_pi_loop(
+            drawing_paths=args.drawings,
+            output_dir=args.output_dir,
+            agent_config=config,
+            loop_config=PiLoopConfig(
+                max_iterations=args.max_iterations,
+                min_success_rate=args.target_success_rate,
+            ),
+        )
+        print(json.dumps(loop_result, indent=2))
+        return
+
     result = agent.run_roundtrip(args.drawing, output_dir=args.output_dir)
     print(json.dumps(result, indent=2))
 
