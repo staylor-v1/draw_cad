@@ -161,6 +161,7 @@ class Gemma4RoundTripConfig:
     agent_profile_path: Path = DEFAULT_AGENT_PROFILE
     output_dir: Path = REPO_ROOT / "experiments" / "gemma4_agent"
     view_suffixes: tuple[str, str, str] = ("f", "r", "t")
+    api_compatibility: str = "ollama"
 
     @classmethod
     def from_yaml(cls, path: str | Path) -> "Gemma4RoundTripConfig":
@@ -178,6 +179,7 @@ class Gemma4RoundTripConfig:
             agent_profile_path=Path(agent.get("agent_profile_path", cls.agent_profile_path)),
             output_dir=Path(agent.get("output_dir", cls.output_dir)),
             view_suffixes=tuple(agent.get("view_suffixes", cls.view_suffixes)),  # type: ignore[arg-type]
+            api_compatibility=str(agent.get("api_compatibility", cls.api_compatibility)),
         )
 
 
@@ -287,7 +289,7 @@ class Gemma4RoundTripAgent:
 
     def __init__(self, config: Gemma4RoundTripConfig | None = None):
         self.config = config or Gemma4RoundTripConfig()
-        self.api_url = f"{self.config.base_url.rstrip('/')}/api/chat"
+        self.api_url = self._resolve_api_url()
 
     def run_roundtrip(
         self,
@@ -572,7 +574,7 @@ class Gemma4RoundTripAgent:
         blank_response_repairs = 0
 
         for _ in range(self.config.max_tool_rounds):
-            response = self._ollama_chat(messages=messages, tools=get_tool_schemas())
+            response = self._model_chat(messages=messages, tools=get_tool_schemas())
             assistant_message = response.get("message", {})
             messages.append(assistant_message)
             transcript.append({"assistant": assistant_message, "raw": response})
@@ -618,6 +620,7 @@ class Gemma4RoundTripAgent:
                     {
                         "role": "tool",
                         "tool_name": tool_name,
+                        "tool_call_id": tool_call.get("id", tool_name),
                         "content": json.dumps(tool_result, ensure_ascii=True),
                     }
                 )
@@ -851,6 +854,21 @@ class Gemma4RoundTripAgent:
             message,
         ]
 
+    def _resolve_api_url(self) -> str:
+        base = self.config.base_url.rstrip("/")
+        if self.config.api_compatibility == "openai":
+            return f"{base}/chat/completions"
+        return f"{base}/api/chat"
+
+    def _model_chat(
+        self,
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
+        if self.config.api_compatibility == "openai":
+            return self._openai_chat(messages=messages, tools=tools)
+        return self._ollama_chat(messages=messages, tools=tools)
+
     def _ollama_chat(
         self,
         messages: list[dict[str, Any]],
@@ -871,6 +889,61 @@ class Gemma4RoundTripAgent:
             response = client.post(self.api_url, json=payload)
             response.raise_for_status()
             return response.json()
+
+    def _openai_chat(
+        self,
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "model": self.config.model,
+            "messages": self._to_openai_messages(messages),
+            "temperature": self.config.temperature,
+            "max_tokens": self.config.max_tokens,
+        }
+        if tools:
+            payload["tools"] = tools
+            payload["tool_choice"] = "auto"
+        with httpx.Client(timeout=600) as client:
+            response = client.post(
+                self.api_url,
+                json=payload,
+                headers={"Authorization": f"Bearer {self._resolve_openai_api_key()}"},
+            )
+            response.raise_for_status()
+            data = response.json()
+        choice = (data.get("choices") or [{}])[0]
+        message = choice.get("message") or {}
+        normalized_message = {
+            "role": "assistant",
+            "content": message.get("content") or "",
+        }
+        if message.get("tool_calls"):
+            normalized_message["tool_calls"] = message["tool_calls"]
+        return {"message": normalized_message, "raw_openai": data}
+
+    def _resolve_openai_api_key(self) -> str:
+        return (
+            Path(".openai_api_key").read_text(encoding="utf-8").strip()
+            if Path(".openai_api_key").exists()
+            else __import__("os").environ.get("OPENAI_API_KEY", "EMPTY")
+        )
+
+    def _to_openai_messages(self, messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        converted: list[dict[str, Any]] = []
+        for message in messages:
+            role = message.get("role")
+            if role == "tool":
+                converted.append(
+                    {
+                        "role": "tool",
+                        "tool_call_id": message.get("tool_call_id", message.get("tool_name", "tool")),
+                        "content": message.get("content", ""),
+                    }
+                )
+                continue
+            converted.append({"role": role, "content": message.get("content", "")})
+        return converted
 
 
 def _run_id() -> str:
