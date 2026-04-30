@@ -7,6 +7,7 @@ from pathlib import Path
 import gemma4_agent.agent as agent_module
 from gemma4_agent.agent import (
     Gemma4RoundTripAgent,
+    cad_construction_strategy_context,
     _feature_template_specs_from_evidence,
     _repair_common_build123d_code,
     _stage_used_fallback,
@@ -34,6 +35,7 @@ from gemma4_agent.toolbox import (
     get_tool_schemas,
     inspect_drawing,
     prepare_drawing_masks,
+    render_feature_template_source_contact_sheet,
     render_step_to_drawing,
     segment_drawing_views,
 )
@@ -192,6 +194,23 @@ def test_dispatch_build_flange_template_writes_step(tmp_path: Path):
     assert result["template"] == "flange"
     assert Path(result["step_path"]).exists()
     assert "bolt_positions" in result["code"]
+    assert "machining_operations" in result["code"]
+    assert any("turn/cone-cut upper web" in action for action in result["feature_actions"])
+
+
+def test_cad_construction_strategy_context_recommends_revolved_flange():
+    context = cad_construction_strategy_context(
+        {
+            "physical_features": ["flange", "internal step/revolved profile"],
+            "dimensions": ["R2.730", "diameter 2.165", "diameter 1.929", "R.079", "SECTION A-A"],
+        },
+        drawing_name="flange1",
+    )
+
+    assert context["catalog"]
+    recommended = [item["strategy_id"] for item in context["recommended"]]
+    assert recommended[0] == "revolved_section_profile"
+    assert "template_replay_refine" in recommended
 
 
 def test_dispatch_build_two_hole_stepped_block_template_writes_step(tmp_path: Path):
@@ -232,6 +251,24 @@ def test_render_step_to_drawing_writes_clean_source_contact_sheet(tmp_path: Path
     assert Path(rendered["contact_sheet_path"]).exists()
     assert Path(rendered["source_contact_sheet_path"]).exists()
     assert rendered["source_contact_sheet_path"] != rendered["contact_sheet_path"]
+
+
+def test_render_flange_feature_source_contact_sheet(tmp_path: Path):
+    rendered = render_feature_template_source_contact_sheet(
+        template="flange",
+        dimensions={
+            "outer_radius": 2.73,
+            "bolt_count": 5,
+            "bolt_hole_diameter": 0.315,
+            "bore_diameter": 1.929,
+        },
+        output_dir=tmp_path / "feature_render",
+        stem="flange",
+    )
+
+    assert rendered["success"] is True
+    assert rendered["template"] == "flange"
+    assert Path(rendered["source_contact_sheet_path"]).exists()
 
 
 def test_dispatch_tool_reports_malformed_json_arguments():

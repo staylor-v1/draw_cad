@@ -20,6 +20,7 @@ from gemma4_agent.toolbox import (
     execute_cad_code,
     get_tool_schemas,
     prepare_drawing_masks,
+    render_feature_template_source_contact_sheet,
     render_step_to_drawing,
     segment_drawing_views,
 )
@@ -39,6 +40,110 @@ _MASK_IMAGE_ARTIFACT_KEYS = (
     "overlay_path",
 )
 _MAX_SEGMENTED_VIEW_ATTACHMENTS = 8
+
+
+CAD_CONSTRUCTION_STRATEGIES: tuple[dict[str, Any], ...] = (
+    {
+        "strategy_id": "revolved_section_profile",
+        "name": "Revolved section/profile first",
+        "best_for": [
+            "turned parts, hubs, shafts, flanges, bushings, pulleys",
+            "drawings with section views listing diameters, counterbores, radii, chamfers, or tapers",
+        ],
+        "construction_sequence": [
+            "extract axial stations and radial dimensions from the section/profile view",
+            "sketch the half-section material profile around the rotation axis",
+            "revolve the profile into the base solid",
+            "subtract through bores, counterbores, grooves, and reliefs by diameter/depth",
+            "add bolt/lug patterns or secondary pads after the turned body exists",
+            "apply fillets/chamfers as final named finishing features",
+        ],
+        "choose_when": "The drawing gives diameters or a cut section; source fidelity depends on stepped internal/external contours.",
+        "avoid_when": "The part is primarily a flat plate, open bracket, or rectangular machined block.",
+    },
+    {
+        "strategy_id": "sketch_extrude_cut_plate",
+        "name": "Profile sketch plus extrude/cut",
+        "best_for": [
+            "flat plates, links, connecting rods, covers, gaskets, brackets with constant thickness",
+            "top/front views that define an outer 2D silhouette and hole pattern",
+        ],
+        "construction_sequence": [
+            "sketch the outer planar profile using lines, arcs, tangent radii, and symmetry",
+            "extrude to the dimensioned thickness",
+            "cut holes, slots, and pockets from sketched centers or bolt circles",
+            "pattern repeated holes/features from one controlled feature",
+            "finish perimeter radii/chamfers last",
+        ],
+        "choose_when": "Most geometry is planar and the drawing dimensions are widths, radii, hole centers, and thickness.",
+        "avoid_when": "A section view shows a nonconstant turned profile or hidden internal bores dominate the part.",
+    },
+    {
+        "strategy_id": "additive_subtractive_prismatic",
+        "name": "Base solid plus additive/subtractive features",
+        "best_for": [
+            "machined blocks, stepped blocks, housings, bosses on rectangular stock",
+            "orthographic views with width/depth/height plus pockets, holes, pads, and steps",
+        ],
+        "construction_sequence": [
+            "create the stock/base body from the largest envelope",
+            "add pads, bosses, ribs, or raised lands in dependency order",
+            "subtract pockets, slots, counterbores, through holes, and side cuts",
+            "mirror or pattern repeated geometry",
+            "apply edge breaks, chamfers, and fillets as finishing features",
+        ],
+        "choose_when": "The part is mostly rectilinear and feature order follows machining from stock.",
+        "avoid_when": "The dominant shape is rotational, swept/curved, or thin-walled.",
+    },
+    {
+        "strategy_id": "sweep_loft_thin_wall",
+        "name": "Path sweep/loft for curved or thin-wall forms",
+        "best_for": [
+            "C-brackets, pipe supports, clips, hooks, handles, curved ribs, swept channels",
+            "drawings where a centerline/path and cross-section explain the shape better than boxes",
+        ],
+        "construction_sequence": [
+            "derive the center path or guide curves from the view with the clearest curvature",
+            "define the wall or solid cross-section",
+            "sweep or loft the cross-section along the path",
+            "trim mounting pads, flats, holes, and side cuts",
+            "finish bends and end radii last",
+        ],
+        "choose_when": "A curved centerline or constant section dominates the manufactured form.",
+        "avoid_when": "The part is an axisymmetric turned body or simple extruded plate.",
+    },
+    {
+        "strategy_id": "template_replay_refine",
+        "name": "Known-family template replay and refinement",
+        "best_for": [
+            "recognized training families such as connecting rods, C-brackets, flanges, hubs, and stepped blocks",
+            "roundtrip pass two, where the first STEP candidate should be replayed and compared before freehand modeling",
+        ],
+        "construction_sequence": [
+            "build the closest feature template with extracted dimensions",
+            "compare template STEP/source render against the drawing",
+            "refine dimensions and add missing cuts/radii before replacing it with custom code",
+            "reuse the first-pass template for generated drawings unless comparison proves a mismatch",
+        ],
+        "choose_when": "Evidence or filename strongly identifies a supported feature family.",
+        "avoid_when": "The template family is weakly matched and a simpler strategy explains more source features.",
+    },
+    {
+        "strategy_id": "direct_roundtrip_reconstruction",
+        "name": "Direct deterministic reconstruction for generated drawings",
+        "best_for": [
+            "clean SVG triplets generated from an existing STEP",
+            "roundtrip validation where shape equivalence matters more than source drawing resemblance",
+        ],
+        "construction_sequence": [
+            "inspect the SVG triplet and run deterministic reconstruction first",
+            "compare candidates against first_step_path when available",
+            "repair topology/features only if extents, volume, face count, or source features disagree",
+        ],
+        "choose_when": "The drawing is generated, clean, and already tied to a reference STEP.",
+        "avoid_when": "The source is a raster engineering drawing with rich section/detail information.",
+    },
+)
 
 
 @dataclass(frozen=True)
@@ -76,6 +181,107 @@ class Gemma4RoundTripConfig:
         )
 
 
+def cad_construction_strategy_context(
+    drawing_evidence: dict[str, Any] | None,
+    drawing_name: str = "",
+) -> dict[str, Any]:
+    """Return the full CAD strategy catalogue plus evidence-ranked recommendations."""
+    return {
+        "catalog": _json_safe(CAD_CONSTRUCTION_STRATEGIES),
+        "recommended": recommend_cad_construction_strategies(drawing_evidence or {}, drawing_name=drawing_name),
+        "selection_rule": (
+            "Choose the strategy whose construction sequence matches the dominant manufacturing geometry. "
+            "Use the drawing's section/detail views and dimensions to choose operations, then verify by STEP execution."
+        ),
+    }
+
+
+def cad_roundtrip_strategy_context() -> dict[str, Any]:
+    """Strategy context for pass-two generated drawings."""
+    return {
+        "catalog": _json_safe(CAD_CONSTRUCTION_STRATEGIES),
+        "recommended": [
+            {
+                "strategy_id": "template_replay_refine",
+                "confidence": 0.88,
+                "reason": "Pass two should replay successful first-pass feature templates before freehand reconstruction.",
+            },
+            {
+                "strategy_id": "direct_roundtrip_reconstruction",
+                "confidence": 0.82,
+                "reason": "Generated SVG triplets should be reconstructed directly and compared to first_step_path.",
+            },
+        ],
+        "selection_rule": "Prefer replay/direct reconstruction for generated drawings; freehand code only repairs measured mismatches.",
+    }
+
+
+def recommend_cad_construction_strategies(
+    drawing_evidence: dict[str, Any],
+    drawing_name: str = "",
+) -> list[dict[str, Any]]:
+    """Rank CAD construction strategies using lightweight drawing evidence cues."""
+    text = f"{drawing_name}\n{_evidence_text(drawing_evidence)}".lower()
+    recommendations: list[dict[str, Any]] = []
+
+    def add(strategy_id: str, confidence: float, reason: str) -> None:
+        if any(item["strategy_id"] == strategy_id for item in recommendations):
+            return
+        recommendations.append(
+            {
+                "strategy_id": strategy_id,
+                "confidence": round(confidence, 3),
+                "reason": reason,
+            }
+        )
+
+    if any(term in text for term in ("flange", "hub", "shaft", "bushing", "pulley", "section a-a", "counterbore", "diameter", "ø")):
+        add(
+            "revolved_section_profile",
+            0.92,
+            "Evidence mentions a flange/hub/section/diameter family, so axial profile and bore steps should drive the model.",
+        )
+    if any(term in text for term in ("connecting rod", "link", "plate", "cover", "gasket", "thru x", "bolt pattern")):
+        add(
+            "sketch_extrude_cut_plate",
+            0.82,
+            "Evidence suggests a mostly planar silhouette with hole patterns and a controlling thickness.",
+        )
+    if any(term in text for term in ("block", "pocket", "slot", "boss", "pad", "step", "rectangular")):
+        add(
+            "additive_subtractive_prismatic",
+            0.78,
+            "Evidence suggests a machined block or stepped prismatic part built from stock plus cuts.",
+        )
+    if any(term in text for term in ("c-bracket", "closet rod", "curved support", "sweep", "thin wall", "hook", "clip")):
+        add(
+            "sweep_loft_thin_wall",
+            0.84,
+            "Evidence suggests a curved or thin-wall support whose path/section should be modeled before trims.",
+        )
+    if any(term in text for term in ("connecting rod", "c-bracket", "closet rod", "flange", "hub", "example02", "stepped block")):
+        add(
+            "template_replay_refine",
+            0.86,
+            "Evidence matches a supported feature-template family; build and refine that candidate before freehand CAD.",
+        )
+
+    if not recommendations:
+        add(
+            "additive_subtractive_prismatic",
+            0.52,
+            "Default to a conservative base-solid/add-cut strategy when the drawing family is unclear.",
+        )
+        add(
+            "sketch_extrude_cut_plate",
+            0.48,
+            "Check whether the dominant view is a constant-thickness profile before committing to prismatic stock.",
+        )
+
+    recommendations.sort(key=lambda item: item["confidence"], reverse=True)
+    return recommendations[:4]
+
+
 class Gemma4RoundTripAgent:
     """Gemma 4 tool-calling agent that tests drawing-to-CAD roundtrip stability."""
 
@@ -104,7 +310,12 @@ class Gemma4RoundTripAgent:
             source_drawing,
             root,
         )
+        cad_strategy_context = cad_construction_strategy_context(
+            drawing_evidence or {},
+            drawing_name=source_drawing.stem,
+        )
         first_extra_context: dict[str, Any] = {"drawing_evidence": drawing_evidence or {}}
+        first_extra_context["cad_construction_strategies"] = cad_strategy_context
         if drawing_masks:
             first_extra_context["drawing_masks"] = drawing_masks
         if drawing_view_segments:
@@ -134,6 +345,11 @@ class Gemma4RoundTripAgent:
             stem="pass_1_reprojected",
             view_suffixes=self.config.view_suffixes,
         )
+        self._attach_feature_source_contact_sheet(
+            rendered,
+            first_stage,
+            root / "rendered_from_pass_1",
+        )
 
         roundtrip_feature_template_candidates = self._prepare_feature_templates_for_roundtrip(
             first_stage,
@@ -143,6 +359,7 @@ class Gemma4RoundTripAgent:
             "first_step_path": first_step,
             "rendered_layout_svg_path": rendered["layout_svg_path"],
             "rendered_contact_sheet_path": rendered["contact_sheet_path"],
+            "cad_construction_strategies": cad_roundtrip_strategy_context(),
         }
         if roundtrip_feature_template_candidates:
             second_extra_context["roundtrip_feature_template_candidates"] = roundtrip_feature_template_candidates
@@ -188,6 +405,7 @@ class Gemma4RoundTripAgent:
             "drawing_evidence": drawing_evidence or {},
             "drawing_masks": drawing_masks,
             "drawing_view_segments": drawing_view_segments,
+            "cad_construction_strategies": cad_strategy_context,
             "feature_template_candidates": feature_template_candidates,
             "roundtrip_feature_template_candidates": roundtrip_feature_template_candidates,
             "first_stage": first_stage,
@@ -278,6 +496,30 @@ class Gemma4RoundTripAgent:
             result["source_candidate_step_path"] = candidate.get("step_path")
             candidates.append(result)
         return candidates
+
+    def _attach_feature_source_contact_sheet(
+        self,
+        rendered: dict[str, Any],
+        first_stage: dict[str, Any],
+        output_dir: Path,
+    ) -> None:
+        for candidate in first_stage.get("feature_template_candidates") or []:
+            if not isinstance(candidate, dict) or not candidate.get("success"):
+                continue
+            template = candidate.get("input_template") or candidate.get("template")
+            dimensions = candidate.get("dimensions")
+            if not template or not isinstance(dimensions, dict):
+                continue
+            result = render_feature_template_source_contact_sheet(
+                template=template,
+                dimensions=dimensions,
+                output_dir=output_dir,
+                stem="pass_1_reprojected",
+            )
+            if result.get("success") and result.get("source_contact_sheet_path"):
+                rendered["feature_source_contact_sheet"] = result
+                rendered["source_contact_sheet_path"] = result["source_contact_sheet_path"]
+                return
 
     def _prepare_masks_for_first_pass(self, drawing_path: Path, root: Path) -> dict[str, Any] | None:
         if drawing_path.suffix.lower() not in _RASTER_SUFFIXES:
@@ -779,12 +1021,21 @@ def _connecting_rod_dimensions_from_evidence(text: str) -> dict[str, float]:
 def _flange_dimensions_from_evidence(text: str) -> dict[str, float]:
     return {
         "outer_radius": _number_near(text, ("r2.730", "outer radius", "flange radius"), 2.73),
-        "thickness": _number_near(text, (".250", ".235", "flange thickness", "thickness"), 0.25),
+        "thickness": _number_near(text, (".461", ".250", ".235", "flange thickness", "thickness"), 0.461),
         "hub_radius": _number_near(text, ("2.835", "hub diameter", "major diameter"), 2.835) / 2.0,
         "upper_hub_radius": _number_near(text, ("2.000", "upper diameter", "pilot diameter"), 2.0) / 2.0,
-        "hub_height": _number_near(text, ("1.456", "hub height", "boss height"), 1.456),
+        "hub_height": _number_near(text, (".866", "hub height", "boss height"), 0.866),
         "upper_hub_height": _number_near(text, ("1.101", "upper height", "pilot height"), 1.101),
+        "upper_web_height": _number_near(text, (".235", "41.1", "web height", "chamfer height"), 0.235),
         "bore_diameter": _number_near(text, ("1.929", "bore diameter", "inner diameter"), 1.929),
+        "lower_bore_diameter": _number_near(text, ("2.165", "lower bore", "counterbore"), 2.165),
+        "lower_bore_depth": _number_near(text, (".866", "counterbore depth", "lower bore depth"), 0.866),
+        "lower_collar_radius": _number_near(text, ("3.339", "lower collar", "lower step"), 3.339) / 2.0,
+        "lower_collar_height": _number_near(text, (".235", "lower collar height", "lower step height"), 0.235),
+        "total_height": _number_near(text, ("2.218", "overall height", "total height"), 2.218),
+        "blend_radius": _number_near(text, ("r.079", "blend radius", "fillet radius"), 0.079),
+        "lug_round_radius": _number_near(text, ("r.373", "lug round radius"), 0.373),
+        "outer_lobe_radius": _number_near(text, ("r.520", "outer lobe radius"), 0.52),
         "bolt_hole_diameter": _number_near(text, (".315", "bolt hole", "thru x 5"), 0.315),
         "bolt_count": _count_near(text, 5),
         "bolt_circle_radius": _number_near(text, ("bolt circle", "hole pattern radius"), 2.34),
