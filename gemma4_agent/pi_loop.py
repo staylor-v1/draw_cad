@@ -2,17 +2,20 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-from gemma4_agent.agent import Gemma4RoundTripAgent, Gemma4RoundTripConfig
+from gemma4_agent.agent import Gemma4RoundTripAgent, Gemma4RoundTripConfig, _json_safe
+from gemma4_agent.training import judge_source_fidelity, training_case_passed
 
 
 @dataclass(frozen=True)
 class PiLoopConfig:
     max_iterations: int = 3
     min_success_rate: float = 0.8
+    source_fidelity_threshold: float | None = None
+    feature_match_threshold: float | None = None
 
 
 def run_pi_loop(
@@ -35,6 +38,14 @@ def run_pi_loop(
         for drawing in drawing_paths:
             drawing_path = Path(drawing)
             result = agent.run_roundtrip(drawing_path, output_dir=iter_dir / drawing_path.stem)
+            if loop.source_fidelity_threshold is not None:
+                _attach_source_fidelity(
+                    result=result,
+                    drawing_path=drawing_path,
+                    agent_config=agent_config,
+                    source_fidelity_threshold=loop.source_fidelity_threshold,
+                    feature_match_threshold=loop.feature_match_threshold,
+                )
             case_results.append(result)
 
         successes = sum(1 for r in case_results if r.get("success"))
@@ -60,13 +71,59 @@ def run_pi_loop(
             break
 
     final = {
-        "loop_config": {"max_iterations": loop.max_iterations, "min_success_rate": loop.min_success_rate},
-        "agent_config": agent_config.__dict__,
+        "loop_config": _json_safe(asdict(loop)),
+        "agent_config": _json_safe(asdict(agent_config)),
         "profile_notes": profile_notes,
         "history": history,
     }
     (root / "pi_loop_summary.json").write_text(json.dumps(final, indent=2), encoding="utf-8")
     return final
+
+
+def _attach_source_fidelity(
+    *,
+    result: dict[str, Any],
+    drawing_path: Path,
+    agent_config: Gemma4RoundTripConfig,
+    source_fidelity_threshold: float,
+    feature_match_threshold: float | None,
+) -> None:
+    rendered = result.get("rendered_drawing") if isinstance(result.get("rendered_drawing"), dict) else {}
+    contact_sheet = rendered.get("source_contact_sheet_path") or rendered.get("contact_sheet_path")
+    if not contact_sheet:
+        criteria = result.setdefault("success_criteria", {})
+        criteria["source_fidelity_checked"] = False
+        criteria["source_fidelity_error"] = "Roundtrip did not produce a generated contact sheet"
+        result["success"] = False
+        return
+    evaluation_source_path = _source_fidelity_original_path(result, drawing_path)
+    source_fidelity = judge_source_fidelity(
+        model=agent_config.model,
+        base_url=agent_config.base_url,
+        original_drawing_path=evaluation_source_path,
+        generated_contact_sheet_path=contact_sheet,
+        temperature=0.0,
+    )
+    source_fidelity["original_evaluation_path"] = str(evaluation_source_path)
+    criteria = training_case_passed(
+        roundtrip_summary=result,
+        source_fidelity=source_fidelity,
+        source_fidelity_threshold=source_fidelity_threshold,
+        feature_match_threshold=feature_match_threshold,
+    )
+    result["source_fidelity"] = source_fidelity
+    result["success_criteria"] = criteria
+    result["success"] = bool(criteria["passed"])
+
+
+def _source_fidelity_original_path(result: dict[str, Any], fallback: Path) -> Path:
+    masks = result.get("drawing_masks") if isinstance(result.get("drawing_masks"), dict) else {}
+    artifacts = masks.get("artifacts") if isinstance(masks.get("artifacts"), dict) else {}
+    for key in ("annotation_masked_path", "physical_linework_path", "sheet_masked_path"):
+        candidate = artifacts.get(key)
+        if candidate and Path(candidate).exists():
+            return Path(candidate)
+    return fallback
 
 
 def _summarize_failure_patterns(results: list[dict[str, Any]]) -> list[str]:
@@ -78,6 +135,11 @@ def _summarize_failure_patterns(results: list[dict[str, Any]]) -> list[str]:
             patterns["fallback_geometry"] = patterns.get("fallback_geometry", 0) + 1
         if not result.get("roundtrip_equivalent"):
             patterns["roundtrip_not_equivalent"] = patterns.get("roundtrip_not_equivalent", 0) + 1
+        criteria = result.get("success_criteria") if isinstance(result.get("success_criteria"), dict) else {}
+        if criteria.get("source_fidelity_checked") and not criteria.get("source_fidelity_passed"):
+            patterns["source_fidelity_failed"] = patterns.get("source_fidelity_failed", 0) + 1
+        if criteria.get("source_fidelity_checked") and not criteria.get("feature_match_passed"):
+            patterns["feature_match_failed"] = patterns.get("feature_match_failed", 0) + 1
         source = ((result.get("first_stage") or {}).get("code_source")) or "no_final_code"
         patterns[f"code_source:{source}"] = patterns.get(f"code_source:{source}", 0) + 1
     return [f"{name}={count}" for name, count in sorted(patterns.items(), key=lambda kv: kv[1], reverse=True)]

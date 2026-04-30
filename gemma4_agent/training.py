@@ -54,7 +54,29 @@ Return this JSON shape:
   "actionable_prompt_feedback": []
 }
 
-Use scores from 0.0 to 1.0. Be strict about source drawing resemblance."""
+Use scores from 0.0 to 1.0. Be strict about source drawing resemblance.
+Use exactly these keys, with no extra *_reason or diagnostic keys. Keep every string
+under 120 characters."""
+
+
+SOURCE_FIDELITY_JSON_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        **{key: {"type": "number"} for key in SOURCE_FIDELITY_KEYS},
+        "major_errors": {"type": "array", "items": {"type": "string"}, "maxItems": 5},
+        "missing_features": {"type": "array", "items": {"type": "string"}, "maxItems": 8},
+        "spurious_geometry": {"type": "array", "items": {"type": "string"}, "maxItems": 8},
+        "actionable_prompt_feedback": {"type": "array", "items": {"type": "string"}, "maxItems": 5},
+    },
+    "required": [
+        *SOURCE_FIDELITY_KEYS,
+        "major_errors",
+        "missing_features",
+        "spurious_geometry",
+        "actionable_prompt_feedback",
+    ],
+    "additionalProperties": False,
+}
 
 
 PROFILE_REVISION_SYSTEM_PROMPT = """You improve a CAD reconstruction agent prompt.
@@ -72,13 +94,14 @@ def judge_source_fidelity(
     original_drawing_path: str | Path,
     generated_contact_sheet_path: str | Path,
     temperature: float = 0.0,
-    max_tokens: int = 2048,
+    max_tokens: int = 4096,
 ) -> dict[str, Any]:
     """Ask local Gemma to judge source drawing fidelity from two images."""
     original_b64, original_mime = encode_image_for_ollama(original_drawing_path)
     generated_b64, generated_mime = encode_image_for_ollama(generated_contact_sheet_path)
     payload: dict[str, Any] = {
         "model": model,
+        "format": SOURCE_FIDELITY_JSON_SCHEMA,
         "messages": [
             {"role": "system", "content": SOURCE_FIDELITY_SYSTEM_PROMPT},
             {
@@ -90,7 +113,7 @@ def judge_source_fidelity(
         "stream": False,
         "options": {
             "temperature": temperature,
-            "num_predict": max_tokens,
+            "num_predict": max(4096, max_tokens),
         },
     }
     api_url = f"{base_url.rstrip('/')}/api/chat"

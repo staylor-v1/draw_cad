@@ -42,6 +42,9 @@ def main() -> None:
     improve.add_argument("--output-dir", default="experiments/gemma4_agent/pi_loop")
     improve.add_argument("--max-iterations", type=int, default=3)
     improve.add_argument("--target-success-rate", type=float, default=0.8)
+    improve.add_argument("--source-fidelity-threshold", type=float)
+    improve.add_argument("--feature-match-threshold", type=float)
+    improve.add_argument("--summary-only", action="store_true", help="Print compact per-case PI loop results")
 
     args = parser.parse_args()
 
@@ -61,9 +64,9 @@ def main() -> None:
         return
 
     config = Gemma4RoundTripConfig.from_yaml(args.config)
-    if args.model:
+    if getattr(args, "model", None):
         config = Gemma4RoundTripConfig(**{**config.__dict__, "model": args.model})
-    if args.base_url:
+    if getattr(args, "base_url", None):
         config = Gemma4RoundTripConfig(**{**config.__dict__, "base_url": args.base_url})
 
     agent = Gemma4RoundTripAgent(config)
@@ -75,13 +78,63 @@ def main() -> None:
             loop_config=PiLoopConfig(
                 max_iterations=args.max_iterations,
                 min_success_rate=args.target_success_rate,
+                source_fidelity_threshold=args.source_fidelity_threshold,
+                feature_match_threshold=args.feature_match_threshold,
             ),
         )
+        if args.summary_only:
+            loop_result = _compact_loop_result(loop_result)
         print(json.dumps(loop_result, indent=2))
         return
 
     result = agent.run_roundtrip(args.drawing, output_dir=args.output_dir)
     print(json.dumps(result, indent=2))
+
+def _compact_loop_result(loop_result: dict) -> dict:
+    history = []
+    for iteration in loop_result.get("history", []):
+        cases = []
+        for case in iteration.get("cases", []):
+            source = case.get("source_fidelity") or {}
+            criteria = case.get("success_criteria") or {}
+            cases.append(
+                {
+                    "source_drawing": case.get("source_drawing"),
+                    "success": case.get("success"),
+                    "roundtrip_equivalent": case.get("roundtrip_equivalent"),
+                    "used_fallback": case.get("used_fallback"),
+                    "source_fidelity": {
+                        "overall_score": source.get("overall_score"),
+                        "feature_match": source.get("feature_match"),
+                        "major_errors": source.get("major_errors"),
+                        "missing_features": source.get("missing_features"),
+                        "original_evaluation_path": source.get("original_evaluation_path"),
+                    },
+                    "success_criteria": {
+                        "passed": criteria.get("passed"),
+                        "source_fidelity_passed": criteria.get("source_fidelity_passed"),
+                        "feature_match_passed": criteria.get("feature_match_passed"),
+                    },
+                    "first_step_path": case.get("first_step_path"),
+                    "second_step_path": case.get("second_step_path"),
+                    "source_contact_sheet_path": (case.get("rendered_drawing") or {}).get("source_contact_sheet_path"),
+                }
+            )
+        history.append(
+            {
+                "iteration": iteration.get("iteration"),
+                "success_rate": iteration.get("success_rate"),
+                "successes": iteration.get("successes"),
+                "total": iteration.get("total"),
+                "failure_patterns": iteration.get("failure_patterns"),
+                "cases": cases,
+            }
+        )
+    return {
+        "loop_config": loop_result.get("loop_config"),
+        "profile_notes": loop_result.get("profile_notes"),
+        "history": history,
+    }
 
 
 if __name__ == "__main__":

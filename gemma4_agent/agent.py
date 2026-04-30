@@ -998,7 +998,9 @@ def _feature_template_specs_from_evidence(
     drawing_evidence: dict[str, Any],
     drawing_name: str = "",
 ) -> list[dict[str, Any]]:
-    evidence_text = f"{_evidence_text(drawing_evidence)} {drawing_name.lower()}".strip()
+    name_text = drawing_name.lower()
+    normalized_name_text = re.sub(r"[_\-.]+", " ", name_text)
+    evidence_text = f"{_evidence_text(drawing_evidence)} {name_text} {normalized_name_text}".strip()
     dimension_text = _evidence_text(drawing_evidence.get("dimensions", drawing_evidence))
     specs: list[dict[str, Any]] = []
     if any(token in evidence_text for token in ("closet rod", "c-shaped", "c shape", "curved bracket", "curved support")):
@@ -1017,8 +1019,24 @@ def _feature_template_specs_from_evidence(
                 "evidence_match": "connecting_rod_or_link",
             }
         )
-    name_text = drawing_name.lower()
-    if "flange" in name_text or "hub" in name_text or any(
+    lathe_hub_match = (
+        "hub" in name_text
+        or "lathe" in evidence_text
+        or "xometry lathe" in evidence_text
+        or (
+            any(token in evidence_text for token in ("diameter 40", "ø40", "d40"))
+            and any(token in evidence_text for token in ("4 holes", "x4", "x 4", "diameter 30"))
+        )
+    )
+    if lathe_hub_match and "flange" not in name_text:
+        specs.append(
+            {
+                "template": "hub",
+                "dimensions": _lathe_hub_dimensions_from_evidence(evidence_text),
+                "evidence_match": "lathe_hub_or_shaft_hub",
+            }
+        )
+    elif "flange" in name_text or any(
         token in evidence_text
         for token in (
             "flanged",
@@ -1113,6 +1131,22 @@ def _flange_dimensions_from_evidence(text: str) -> dict[str, float]:
         "bolt_count": _count_near(text, 5),
         "bolt_circle_radius": _number_near(text, ("bolt circle", "hole pattern radius"), 2.34),
         "lug_radius": _number_near(text, ("r.520", "lug radius"), 0.52),
+    }
+
+
+def _lathe_hub_dimensions_from_evidence(text: str) -> dict[str, float]:
+    return {
+        "length": _number_near(text, ("76", "overall length", "length"), 76.0),
+        "left_shaft_radius": _number_near(text, ("diameter 10", "ø10", "10 h7"), 10.0) / 2.0,
+        "right_step_radius": _number_near(text, ("diameter 10", "ø10", "right step"), 10.0) / 2.0,
+        "right_spigot_radius": _number_near(text, ("diameter 8", "ø8", "right spigot"), 8.0) / 2.0,
+        "waist_radius": _number_near(text, ("diameter 15", "ø15", "central waist"), 15.0) / 2.0,
+        "flange_radius": _number_near(text, ("diameter 40", "ø40", "outer diameter"), 40.0) / 2.0,
+        "web_shoulder_radius": _number_near(text, ("21.5", "diameter 21.5", "web shoulder"), 21.5) / 2.0,
+        "bore_radius": _number_near(text, ("m4", "diameter 4", "ø4"), 4.0) / 2.0,
+        "bolt_hole_diameter": _number_near(text, ("diameter 3", "ø3", "bolt hole"), 3.0),
+        "bolt_count": _count_near(text, 4),
+        "bolt_circle_radius": _number_near(text, ("diameter 30", "ø30", "bolt circle"), 30.0) / 2.0,
     }
 
 

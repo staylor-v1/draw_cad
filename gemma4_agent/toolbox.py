@@ -770,8 +770,12 @@ def build_feature_template_cad(
         code = _c_bracket_template_code(params)
         family = "c_bracket"
     elif normalized_template in {"flange", "circular_flange", "hub", "flanged_hub"}:
-        code = _flange_template_code(params)
-        family = "flange"
+        if normalized_template == "hub":
+            code = _lathe_hub_template_code(params)
+            family = "lathe_hub"
+        else:
+            code = _flange_template_code(params)
+            family = "flange"
     elif normalized_template in {"two_hole_stepped_block", "stepped_block", "two_hole_block", "gdt_example_02"}:
         code = _two_hole_stepped_block_template_code(params)
         family = "two_hole_stepped_block"
@@ -823,6 +827,17 @@ def build_feature_template_cad(
             "counterbore lower recess",
             "drill five bolt holes",
             "apply visible R.079-style blends/chamfers where robust",
+        ]
+    elif family == "lathe_hub":
+        result["feature_actions"] = [
+            "revolve the A-A axial half-section profile around the shaft axis",
+            "turn left H7 pilot shaft diameter and shoulder chamfer",
+            "turn thin outer flanges to diameter 40 at each end of the web",
+            "turn/arc-cut concave R19 web transitions down to the diameter 15 waist",
+            "turn right stepped spigot diameters before the end face",
+            "bore the axial M4/diameter 4 through feature",
+            "drill four diameter 3 holes on the diameter 30 bolt circle from the end view",
+            "apply R3, R1, R0.3 blends and 45 degree edge breaks where robust",
         ]
     return result
 
@@ -925,11 +940,15 @@ def _flange_template_code(params: dict[str, Any]) -> str:
     lug_radius = _num_param(params, "lug_radius", max(bolt_hole_diameter * 1.6, outer_radius * 0.12))
     total_height = lower_bore_depth + thickness + upper_hub_height
     cutter_height = total_height + 2.0
-    lower_collar_z = lower_collar_height / 2.0
-    lower_hub_z = lower_collar_height + lower_hub_height / 2.0
     flange_z = lower_bore_depth + thickness / 2.0
-    upper_web_z = lower_bore_depth + thickness + upper_web_height / 2.0
-    upper_hub_z = lower_bore_depth + thickness + upper_web_height + upper_cylinder_height / 2.0
+    flange_bottom = lower_bore_depth
+    flange_top = lower_bore_depth + thickness
+    web_top = flange_top + upper_web_height
+    top_recess_bottom = max(web_top, total_height - max(upper_web_height, thickness) * 0.82)
+    top_recess_radius = max(
+        bore_diameter / 2.0 + 0.02,
+        min(upper_hub_radius - 0.02, bore_diameter / 2.0 + max(blend_radius * 1.2, 0.08)),
+    )
     return f"""from build123d import *
 from math import cos, pi, sin
 
@@ -937,12 +956,32 @@ from math import cos, pi, sin
 # Parameters are approximate drawing dimensions, usually inches for flange drawings.
 bolt_positions = []
 with BuildPart() as flange_part:
-    with Locations((0, 0, {lower_collar_z:.6g})):
-        Cylinder(radius={lower_collar_radius:.6g}, height={lower_collar_height:.6g})
-    with Locations((0, 0, {lower_hub_z:.6g})):
-        Cylinder(radius={hub_radius:.6g}, height={lower_hub_height:.6g})
-    with Locations((0, 0, {flange_z:.6g})):
-        Cylinder(radius={outer_radius:.6g}, height={thickness:.6g})
+    # Primary lathe-style operation: revolve the real section A-A material profile.
+    # The inner boundary carries the through bore, lower counterbore, and shallow
+    # upper relief so section/profile details are CAD features, not annotation notes.
+    with BuildSketch(Plane.XZ) as revolved_section:
+        with BuildLine():
+            Polyline(
+                ({lower_bore_diameter / 2.0:.6g}, 0.0),
+                ({lower_collar_radius:.6g}, 0.0),
+                ({lower_collar_radius:.6g}, {lower_collar_height:.6g}),
+                ({hub_radius:.6g}, {lower_collar_height:.6g}),
+                ({hub_radius:.6g}, {flange_bottom:.6g}),
+                ({outer_radius:.6g}, {flange_bottom:.6g}),
+                ({outer_radius:.6g}, {flange_top:.6g}),
+                ({hub_radius + blend_radius * 1.6:.6g}, {flange_top:.6g}),
+                ({upper_hub_radius:.6g}, {web_top:.6g}),
+                ({upper_hub_radius:.6g}, {total_height:.6g}),
+                ({top_recess_radius:.6g}, {total_height:.6g}),
+                ({top_recess_radius:.6g}, {top_recess_bottom:.6g}),
+                ({bore_diameter / 2.0:.6g}, {top_recess_bottom:.6g}),
+                ({bore_diameter / 2.0:.6g}, {lower_bore_depth:.6g}),
+                ({lower_bore_diameter / 2.0:.6g}, {lower_bore_depth:.6g}),
+                ({lower_bore_diameter / 2.0:.6g}, 0.0),
+                close=True,
+            )
+        make_face()
+    revolve(axis=Axis.Z)
 
     # Rounded mounting lugs preserve the visible five-hole perimeter pattern.
     for index in range({bolt_count}):
@@ -953,16 +992,6 @@ with BuildPart() as flange_part:
         with Locations((x, y, {flange_z:.6g})):
             Cylinder(radius={lug_radius:.6g}, height={thickness:.6g})
 
-    # Concentric stepped hub/bore stack from the section view.
-    with Locations((0, 0, {upper_web_z:.6g})):
-        Cone(bottom_radius={hub_radius:.6g}, top_radius={upper_hub_radius:.6g}, height={upper_web_height:.6g})
-    with Locations((0, 0, {upper_hub_z:.6g})):
-        Cylinder(radius={upper_hub_radius:.6g}, height={upper_cylinder_height:.6g})
-
-    with Locations((0, 0, {total_height / 2.0:.6g})):
-        Cylinder(radius={bore_diameter / 2.0:.6g}, height={cutter_height:.6g}, mode=Mode.SUBTRACT)
-    with Locations((0, 0, {lower_bore_depth / 2.0:.6g})):
-        Cylinder(radius={lower_bore_diameter / 2.0:.6g}, height={lower_bore_depth:.6g}, mode=Mode.SUBTRACT)
     for x, y in bolt_positions:
         with Locations((x, y, {flange_z:.6g})):
             Cylinder(radius={bolt_hole_diameter / 2.0:.6g}, height={cutter_height:.6g}, mode=Mode.SUBTRACT)
@@ -987,6 +1016,92 @@ machining_operations = [
 ]
 try:
     part = fillet(part.edges(), radius={min(blend_radius, 0.06):.6g})
+except Exception:
+    pass
+"""
+
+
+def _lathe_hub_template_code(params: dict[str, Any]) -> str:
+    length = _num_param(params, "length", 76.0)
+    left_shaft_radius = _num_param(params, "left_shaft_radius", _num_param(params, "end_shaft_radius", 5.0))
+    right_spigot_radius = _num_param(params, "right_spigot_radius", 4.0)
+    right_step_radius = _num_param(params, "right_step_radius", 5.0)
+    waist_radius = _num_param(params, "waist_radius", 7.5)
+    flange_radius = _num_param(params, "flange_radius", 20.0)
+    web_shoulder_radius = _num_param(params, "web_shoulder_radius", 10.75)
+    bore_radius = _num_param(params, "bore_radius", 2.0)
+    bolt_hole_diameter = _num_param(params, "bolt_hole_diameter", 3.0)
+    bolt_count = max(1, int(round(_num_param(params, "bolt_count", 4.0))))
+    bolt_circle_radius = _num_param(params, "bolt_circle_radius", 15.0)
+    cutter_length = length + 8.0
+    half = length / 2.0
+    left_flange_x = -half + 14.0
+    left_flange_width = 3.0
+    left_web_inner_x = -10.95
+    right_web_inner_x = 10.95
+    right_flange_x = half - 14.0
+    right_flange_width = 3.0
+    right_step_x = half - 19.0
+    right_spigot_x = half - 12.0
+    return f"""from build123d import *
+from math import cos, pi, sin
+
+# Feature template: lathe-style hub/shaft with four-hole end view.
+# Built as a revolved half-section so the CAD sequence matches turning practice.
+with BuildPart() as hub_part:
+    with BuildSketch(Plane.XY) as axial_section:
+        with BuildLine():
+            Polyline(
+                ({-half:.6g}, {left_shaft_radius:.6g}),
+                ({left_flange_x - left_flange_width - 2.0:.6g}, {left_shaft_radius:.6g}),
+                ({left_flange_x - left_flange_width:.6g}, {left_shaft_radius + 1.0:.6g}),
+                ({left_flange_x - left_flange_width:.6g}, {flange_radius:.6g}),
+                ({left_flange_x:.6g}, {flange_radius:.6g}),
+                ({left_flange_x + 1.1:.6g}, {web_shoulder_radius:.6g}),
+                ({left_web_inner_x:.6g}, {waist_radius:.6g}),
+                ({right_web_inner_x:.6g}, {waist_radius:.6g}),
+                ({right_flange_x - 1.1:.6g}, {web_shoulder_radius:.6g}),
+                ({right_flange_x:.6g}, {flange_radius:.6g}),
+                ({right_flange_x + right_flange_width:.6g}, {flange_radius:.6g}),
+                ({right_flange_x + right_flange_width:.6g}, {right_step_radius:.6g}),
+                ({right_step_x:.6g}, {right_step_radius:.6g}),
+                ({right_step_x:.6g}, {right_spigot_radius:.6g}),
+                ({right_spigot_x:.6g}, {right_spigot_radius:.6g}),
+                ({right_spigot_x:.6g}, {bore_radius + 0.35:.6g}),
+                ({half:.6g}, {bore_radius + 0.35:.6g}),
+                ({half:.6g}, 0.0),
+                ({-half:.6g}, 0.0),
+                ({-half:.6g}, {left_shaft_radius:.6g}),
+                close=True,
+            )
+        make_face()
+    revolve(axis=Axis.X)
+
+    Cylinder(radius={bore_radius:.6g}, height={cutter_length:.6g}, rotation=(0, 90, 0), mode=Mode.SUBTRACT)
+
+bolt_positions = []
+for index in range({bolt_count}):
+    angle = 2 * pi * index / {bolt_count}
+    y = {bolt_circle_radius:.6g} * cos(angle)
+    z = {bolt_circle_radius:.6g} * sin(angle)
+    bolt_positions.append((y, z))
+    with Locations(({right_flange_x + right_flange_width / 2.0:.6g}, y, z)):
+        Cylinder(radius={bolt_hole_diameter / 2.0:.6g}, height={right_flange_width + 6.0:.6g}, rotation=(0, 90, 0), mode=Mode.SUBTRACT)
+
+part = hub_part.part
+
+machining_operations = [
+    "revolve A-A axial half-section into the primary turned blank",
+    "turn left pilot diameter {left_shaft_radius * 2.0:.6g}",
+    "turn central waist diameter {waist_radius * 2.0:.6g}",
+    "turn paired end flanges diameter {flange_radius * 2.0:.6g}",
+    "turn right spigot diameters {right_step_radius * 2.0:.6g} and {right_spigot_radius * 2.0:.6g}",
+    "bore axial through hole diameter {bore_radius * 2.0:.6g}",
+    "drill {bolt_count}x end-face holes diameter {bolt_hole_diameter:.6g} on diameter {bolt_circle_radius * 2.0:.6g}",
+    "apply R19/R3/R1/R0.3 blends and 45 degree edge breaks where robust",
+]
+try:
+    part = fillet(part.edges(), radius=0.3)
 except Exception:
     pass
 """
@@ -1155,21 +1270,31 @@ def render_feature_template_source_contact_sheet(
     output_path.mkdir(parents=True, exist_ok=True)
     normalized_template = _safe_file_label(template).lower()
     params = dimensions or {}
-    if normalized_template not in {"flange", "circular_flange", "hub", "flanged_hub"}:
+    if normalized_template == "hub":
+        image_path = output_path / f"{stem}_{normalized_template}_source_contact_sheet.png"
+        _write_lathe_hub_source_contact_sheet(params, image_path)
+        return {
+            "success": True,
+            "template": "lathe_hub",
+            "input_template": template,
+            "source_contact_sheet_path": str(image_path),
+        }
+    if normalized_template in {"flange", "circular_flange", "flanged_hub"}:
+        image_path = output_path / f"{stem}_{normalized_template}_source_contact_sheet.png"
+        _write_flange_source_contact_sheet(params, image_path)
+        return {
+            "success": True,
+            "template": "flange",
+            "input_template": template,
+            "source_contact_sheet_path": str(image_path),
+        }
+    else:
         return {
             "success": False,
             "template": template,
             "error": f"No feature source contact sheet renderer for template: {template}",
             "error_type": "UnsupportedFeatureSourceRenderer",
         }
-    image_path = output_path / f"{stem}_{normalized_template}_source_contact_sheet.png"
-    _write_flange_source_contact_sheet(params, image_path)
-    return {
-        "success": True,
-        "template": "flange",
-        "input_template": template,
-        "source_contact_sheet_path": str(image_path),
-    }
 
 
 def summarize_step(step_path: str | Path) -> dict[str, Any]:
@@ -1266,7 +1391,7 @@ def _validate_step_path(path: str | Path, *, label: str) -> dict[str, Any] | Non
 
 
 def encode_image_for_ollama(image_path: str | Path) -> tuple[str, str]:
-    """Return base64 image data and MIME type for Ollama image messages."""
+    """Return base64 PNG image data and MIME type for Ollama image messages."""
     path = Path(image_path)
     mime_type = mimetypes.guess_type(path.name)[0] or "image/png"
     if path.suffix.lower() == ".svg":
@@ -1278,6 +1403,12 @@ def encode_image_for_ollama(image_path: str | Path) -> tuple[str, str]:
         except Exception:
             data = path.read_bytes()
             return base64.b64encode(data).decode("ascii"), mime_type
+
+    if path.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp", ".bmp"}:
+        with Image.open(path) as image:
+            encoded = BytesIO()
+            image.convert("RGB").save(encoded, format="PNG", optimize=True)
+        return base64.b64encode(encoded.getvalue()).decode("ascii"), "image/png"
 
     return base64.b64encode(path.read_bytes()).decode("ascii"), mime_type
 
@@ -1477,10 +1608,11 @@ def _write_flange_source_contact_sheet(params: dict[str, Any], output_path: Path
         x, y, w, h = frames[frame_key]
         span_x = outer_radius * 2.35
         span_z = max(total_height * 1.25, 1.0)
-        scale = min((w - 28) / span_x, (h - 28) / span_z)
+        scale_x = (w - 28) / span_x
+        scale_z = (h - 28) / span_z
         return (
-            x + w / 2.0 + x_value * scale,
-            y + h - 14 - z_value * scale,
+            x + w / 2.0 + x_value * scale_x,
+            y + h - 14 - z_value * scale_z,
         )
 
     def line_profile(points: list[tuple[float, float]], frame_key: str, fill="black", width=2) -> None:
@@ -1526,11 +1658,6 @@ def _write_flange_source_contact_sheet(params: dict[str, Any], output_path: Path
     fill_profile(outline, "f", (244, 244, 244))
     fill_profile(bore_void, "f", "white")
     line_profile(outline, "f", width=2)
-    hatch_z = flange_bottom + thickness * 0.12
-    while hatch_z < web_top - upper_web_height * 0.08:
-        line_profile([(-outer_radius * 0.9, hatch_z), (-(bore_radius + blend_radius), hatch_z + thickness * 0.32)], "f", fill=(95, 95, 95), width=1)
-        line_profile([(bore_radius + blend_radius, hatch_z), (outer_radius * 0.9, hatch_z + thickness * 0.32)], "f", fill=(95, 95, 95), width=1)
-        hatch_z += max(thickness * 0.22, 0.055)
     for z_value in (flange_bottom + thickness * 0.2, flange_top - thickness * 0.15, web_top - upper_web_height * 0.25):
         line_profile([(-outer_radius * 0.82, z_value), (-(bore_radius + blend_radius), z_value + thickness * 0.22)], "f", fill=(95, 95, 95), width=1)
         line_profile([(bore_radius + blend_radius, z_value), (outer_radius * 0.82, z_value + thickness * 0.22)], "f", fill=(95, 95, 95), width=1)
@@ -1555,10 +1682,7 @@ def _write_flange_source_contact_sheet(params: dict[str, Any], output_path: Path
     fillet = max(blend_radius, total_height * 0.018, 0.04)
     for sign in (-1.0, 1.0):
         cx, cy = map_profile(sign * hub_radius, flange_bottom, "f")
-        rr = fillet * min(
-            (frames["f"][2] - 28) / (outer_radius * 2.35),
-            (frames["f"][3] - 28) / max(total_height * 1.25, 1.0),
-        )
+        rr = fillet * (frames["f"][3] - 28) / max(total_height * 1.25, 1.0)
         box = (cx - rr, cy - rr, cx + rr, cy + rr)
         draw.arc(box, 180 if sign > 0 else 270, 270 if sign > 0 else 360, fill="black", width=1)
         cx, cy = map_profile(sign * upper_hub_radius, web_top, "f")
@@ -1590,11 +1714,6 @@ def _write_flange_source_contact_sheet(params: dict[str, Any], output_path: Path
     fill_profile(side_outline, "r", (248, 248, 248))
     fill_profile(bore_void, "r", "white")
     line_profile(side_outline, "r", width=2)
-    hatch_z = flange_bottom + thickness * 0.16
-    while hatch_z < web_top - upper_web_height * 0.1:
-        line_profile([(-outer_radius * 0.9, hatch_z), (-(bore_radius + blend_radius), hatch_z + thickness * 0.28)], "r", fill=(95, 95, 95), width=1)
-        line_profile([(bore_radius + blend_radius, hatch_z), (outer_radius * 0.9, hatch_z + thickness * 0.28)], "r", fill=(95, 95, 95), width=1)
-        hatch_z += max(thickness * 0.24, 0.06)
     for z_value in (flange_bottom + thickness * 0.25, flange_top - thickness * 0.1):
         line_profile([(-outer_radius * 0.85, z_value), (-(bore_radius + blend_radius), z_value + thickness * 0.18)], "r", fill=(95, 95, 95), width=1)
         line_profile([(bore_radius + blend_radius, z_value), (outer_radius * 0.85, z_value + thickness * 0.18)], "r", fill=(95, 95, 95), width=1)
@@ -1609,7 +1728,7 @@ def _write_flange_source_contact_sheet(params: dict[str, Any], output_path: Path
     line_profile([(-outer_radius, flange_mid), (outer_radius, flange_mid)], "r", fill=(80, 80, 80), width=1)
 
     # Top view with lugs, five bolt holes, and concentric bore/hub circles.
-    x0, y0, w, h = frames["t"]
+    x0, y0, w, h = frames["f"]
     scale = (w - 42) / (2.0 * (outer_radius + lug_radius * 0.35))
     cx = x0 + w / 2.0
     cy = y0 + h / 2.0
@@ -1625,9 +1744,295 @@ def _write_flange_source_contact_sheet(params: dict[str, Any], output_path: Path
         angle = 2.0 * math.pi * index / bolt_count - math.pi / 2.0
         bx = bolt_circle_radius * math.cos(angle)
         by = bolt_circle_radius * math.sin(angle)
+        circle(bx, by, lug_radius, width=1)
         circle(bx, by, bolt_hole_radius, width=2)
     for radius in (lower_collar_radius, hub_radius, lower_bore_radius, upper_hub_radius, bore_radius):
         circle(0.0, 0.0, radius, width=2)
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    image.save(output_path)
+
+
+def _write_connecting_rod_source_contact_sheet(params: dict[str, Any], output_path: Path) -> None:
+    length = _num_param(params, "overall_length", 137.5)
+    large_d = _num_param(params, "large_end_diameter", 60.0)
+    small_d = _num_param(params, "small_end_diameter", 25.0)
+    large_bore_d = _num_param(params, "large_bore_diameter", 40.0)
+    small_bore_d = _num_param(params, "small_bore_diameter", 15.0)
+    thickness = _num_param(params, "thickness", 9.2)
+    beam_width = _num_param(params, "beam_width", 21.3)
+    center_distance = max(length - (large_d + small_d) / 2.0, max(large_d, small_d))
+
+    thumb = 320
+    pad = 18
+    label_h = 26
+    image = Image.new("RGB", (pad + 3 * (thumb + pad), thumb + label_h + 2 * pad), "white")
+    draw = ImageDraw.Draw(image)
+    frames = {
+        "f": (pad, pad, thumb, thumb),
+        "r": (pad + thumb + pad, pad, thumb, thumb),
+        "t": (pad + 2 * (thumb + pad), pad, thumb, thumb),
+    }
+    for label, (x, y, w, h) in frames.items():
+        draw.rectangle((x, y, x + w, y + h), outline="black")
+        draw.text((x, y + h + 6), label, fill="black")
+
+    x0, y0, w, h = frames["f"]
+    scale = min((w - 32) / max(length, 1.0), (h - 32) / max(large_d * 1.25, 1.0))
+    cx = x0 + w / 2.0
+    cy = y0 + h / 2.0
+    left_x = -center_distance / 2.0
+    right_x = center_distance / 2.0
+
+    def top_xy(px: float, py: float) -> tuple[float, float]:
+        return cx + px * scale, cy - py * scale
+
+    def ellipse(center_x: float, center_y: float, diameter: float, width: int = 2, fill=None) -> None:
+        px, py = top_xy(center_x, center_y)
+        rr = diameter * scale / 2.0
+        draw.ellipse((px - rr, py - rr, px + rr, py + rr), outline="black", width=width, fill=fill)
+
+    # Primary profile view: two circular eyes, bores, and a tapered ribbed shank.
+    web_half = beam_width / 2.0
+    draw.polygon(
+        [
+            top_xy(left_x, web_half),
+            top_xy(right_x, web_half * 0.72),
+            top_xy(right_x, -web_half * 0.72),
+            top_xy(left_x, -web_half),
+        ],
+        fill=(246, 246, 246),
+        outline="black",
+    )
+    ellipse(left_x, 0.0, large_d, width=2, fill=(248, 248, 248))
+    ellipse(right_x, 0.0, small_d, width=2, fill=(248, 248, 248))
+    ellipse(left_x, 0.0, large_bore_d, width=2, fill="white")
+    ellipse(right_x, 0.0, small_bore_d, width=2, fill="white")
+    for factor in (0.42, 0.72):
+        draw.line((top_xy(left_x + large_d * 0.45, web_half * factor), top_xy(right_x - small_d * 0.58, web_half * 0.36)), fill="black", width=1)
+        draw.line((top_xy(left_x + large_d * 0.45, -web_half * factor), top_xy(right_x - small_d * 0.58, -web_half * 0.36)), fill="black", width=1)
+    draw.line((top_xy(left_x + large_d * 0.34, 0.0), top_xy(right_x - small_d * 0.36, 0.0)), fill=(80, 80, 80), width=1)
+
+    # Front/side views expose constant thickness and the through bores as hidden lines.
+    def profile_frame(frame_key: str, height_scale: float = 1.0) -> None:
+        x, y, w, h = frames[frame_key]
+        sx = (w - 32) / max(length, 1.0)
+        sy = (h - 40) / max(thickness * 2.4, 1.0)
+        mid_y = y + h / 2.0
+        left = x + w / 2.0 - length * sx / 2.0
+        right = x + w / 2.0 + length * sx / 2.0
+        top = mid_y - thickness * height_scale * sy / 2.0
+        bottom = mid_y + thickness * height_scale * sy / 2.0
+        draw.rectangle((left, top, right, bottom), outline="black", width=2, fill=(248, 248, 248))
+        for center, diameter in ((left_x, large_bore_d), (right_x, small_bore_d)):
+            px = x + w / 2.0 + center * sx
+            rr = diameter * sx / 2.0
+            draw.line((px - rr, top, px - rr, bottom), fill=(90, 90, 90), width=1)
+            draw.line((px + rr, top, px + rr, bottom), fill=(90, 90, 90), width=1)
+        draw.line((left, mid_y, right, mid_y), fill=(80, 80, 80), width=1)
+
+    profile_frame("r", 1.0)
+    profile_frame("t", 0.65)
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    image.save(output_path)
+
+
+def _write_c_bracket_source_contact_sheet(params: dict[str, Any], output_path: Path) -> None:
+    outer_diameter = _num_param(params, "outer_diameter", 39.72)
+    inner_radius = _num_param(params, "inner_radius", 11.25)
+    thickness = _num_param(params, "thickness", 15.0)
+    base_width = _num_param(params, "base_width", 26.72)
+    mounting_hole_diameter = _num_param(params, "mounting_hole_diameter", 3.0)
+    large_hole_diameter = _num_param(params, "large_hole_diameter", 5.0)
+    side_hole_diameter = _num_param(params, "side_hole_diameter", 2.8)
+    outer_radius = outer_diameter / 2.0
+
+    thumb = 320
+    pad = 18
+    label_h = 26
+    image = Image.new("RGB", (pad + 3 * (thumb + pad), thumb + label_h + 2 * pad), "white")
+    draw = ImageDraw.Draw(image)
+    frames = {
+        "f": (pad, pad, thumb, thumb),
+        "r": (pad + thumb + pad, pad, thumb, thumb),
+        "t": (pad + 2 * (thumb + pad), pad, thumb, thumb),
+    }
+    for label, (x, y, w, h) in frames.items():
+        draw.rectangle((x, y, x + w, y + h), outline="black")
+        draw.text((x, y + h + 6), label, fill="black")
+
+    x0, y0, w, h = frames["f"]
+    scale = min((w - 40) / max(outer_diameter, 1.0), (h - 40) / max(outer_diameter, 1.0))
+    cx = x0 + w / 2.0
+    cy = y0 + h / 2.0
+
+    def circle(center_x: float, center_y: float, radius: float, width: int = 2, fill=None) -> None:
+        px = cx + center_x * scale
+        py = cy - center_y * scale
+        rr = radius * scale
+        draw.ellipse((px - rr, py - rr, px + rr, py + rr), outline="black", width=width, fill=fill)
+
+    # Main C-shaped support: outer ring, inner rod clearance, and open mouth.
+    circle(0.0, 0.0, outer_radius, fill=(248, 248, 248))
+    circle(0.0, 0.0, inner_radius, fill="white")
+    mouth = (
+        cx - outer_radius * scale,
+        cy - inner_radius * 1.15 * scale,
+        cx + outer_radius * 0.2 * scale,
+        cy + inner_radius * 1.15 * scale,
+    )
+    draw.rectangle(mouth, fill="white")
+    draw.line((cx - outer_radius * scale, cy - inner_radius * 1.15 * scale, cx + outer_radius * 0.2 * scale, cy - inner_radius * 1.15 * scale), fill="black", width=2)
+    draw.line((cx - outer_radius * scale, cy + inner_radius * 1.15 * scale, cx + outer_radius * 0.2 * scale, cy + inner_radius * 1.15 * scale), fill="black", width=2)
+    circle(outer_radius * 0.5, inner_radius * 1.12, large_hole_diameter / 2.0, width=2, fill="white")
+    circle(outer_radius * 0.5, -inner_radius * 1.12, mounting_hole_diameter / 2.0, width=2, fill="white")
+
+    # Side and top views show the wall thickness and side hole.
+    for frame_key, height_factor in (("r", 1.0), ("t", 0.62)):
+        x, y, w, h = frames[frame_key]
+        sx = (w - 40) / max(outer_diameter, 1.0)
+        sy = (h - 50) / max(thickness * 1.4, 1.0)
+        left = x + w / 2.0 - outer_diameter * sx / 2.0
+        right = x + w / 2.0 + outer_diameter * sx / 2.0
+        top = y + h / 2.0 - thickness * height_factor * sy / 2.0
+        bottom = y + h / 2.0 + thickness * height_factor * sy / 2.0
+        draw.rectangle((left, top, right, bottom), outline="black", width=2, fill=(248, 248, 248))
+        px = x + w / 2.0
+        rr = side_hole_diameter * sx / 2.0
+        draw.ellipse((px - rr, (top + bottom) / 2.0 - rr, px + rr, (top + bottom) / 2.0 + rr), outline="black", width=2, fill="white")
+        draw.line((left, (top + bottom) / 2.0, right, (top + bottom) / 2.0), fill=(80, 80, 80), width=1)
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    image.save(output_path)
+
+
+def _write_lathe_hub_source_contact_sheet(params: dict[str, Any], output_path: Path) -> None:
+    length = _num_param(params, "length", 76.0)
+    left_shaft_radius = _num_param(params, "left_shaft_radius", _num_param(params, "end_shaft_radius", 5.0))
+    right_spigot_radius = _num_param(params, "right_spigot_radius", 4.0)
+    right_step_radius = _num_param(params, "right_step_radius", 5.0)
+    waist_radius = _num_param(params, "waist_radius", 7.5)
+    flange_radius = _num_param(params, "flange_radius", 20.0)
+    web_shoulder_radius = _num_param(params, "web_shoulder_radius", 10.75)
+    bore_radius = _num_param(params, "bore_radius", 2.0)
+    bolt_hole_radius = _num_param(params, "bolt_hole_diameter", 3.0) / 2.0
+    bolt_count = max(1, int(round(_num_param(params, "bolt_count", 4.0))))
+    bolt_circle_radius = _num_param(params, "bolt_circle_radius", 15.0)
+    half = length / 2.0
+    left_flange_x = -half + 14.0
+    left_flange_width = 3.0
+    left_web_inner_x = -10.95
+    right_web_inner_x = 10.95
+    right_flange_x = half - 14.0
+    right_flange_width = 3.0
+    right_step_x = half - 19.0
+    right_spigot_x = half - 12.0
+
+    thumb = 320
+    pad = 18
+    label_h = 26
+    image = Image.new("RGB", (pad + 3 * (thumb + pad), thumb + label_h + 2 * pad), "white")
+    draw = ImageDraw.Draw(image)
+    frames = {
+        "f": (pad, pad, thumb, thumb),
+        "r": (pad + thumb + pad, pad, thumb, thumb),
+        "t": (pad + 2 * (thumb + pad), pad, thumb, thumb),
+    }
+    for label, (x, y, w, h) in frames.items():
+        draw.rectangle((x, y, x + w, y + h), outline="black")
+        draw.text((x, y + h + 6), label, fill="black")
+
+    def map_section(x_value: float, radius: float, frame_key: str) -> tuple[float, float]:
+        x, y, w, h = frames[frame_key]
+        sx = (w - 32) / max(length * 1.08, 1.0)
+        sy = (h - 32) / max(flange_radius * 2.35, 1.0)
+        return x + w / 2.0 + x_value * sx, y + h / 2.0 - radius * sy
+
+    section = [
+        (-half, left_shaft_radius),
+        (left_flange_x - left_flange_width - 2.0, left_shaft_radius),
+        (left_flange_x - left_flange_width, left_shaft_radius + 1.0),
+        (left_flange_x - left_flange_width, flange_radius),
+        (left_flange_x, flange_radius),
+        (left_flange_x + 1.1, web_shoulder_radius),
+        (left_web_inner_x, waist_radius),
+        (right_web_inner_x, waist_radius),
+        (right_flange_x - 1.1, web_shoulder_radius),
+        (right_flange_x, flange_radius),
+        (right_flange_x + right_flange_width, flange_radius),
+        (right_flange_x + right_flange_width, right_step_radius),
+        (right_step_x, right_step_radius),
+        (right_step_x, right_spigot_radius),
+        (right_spigot_x, right_spigot_radius),
+        (right_spigot_x, bore_radius + 0.35),
+        (half, bore_radius + 0.35),
+    ]
+    upper = [map_section(x, r, "f") for x, r in section]
+    lower = [map_section(x, -r, "f") for x, r in reversed(section)]
+    draw.polygon(upper + lower, outline="black", fill=(246, 246, 246))
+
+    def draw_bore_slot(frame_key: str, radius_scale: float = 1.0) -> None:
+        top_left = map_section(-half, bore_radius * radius_scale, frame_key)
+        top_right = map_section(half, bore_radius * radius_scale, frame_key)
+        bottom_right = map_section(half, -bore_radius * radius_scale, frame_key)
+        bottom_left = map_section(-half, -bore_radius * radius_scale, frame_key)
+        draw.polygon((top_left, top_right, bottom_right, bottom_left), outline="black", fill="white")
+        for x_value in (-half + 8.0, half - 8.0):
+            px, py1 = map_section(x_value, bore_radius * radius_scale, frame_key)
+            _, py2 = map_section(x_value, -bore_radius * radius_scale, frame_key)
+            draw.line((px, py1, px, py2), fill="black", width=1)
+
+    def draw_projected_bolt_holes(frame_key: str, radius_scale: float = 1.0) -> None:
+        for x_value in (left_flange_x - left_flange_width / 2.0, right_flange_x + right_flange_width / 2.0):
+            cx, cy = map_section(x_value, 0.0, frame_key)
+            _, edge_y = map_section(x_value, bolt_hole_radius * radius_scale, frame_key)
+            rr = abs(cy - edge_y)
+            draw.ellipse((cx - rr, cy - rr, cx + rr, cy + rr), outline="black", width=1, fill="white")
+
+    draw_bore_slot("f")
+    draw_projected_bolt_holes("f")
+    draw.line((map_section(-length / 2.0, 0.0, "f"), map_section(length / 2.0, 0.0, "f")), fill=(80, 80, 80), width=1)
+
+    # Section A-A repeats the axial profile and adds simple hatching to cue a cut view.
+    upper = [map_section(x, r * 0.7, "r") for x, r in section]
+    lower = [map_section(x, -r * 0.7, "r") for x, r in reversed(section)]
+    draw.polygon(upper + lower, outline="black", fill=(248, 248, 248))
+    rx, ry, rw, rh = frames["r"]
+    hatch = Image.new("RGB", image.size, (248, 248, 248))
+    hatch_draw = ImageDraw.Draw(hatch)
+    for offset in range(-180, 220, 18):
+        x1 = rx + max(0, offset)
+        y1 = ry + rh - max(0, -offset)
+        x2 = min(rx + rw, x1 + 90)
+        y2 = max(ry, y1 - 90)
+        hatch_draw.line((x1, y1, x2, y2), fill=(150, 150, 150), width=1)
+    hatch_mask = Image.new("L", image.size, 0)
+    ImageDraw.Draw(hatch_mask).polygon(upper + lower, fill=255)
+    image.paste(hatch, mask=hatch_mask)
+    draw = ImageDraw.Draw(image)
+    draw.polygon(upper + lower, outline="black")
+    draw_bore_slot("r", radius_scale=0.7)
+    draw_projected_bolt_holes("r", radius_scale=0.7)
+    draw.line((map_section(-length / 2.0, 0.0, "r"), map_section(length / 2.0, 0.0, "r")), fill=(80, 80, 80), width=1)
+
+    # End view: four-hole circular pattern and concentric hub/bore circles.
+    x0, y0, w, h = frames["t"]
+    scale = (w - 42) / max(flange_radius * 2.3, 1.0)
+    cx = x0 + w / 2.0
+    cy = y0 + h / 2.0
+
+    def circle(center_y: float, center_z: float, radius: float, width: int = 2) -> None:
+        px = cx + center_y * scale
+        py = cy - center_z * scale
+        rr = radius * scale
+        draw.ellipse((px - rr, py - rr, px + rr, py + rr), outline="black", width=width)
+
+    for radius in (flange_radius, bolt_circle_radius, left_shaft_radius, bore_radius):
+        circle(0.0, 0.0, radius, width=2)
+    for index in range(bolt_count):
+        angle = 2.0 * math.pi * index / bolt_count
+        circle(bolt_circle_radius * math.cos(angle), bolt_circle_radius * math.sin(angle), bolt_hole_radius, width=2)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     image.save(output_path)

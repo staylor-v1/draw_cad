@@ -62,8 +62,14 @@ the target success-rate is reached or max iterations is hit.
   training_data/gdt/flange1.png training_data/gdt/simple1.webp \
   --max-iterations 4 \
   --target-success-rate 0.85 \
+  --source-fidelity-threshold 0.72 \
   --output-dir experiments/gemma4_agent/pi_loop
 ```
+
+When `--source-fidelity-threshold` is set, each PI-loop case must also pass the
+source-drawing fidelity judge that compares the original drawing with the generated
+STEP contact sheet. This prevents a self-consistent but wrong first-pass CAD model from
+counting as successful.
 
 ## OpenAI-Compatible Endpoint Mode
 

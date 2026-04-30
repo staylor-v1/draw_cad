@@ -12,6 +12,7 @@ from gemma4_agent.agent import (
     _repair_common_build123d_code,
     _stage_used_fallback,
 )
+from gemma4_agent.cli import _compact_loop_result
 from gemma4_agent.extractors import (
     HeuristicEvidenceExtractor,
     _fallback_evidence_from_text,
@@ -31,6 +32,7 @@ from gemma4_agent.toolbox import (
     _bbox_extent_ratio,
     compare_cad_parts,
     dispatch_tool,
+    encode_image_for_ollama,
     get_tool_instructions,
     get_tool_schemas,
     inspect_drawing,
@@ -154,6 +156,63 @@ def test_dispatch_prepare_drawing_masks_uses_runtime_output(tmp_path: Path):
     assert "prepare_drawing_masks" in get_tool_instructions()
 
 
+def test_encode_image_for_ollama_normalizes_webp_to_png(tmp_path: Path):
+    image_path = tmp_path / "drawing.webp"
+    Image.new("RGB", (24, 16), "white").save(image_path, format="WEBP")
+
+    encoded, mime_type = encode_image_for_ollama(image_path)
+
+    assert encoded
+    assert mime_type == "image/png"
+
+
+def test_compact_loop_result_keeps_actionable_case_fields():
+    compact = _compact_loop_result(
+        {
+            "loop_config": {"max_iterations": 1},
+            "profile_notes": ["ok"],
+            "history": [
+                {
+                    "iteration": 1,
+                    "success_rate": 1.0,
+                    "successes": 1,
+                    "total": 1,
+                    "failure_patterns": [],
+                    "cases": [
+                        {
+                            "source_drawing": "drawing.png",
+                            "success": True,
+                            "roundtrip_equivalent": True,
+                            "used_fallback": False,
+                            "first_step_path": "first.step",
+                            "second_step_path": "second.step",
+                            "rendered_drawing": {"source_contact_sheet_path": "sheet.png"},
+                            "success_criteria": {
+                                "passed": True,
+                                "source_fidelity_passed": True,
+                                "feature_match_passed": True,
+                            },
+                            "source_fidelity": {
+                                "overall_score": 0.3,
+                                "feature_match": 0.2,
+                                "major_errors": [],
+                                "missing_features": [],
+                            },
+                            "large_field": {"ignored": True},
+                        }
+                    ],
+                }
+            ],
+        }
+    )
+
+    case = compact["history"][0]["cases"][0]
+    assert case["source_drawing"] == "drawing.png"
+    assert case["source_fidelity"]["overall_score"] == 0.3
+    assert case["source_contact_sheet_path"] == "sheet.png"
+    assert "large_field" not in case
+
+
 def test_dispatch_build_feature_template_cad_writes_step(tmp_path: Path):
     result = dispatch_tool(
         "build_feature_template_cad",
@@ -198,6 +257,29 @@ def test_dispatch_build_flange_template_writes_step(tmp_path: Path):
     assert any("turn/cone-cut upper web" in action for action in result["feature_actions"])
 
 
+def test_dispatch_build_hub_template_writes_lathe_step(tmp_path: Path):
+    result = dispatch_tool(
+        "build_feature_template_cad",
+        {
+            "template": "hub",
+            "dimensions": {
+                "length": 76,
+                "flange_radius": 20,
+                "waist_radius": 7.5,
+                "bolt_count": 4,
+            },
+        },
+        runtime=ToolRuntime(output_dir=tmp_path / "tool_output"),
+    )
+
+    assert result["success"] is True
+    assert result["template"] == "lathe_hub"
+    assert Path(result["step_path"]).exists()
+    assert "revolve(axis=Axis.X)" in result["code"]
+    assert "bolt_positions" in result["code"]
+    assert any("four diameter 3 holes" in action for action in result["feature_actions"])
+
+
 def test_cad_construction_strategy_context_recommends_revolved_flange():
     context = cad_construction_strategy_context(
         {
@@ -211,6 +293,16 @@ def test_cad_construction_strategy_context_recommends_revolved_flange():
     recommended = [item["strategy_id"] for item in context["recommended"]]
     assert recommended[0] == "revolved_section_profile"
     assert "template_replay_refine" in recommended
+
+
+def test_feature_template_specs_match_normalized_filenames():
+    rod_specs = _feature_template_specs_from_evidence({}, drawing_name="connecting_rod")
+    support_specs = _feature_template_specs_from_evidence({}, drawing_name="closet-rod-support")
+    hub_specs = _feature_template_specs_from_evidence({}, drawing_name="hub")
+
+    assert rod_specs[0]["template"] == "connecting_rod"
+    assert support_specs[0]["template"] == "closet_rod_support"
+    assert hub_specs[0]["template"] == "hub"
 
 
 def test_dispatch_build_two_hole_stepped_block_template_writes_step(tmp_path: Path):
@@ -268,6 +360,24 @@ def test_render_flange_feature_source_contact_sheet(tmp_path: Path):
 
     assert rendered["success"] is True
     assert rendered["template"] == "flange"
+    assert Path(rendered["source_contact_sheet_path"]).exists()
+
+
+def test_render_hub_feature_source_contact_sheet(tmp_path: Path):
+    rendered = render_feature_template_source_contact_sheet(
+        template="hub",
+        dimensions={
+            "length": 76,
+            "flange_radius": 20,
+            "waist_radius": 7.5,
+            "bolt_count": 4,
+        },
+        output_dir=tmp_path / "feature_render",
+        stem="hub",
+    )
+
+    assert rendered["success"] is True
+    assert rendered["template"] == "lathe_hub"
     assert Path(rendered["source_contact_sheet_path"]).exists()
 
 
